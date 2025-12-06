@@ -13,6 +13,7 @@ import { CustomFieldsModule } from './custom-fields/custom-fields.module';
 import { WorkflowsModule } from './workflows/workflows.module';
 import { RulesModule } from './rules/rules.module';
 import { TimesheetsModule } from './timesheets/timesheets.module';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TimesheetsModule } from './timesheets/timesheets.module';
     WorkflowsModule, // Workflow engine
     RulesModule, // Rule engine
     TimesheetsModule, // Timesheets module
+    ProjectsModule, // Project management module
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -17,6 +17,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ProjectFinancialsModule } from './project-financials/project-financials.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { LeadsModule } from './leads/leads.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ContactsModule } from './contacts/contacts.module';
     TasksModule, // Task management module
     ProjectFinancialsModule, // Project financials module
     ContactsModule, // Contacts management module
+    LeadsModule, // Lead management and scoring module
   ],
   controllers: [AppController],
   providers: [AppService],

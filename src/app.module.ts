@@ -12,6 +12,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { CustomFieldsModule } from './custom-fields/custom-fields.module';
 import { WorkflowsModule } from './workflows/workflows.module';
 import { RulesModule } from './rules/rules.module';
+import { TimesheetsModule } from './timesheets/timesheets.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { RulesModule } from './rules/rules.module';
     CustomFieldsModule, // Custom fields framework
     WorkflowsModule, // Workflow engine
     RulesModule, // Rule engine
+    TimesheetsModule, // Timesheets module
   ],
   controllers: [AppController],
   providers: [AppService],

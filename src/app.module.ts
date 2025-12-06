@@ -11,6 +11,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { CustomFieldsModule } from './custom-fields/custom-fields.module';
 import { WorkflowsModule } from './workflows/workflows.module';
+import { RulesModule } from './rules/rules.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { WorkflowsModule } from './workflows/workflows.module';
     SubscriptionsModule, // Import after TenantsModule for tenant context
     CustomFieldsModule, // Custom fields framework
     WorkflowsModule, // Workflow engine
+    RulesModule, // Rule engine
   ],
   controllers: [AppController],
   providers: [AppService],

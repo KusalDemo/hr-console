@@ -1,0 +1,27 @@
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ConfigModule } from './config/config.module';
+import { DatabaseModule } from './database/database.module';
+import { HealthModule } from './health/health.module';
+import { LoggerModule } from './common/logger/logger.module';
+import { AuthModule } from './auth/auth.module';
+import { TenantsModule } from './tenants/tenants.module';
+import { OrganizationsModule } from './organizations/organizations.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+
+@Module({
+  imports: [
+    ConfigModule,
+    LoggerModule,
+    DatabaseModule,
+    HealthModule,
+    AuthModule,
+    TenantsModule,
+    OrganizationsModule, // Import after TenantsModule so middleware order is correct
+    SubscriptionsModule, // Import after TenantsModule for tenant context
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}

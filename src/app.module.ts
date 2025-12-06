@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { TenantsModule } from './tenants/tenants.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { CustomFieldsModule } from './custom-fields/custom-fields.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     TenantsModule,
     OrganizationsModule, // Import after TenantsModule so middleware order is correct
     SubscriptionsModule, // Import after TenantsModule for tenant context
+    CustomFieldsModule, // Custom fields framework
   ],
   controllers: [AppController],
   providers: [AppService],

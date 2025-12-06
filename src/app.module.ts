@@ -16,6 +16,7 @@ import { TimesheetsModule } from './timesheets/timesheets.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ProjectFinancialsModule } from './project-financials/project-financials.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProjectFinancialsModule } from './project-financials/project-financials
     ProjectsModule, // Project management module
     TasksModule, // Task management module
     ProjectFinancialsModule, // Project financials module
+    ContactsModule, // Contacts management module
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,6 +14,7 @@ import { WorkflowsModule } from './workflows/workflows.module';
 import { RulesModule } from './rules/rules.module';
 import { TimesheetsModule } from './timesheets/timesheets.module';
 import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ProjectsModule } from './projects/projects.module';
     RulesModule, // Rule engine
     TimesheetsModule, // Timesheets module
     ProjectsModule, // Project management module
+    TasksModule, // Task management module
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LeaveController } from './leave.controller';
-import { LeavePolicyService, LeaveAccrualService } from './services';
+import { LeavePolicyService, LeaveAccrualService, LeaveRequestService } from './services';
 import {
   LeavePolicyRepository,
   EmployeeLeavePolicyAssignmentRepository,
+  LeaveRequestRepository,
 } from './repositories';
 import {
   LeavePolicy,
@@ -12,6 +13,7 @@ import {
   EmployeeLeavePolicyAssignment,
 } from './entities';
 import { Employee } from '../employees/entities/employee.entity';
+import { WorkflowsModule } from '../workflows/workflows.module';
 
 /**
  * Leave Module
@@ -32,19 +34,24 @@ import { Employee } from '../employees/entities/employee.entity';
       EmployeeLeavePolicyAssignment,
       Employee,
     ]),
+    WorkflowsModule,
   ],
   controllers: [LeaveController],
   providers: [
     LeavePolicyService,
     LeaveAccrualService,
+    LeaveRequestService,
     LeavePolicyRepository,
     EmployeeLeavePolicyAssignmentRepository,
+    LeaveRequestRepository,
   ],
   exports: [
     LeavePolicyService,
     LeaveAccrualService,
+    LeaveRequestService,
     LeavePolicyRepository,
     EmployeeLeavePolicyAssignmentRepository,
+    LeaveRequestRepository,
   ],
 })
 export class LeaveModule {}

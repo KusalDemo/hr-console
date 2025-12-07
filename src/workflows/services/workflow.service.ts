@@ -9,7 +9,10 @@ import { WorkflowDefinitionRepository } from '../repositories/workflow-definitio
 import { WorkflowInstanceRepository } from '../repositories/workflow-instance.repository';
 import { WorkflowTransitionRepository } from '../repositories/workflow-transition.repository';
 import { WorkflowApprovalRepository } from '../repositories/workflow-approval.repository';
+import { ApprovalDelegationRepository } from '../repositories/approval-delegation.repository';
+import { ApprovalDelegation } from '../entities/approval-delegation.entity';
 import { WorkflowStateMachineService } from './workflow-state-machine.service';
+import { ApprovalRoutingService } from './approval-routing.service';
 import {
   WorkflowDefinition,
   WorkflowInstance,
@@ -44,7 +47,9 @@ export class WorkflowService {
     private readonly workflowInstanceRepository: WorkflowInstanceRepository,
     private readonly workflowTransitionRepository: WorkflowTransitionRepository,
     private readonly workflowApprovalRepository: WorkflowApprovalRepository,
+    private readonly approvalDelegationRepository: ApprovalDelegationRepository,
     private readonly stateMachineService: WorkflowStateMachineService,
+    private readonly approvalRoutingService: ApprovalRoutingService,
   ) {}
 
   /**
@@ -381,7 +386,107 @@ export class WorkflowService {
   }
 
   /**
+   * Process approval with delegation support
+   */
+  async processApproval(
+    approvalId: number,
+    approve: boolean,
+    approverId: number,
+    comments?: string,
+  ): Promise<WorkflowApproval> {
+    const approval = await this.workflowApprovalRepository.findById(approvalId);
+
+    if (!approval) {
+      throw new NotFoundException(`Approval with ID ${approvalId} not found`);
+    }
+
+    const instance = await this.workflowInstanceRepository.findById(approval.workflowInstanceId);
+
+    if (!instance) {
+      throw new NotFoundException(`Workflow instance not found`);
+    }
+
+    if (instance.status !== WorkflowStatus.ACTIVE) {
+      throw new BadRequestException('Workflow is not active');
+    }
+
+    // Verify approver (check original approver or delegate)
+    if (
+      approval.approverId !== approverId &&
+      (approval.delegatedTo === null || approval.delegatedTo !== approverId)
+    ) {
+      throw new BadRequestException('User is not authorized to approve this step');
+    }
+
+    if (approval.status !== ApprovalStatus.PENDING) {
+      throw new BadRequestException('Approval is not pending');
+    }
+
+    // Update approval
+    if (approve) {
+      approval.status = ApprovalStatus.APPROVED;
+      approval.approvedAt = new Date();
+    } else {
+      approval.status = ApprovalStatus.REJECTED;
+      approval.rejectedAt = new Date();
+      // Reject workflow
+      instance.status = WorkflowStatus.REJECTED;
+      instance.completedAt = new Date();
+      instance.completedBy = approverId;
+      instance.completionReason = comments;
+      await this.workflowInstanceRepository.save(instance);
+    }
+
+    approval.comments = comments || null;
+    await this.workflowApprovalRepository.save(approval);
+
+    // Check if all required approvals are done
+    if (approve) {
+      await this.checkAndProceedWorkflow(instance);
+    }
+
+    this.logger.log(
+      `Approval processed: approval=${approvalId}, approve=${approve}, workflow=${instance.id}`,
+    );
+
+    return approval;
+  }
+
+  /**
+   * Check if workflow can proceed and transition if needed
+   */
+  private async checkAndProceedWorkflow(instance: WorkflowInstance): Promise<void> {
+    // Get all pending approvals for this instance
+    const pendingApprovals = await this.workflowApprovalRepository.findPendingByInstance(
+      instance.id,
+    );
+
+    // Check if all required approvals are done
+    const requiredApprovals = pendingApprovals.filter((a) => a.isRequired);
+    const approvedRequired = requiredApprovals.filter(
+      (a) => a.status === ApprovalStatus.APPROVED,
+    );
+
+    if (approvedRequired.length === requiredApprovals.length) {
+      // All required approvals done, transition workflow
+      const workflowDefinition = instance.workflowDefinition;
+      const workflowDef = this.stateMachineService.parseWorkflowDefinition(
+        workflowDefinition.workflowDefinition,
+      );
+
+      // Find next state (could be enhanced with workflow definition logic)
+      // For now, we'll mark as completed if in final state
+      if (this.stateMachineService.isFinalState(workflowDef, instance.currentState)) {
+        instance.status = WorkflowStatus.COMPLETED;
+        instance.completedAt = new Date();
+        await this.workflowInstanceRepository.save(instance);
+      }
+    }
+  }
+
+  /**
    * Create initial approvals for a state
+   * Enhanced with approval routing and delegation support
    */
   private async createInitialApprovals(
     instance: WorkflowInstance,
@@ -394,16 +499,67 @@ export class WorkflowService {
       return;
     }
 
+    // Check for auto-approval
+    const autoApprovalCheck = await this.approvalRoutingService.checkAutoApproval(
+      instance.workflowDefinition.workflowKey,
+      instance.entityType,
+      instance.workflowData,
+      stateDef.autoApprovalRules,
+    );
+
+    if (autoApprovalCheck.shouldAutoApprove) {
+      this.logger.log(
+        `Auto-approving workflow instance ${instance.id}: ${autoApprovalCheck.reason}`,
+      );
+      // Auto-approve and transition
+      instance.currentState = stateDef.autoApprovalTargetState || stateName;
+      await this.workflowInstanceRepository.save(instance);
+      return;
+    }
+
     const approvals: WorkflowApproval[] = [];
 
     for (let stepIndex = 0; stepIndex < stateDef.approvals.length; stepIndex++) {
       const approvalDef = stateDef.approvals[stepIndex];
       const approvalStep = stepIndex + 1;
 
+      // Determine approvers using routing service if routing rules are provided
+      let approverIds: number[] = [];
+
+      if (approvalDef.routingRules) {
+        // Use routing service to determine approvers
+        approverIds = await this.approvalRoutingService.determineApprovalChain(
+          instance.workflowData?.employeeId || 0,
+          instance.workflowDefinition.workflowKey,
+          instance.entityType,
+          approvalDef.routingRules,
+          instance.workflowData,
+        );
+      } else if (Array.isArray(approvalDef.approvers)) {
+        // Use provided approvers
+        approverIds = approvalDef.approvers;
+      } else if (approvalDef.approver) {
+        // Single approver
+        approverIds = [approvalDef.approver];
+      }
+
+      // Resolve delegations for each approver
+      const resolvedApproverIds = await Promise.all(
+        approverIds.map((approverId) =>
+          this.approvalRoutingService.resolveApprover(
+            approverId,
+            instance.workflowDefinition.workflowKey,
+            instance.entityType,
+            instance.workflowData,
+          ),
+        ),
+      );
+
       // Handle parallel approvals
-      if (Array.isArray(approvalDef.approvers)) {
-        for (let levelIndex = 0; levelIndex < approvalDef.approvers.length; levelIndex++) {
-          const approverId = approvalDef.approvers[levelIndex];
+      if (approvalDef.parallel !== false && resolvedApproverIds.length > 1) {
+        // Parallel: all approvers at same level
+        for (let levelIndex = 0; levelIndex < resolvedApproverIds.length; levelIndex++) {
+          const approverId = resolvedApproverIds[levelIndex];
           const approvalLevel = levelIndex + 1;
 
           const approval = this.workflowApprovalRepository.create({
@@ -422,23 +578,28 @@ export class WorkflowService {
 
           approvals.push(approval);
         }
-      } else if (approvalDef.approver) {
-        // Single approver
-        const approval = this.workflowApprovalRepository.create({
-          workflowInstanceId: instance.id,
-          approvalStep,
-          approvalLevel: 1,
-          approverId: approvalDef.approver,
-          status: ApprovalStatus.PENDING,
-          isRequired: approvalDef.required !== false,
-          dueDate: approvalDef.dueDate
-            ? new Date(approvalDef.dueDate)
-            : approvalDef.dueInDays
-              ? new Date(Date.now() + approvalDef.dueInDays * 24 * 60 * 60 * 1000)
-              : null,
-        });
+      } else {
+        // Sequential: approvers in sequence
+        for (let levelIndex = 0; levelIndex < resolvedApproverIds.length; levelIndex++) {
+          const approverId = resolvedApproverIds[levelIndex];
+          const approvalLevel = levelIndex + 1;
 
-        approvals.push(approval);
+          const approval = this.workflowApprovalRepository.create({
+            workflowInstanceId: instance.id,
+            approvalStep,
+            approvalLevel,
+            approverId,
+            status: ApprovalStatus.PENDING,
+            isRequired: approvalDef.required !== false,
+            dueDate: approvalDef.dueDate
+              ? new Date(approvalDef.dueDate)
+              : approvalDef.dueInDays
+                ? new Date(Date.now() + approvalDef.dueInDays * 24 * 60 * 60 * 1000)
+                : null,
+          });
+
+          approvals.push(approval);
+        }
       }
     }
 
@@ -475,10 +636,73 @@ export class WorkflowService {
 
         if (!this.stateMachineService.stateExists(workflowDef, transition.toState)) {
           throw new BadRequestException(`Transition references invalid toState: ${transition.toState}`);
-        }
       }
     }
   }
+
+  // ========== Delegation Methods ==========
+
+  /**
+   * Create approval delegation
+   */
+  async createDelegation(createDto: any, createdBy?: number): Promise<ApprovalDelegation> {
+    const delegation = this.approvalDelegationRepository.create({
+      ...createDto,
+      effectiveStartDate: new Date(createDto.effectiveStartDate),
+      effectiveEndDate: createDto.effectiveEndDate ? new Date(createDto.effectiveEndDate) : null,
+      isActive: createDto.isActive !== undefined ? createDto.isActive : true,
+      createdBy,
+    });
+
+    const saved = await this.approvalDelegationRepository.save(delegation);
+
+    this.logger.log(
+      `Created approval delegation: ${saved.id} (delegator: ${saved.delegatorId} -> delegate: ${saved.delegateId})`,
+    );
+
+    return saved;
+  }
+
+  /**
+   * Get delegations for delegator
+   */
+  async getDelegationsForDelegator(
+    delegatorId: number,
+    workflowKey?: string,
+    entityType?: string,
+  ): Promise<ApprovalDelegation[]> {
+    return this.approvalDelegationRepository.findActiveDelegations(
+      delegatorId,
+      workflowKey,
+      entityType,
+    );
+  }
+
+  /**
+   * Get delegations for delegate
+   */
+  async getDelegationsForDelegate(delegateId: number): Promise<ApprovalDelegation[]> {
+    return this.approvalDelegationRepository.findDelegationsForDelegate(delegateId);
+  }
+
+  /**
+   * Remove delegation
+   */
+  async removeDelegation(delegationId: number, updatedBy?: number): Promise<void> {
+    const delegation = await this.approvalDelegationRepository.findById(delegationId);
+
+    if (!delegation) {
+      throw new NotFoundException(`Delegation with ID ${delegationId} not found`);
+    }
+
+    delegation.isActive = false;
+    delegation.updatedBy = updatedBy;
+
+    await this.approvalDelegationRepository.save(delegation);
+
+    this.logger.log(`Removed approval delegation: ${delegationId}`);
+  }
+}
 
   /**
    * Map entity to response DTO

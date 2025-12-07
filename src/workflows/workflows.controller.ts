@@ -13,6 +13,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { WorkflowService } from './services/workflow.service';
+import { ApprovalDelegation } from './entities/approval-delegation.entity';
 import {
   CreateWorkflowDefinitionDto,
   UpdateWorkflowDefinitionDto,
@@ -20,6 +21,7 @@ import {
   TransitionWorkflowDto,
   WorkflowDefinitionResponseDto,
   WorkflowInstanceResponseDto,
+  CreateApprovalDelegationDto,
 } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -162,6 +164,65 @@ export class WorkflowsController {
     @CurrentUser() user: JwtPayload,
   ): Promise<void> {
     return this.workflowService.cancelWorkflowInstance(id, reason, user.userId);
+  }
+
+  // ========== Approval Delegation Endpoints ==========
+
+  /**
+   * Create approval delegation
+   * POST /workflows/delegations
+   */
+  @Post('delegations')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles('ADMIN', 'HR', 'MANAGER')
+  async createDelegation(
+    @Body() createDto: CreateApprovalDelegationDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.workflowService.createDelegation(
+      {
+        ...createDto,
+        effectiveStartDate: new Date(createDto.effectiveStartDate),
+        effectiveEndDate: createDto.effectiveEndDate ? new Date(createDto.effectiveEndDate) : undefined,
+      },
+      user.userId,
+    );
+  }
+
+  /**
+   * Get delegations for delegator
+   * GET /workflows/delegations/delegator/:delegatorId
+   */
+  @Get('delegations/delegator/:delegatorId')
+  async getDelegationsForDelegator(
+    @Param('delegatorId', ParseIntPipe) delegatorId: number,
+    @Query('workflowKey') workflowKey?: string,
+    @Query('entityType') entityType?: string,
+  ) {
+    return this.workflowService.getDelegationsForDelegator(delegatorId, workflowKey, entityType);
+  }
+
+  /**
+   * Get delegations for delegate
+   * GET /workflows/delegations/delegate/:delegateId
+   */
+  @Get('delegations/delegate/:delegateId')
+  async getDelegationsForDelegate(@Param('delegateId', ParseIntPipe) delegateId: number) {
+    return this.workflowService.getDelegationsForDelegate(delegateId);
+  }
+
+  /**
+   * Remove delegation
+   * DELETE /workflows/delegations/:id
+   */
+  @Delete('delegations/:id')
+  @Roles('ADMIN', 'HR', 'MANAGER')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeDelegation(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    await this.workflowService.removeDelegation(id, user.userId);
   }
 }
 

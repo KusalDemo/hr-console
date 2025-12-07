@@ -5,5 +5,6 @@ export * from './start-workflow.dto';
 export * from './transition-workflow.dto';
 export * from './approve-workflow.dto';
 export * from './workflow-instance-response.dto';
+export * from './create-approval-delegation.dto';
 
 

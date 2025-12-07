@@ -22,6 +22,7 @@ import { ClientsVendorsModule } from './clients-vendors/clients-vendors.module';
 import { CalendarsModule } from './calendars/calendars.module';
 import { ResourcesModule } from './resources/resources.module';
 import { GoalsModule } from './goals/goals.module';
+import { KPIsModule } from './kpis/kpis.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { GoalsModule } from './goals/goals.module';
     CalendarsModule, // Calendar and scheduling system module
     ResourcesModule, // Resource management module
     GoalsModule, // Goals & OKR framework module
+    KPIsModule, // KPI & Metrics framework module
   ],
   controllers: [AppController],
   providers: [AppService],

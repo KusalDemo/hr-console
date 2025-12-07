@@ -51,6 +51,9 @@ export enum InvoiceStatus {
 @Index('idx_invoices_transaction', ['transactionId'])
 @Index('idx_invoices_project', ['projectId'])
 @Index('idx_invoices_outstanding', ['outstandingAmount'])
+@Index('idx_invoices_recurring', ['recurringInvoiceId'])
+@Index('idx_invoices_billing_rule', ['billingRuleId'])
+@Index('idx_invoices_template', ['invoiceTemplateId'])
 export class Invoice {
   @PrimaryGeneratedColumn('increment')
   id: number;
@@ -291,6 +294,30 @@ export class Invoice {
    */
   @Column({ name: 'project_id', type: 'bigint', nullable: true })
   projectId: number | null;
+
+  /**
+   * Recurring invoice ID (if generated from recurring schedule)
+   */
+  @Column({ name: 'recurring_invoice_id', type: 'bigint', nullable: true })
+  recurringInvoiceId: number | null;
+
+  /**
+   * Billing rule ID (if generated from billing rule)
+   */
+  @Column({ name: 'billing_rule_id', type: 'bigint', nullable: true })
+  billingRuleId: number | null;
+
+  /**
+   * Invoice template ID (template used for generation)
+   */
+  @Column({ name: 'invoice_template_id', type: 'bigint', nullable: true })
+  invoiceTemplateId: number | null;
+
+  /**
+   * Payment gateway ID (for payment processing)
+   */
+  @Column({ name: 'payment_gateway_id', type: 'bigint', nullable: true })
+  paymentGatewayId: number | null;
 
   /**
    * Invoice metadata (JSONB for additional flexible data)

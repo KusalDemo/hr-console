@@ -12,7 +12,13 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { FinancialService, AccountingService, FinancialReportingService } from './services';
+import {
+  FinancialService,
+  AccountingService,
+  FinancialReportingService,
+  BillingService,
+  InvoiceGenerationService,
+} from './services';
 import {
   CreateCurrencyDto,
   UpdateCurrencyDto,
@@ -25,6 +31,8 @@ import {
   CreateJournalEntryDto,
   AccountResponseDto,
   FinancialTransactionResponseDto,
+  CreateBillingRuleDto,
+  CreateRecurringInvoiceDto,
 } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -48,6 +56,8 @@ export class FinancialsController {
     private readonly financialService: FinancialService,
     private readonly accountingService: AccountingService,
     private readonly reportingService: FinancialReportingService,
+    private readonly billingService: BillingService,
+    private readonly invoiceGenerationService: InvoiceGenerationService,
   ) {}
 
   // ========== Currency Endpoints ==========
@@ -409,5 +419,106 @@ export class FinancialsController {
       startDate ? new Date(startDate) : undefined,
       endDate ? new Date(endDate) : undefined,
     );
+  }
+
+  // ========== Billing & Invoicing Endpoints ==========
+
+  /**
+   * Create a billing rule
+   * POST /financials/billing-rules
+   */
+  @Post('billing-rules')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async createBillingRule(
+    @Body() createDto: CreateBillingRuleDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.billingService.createBillingRule(createDto, user.userId);
+  }
+
+  /**
+   * Get billing rule by ID
+   * GET /financials/billing-rules/:id
+   */
+  @Get('billing-rules/:id')
+  async getBillingRule(@Param('id', ParseIntPipe) id: number) {
+    return this.billingService.getBillingRuleById(id);
+  }
+
+  /**
+   * Get active billing rules
+   * GET /financials/billing-rules
+   */
+  @Get('billing-rules')
+  async getBillingRules() {
+    return this.billingService.getActiveBillingRules();
+  }
+
+  /**
+   * Create a recurring invoice schedule
+   * POST /financials/recurring-invoices
+   */
+  @Post('recurring-invoices')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async createRecurringInvoice(
+    @Body() createDto: CreateRecurringInvoiceDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.billingService.createRecurringInvoice(createDto, user.userId);
+  }
+
+  /**
+   * Get recurring invoice by ID
+   * GET /financials/recurring-invoices/:id
+   */
+  @Get('recurring-invoices/:id')
+  async getRecurringInvoice(@Param('id', ParseIntPipe) id: number) {
+    return this.billingService.getRecurringInvoiceById(id);
+  }
+
+  /**
+   * Get active recurring invoices
+   * GET /financials/recurring-invoices
+   */
+  @Get('recurring-invoices')
+  async getRecurringInvoices() {
+    return this.billingService.getActiveRecurringInvoices();
+  }
+
+  /**
+   * Execute billing (generate invoices for due schedules)
+   * POST /financials/billing/execute
+   */
+  @Post('billing/execute')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async executeBilling(@Query('date') date?: string) {
+    return this.billingService.executeBilling(date ? new Date(date) : undefined);
+  }
+
+  /**
+   * Generate recurring invoices
+   * POST /financials/invoices/generate-recurring
+   */
+  @Post('invoices/generate-recurring')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async generateRecurringInvoices(@Query('date') date?: string) {
+    return this.invoiceGenerationService.generateRecurringInvoices(
+      date ? new Date(date) : undefined,
+    );
+  }
+
+  /**
+   * Send invoice
+   * POST /financials/invoices/:id/send
+   */
+  @Post('invoices/:id/send')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async sendInvoice(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('deliveryMethod') deliveryMethod = 'EMAIL',
+  ) {
+    return this.invoiceGenerationService.sendInvoice(id, deliveryMethod);
   }
 }

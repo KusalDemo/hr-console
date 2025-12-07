@@ -9,3 +9,5 @@ export * from './create-account.dto';
 export * from './create-journal-entry.dto';
 export * from './account-response.dto';
 export * from './financial-transaction-response.dto';
+export * from './create-billing-rule.dto';
+export * from './create-recurring-invoice.dto';

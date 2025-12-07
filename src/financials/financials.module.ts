@@ -6,6 +6,8 @@ import {
   CurrencyConversionService,
   AccountingService,
   FinancialReportingService,
+  BillingService,
+  InvoiceGenerationService,
 } from './services';
 import {
   CurrencyRepository,
@@ -19,6 +21,8 @@ import {
   Account,
   FinancialTransaction,
   TransactionLineItem,
+  BillingRule,
+  RecurringInvoice,
 } from './entities';
 
 /**
@@ -39,6 +43,8 @@ import {
       Account,
       FinancialTransaction,
       TransactionLineItem,
+      BillingRule,
+      RecurringInvoice,
     ]),
   ],
   controllers: [FinancialsController],
@@ -47,6 +53,8 @@ import {
     CurrencyConversionService,
     AccountingService,
     FinancialReportingService,
+    BillingService,
+    InvoiceGenerationService,
     CurrencyRepository,
     ExchangeRateRepository,
     AccountRepository,
@@ -57,6 +65,8 @@ import {
     CurrencyConversionService,
     AccountingService,
     FinancialReportingService,
+    BillingService,
+    InvoiceGenerationService,
     CurrencyRepository,
     ExchangeRateRepository,
     AccountRepository,

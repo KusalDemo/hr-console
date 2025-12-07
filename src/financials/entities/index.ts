@@ -8,3 +8,5 @@ export * from './invoice-line-item.entity';
 export * from './payment.entity';
 export * from './payment-allocation.entity';
 export * from './account-balance.entity';
+export * from './billing-rule.entity';
+export * from './recurring-invoice.entity';

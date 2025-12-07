@@ -36,6 +36,7 @@ import { IntegrationsModule } from './integrations/integrations.module';
 import { DocumentsModule } from './documents/documents.module';
 import { SearchModule } from './search/search.module';
 import { GraphQLModule } from './graphql/graphql.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { GraphQLModule } from './graphql/graphql.module';
     DocumentsModule, // Document management system module
     SearchModule, // Advanced search & filtering module
     GraphQLModule, // GraphQL API layer
+    WebhooksModule, // Webhook event system
   ],
   controllers: [AppController],
   providers: [AppService],

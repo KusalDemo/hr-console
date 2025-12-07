@@ -32,6 +32,8 @@ import { KnowledgeModule } from './knowledge/knowledge.module';
 import { SupportModule } from './support/support.module';
 import { FinancialsModule } from './financials/financials.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { IntegrationsModule } from './integrations/integrations.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -66,6 +68,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     SupportModule, // Help center & ticketing module
     FinancialsModule, // Multi-currency support module
     NotificationsModule, // Notification system module
+    IntegrationsModule, // Integration framework module
+    DocumentsModule, // Document management system module
   ],
   controllers: [AppController],
   providers: [AppService],

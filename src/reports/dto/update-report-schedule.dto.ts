@@ -3,7 +3,6 @@ import {
   IsOptional,
   IsNumber,
   IsEnum,
-  IsBoolean,
   IsObject,
   IsArray,
   IsDateString,
@@ -15,22 +14,20 @@ import {
 } from '../entities/report-schedule.entity';
 
 /**
- * Create Report Schedule DTO
+ * Update Report Schedule DTO
  */
-export class CreateReportScheduleDto {
-  @IsNumber()
-  @Type(() => Number)
-  reportDefinitionId: number;
-
+export class UpdateReportScheduleDto {
+  @IsOptional()
   @IsString()
-  scheduleName: string;
+  scheduleName?: string;
 
   @IsOptional()
   @IsString()
   scheduleDescription?: string;
 
+  @IsOptional()
   @IsEnum(ScheduleFrequency)
-  frequency: ScheduleFrequency;
+  frequency?: ScheduleFrequency;
 
   @IsOptional()
   @IsString()

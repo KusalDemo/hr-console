@@ -40,6 +40,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { RateLimitModule } from './rate-limit/rate-limit.module';
 import { DashboardsModule } from './dashboards/dashboards.module';
 import { FormsModule } from './forms/forms.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { FormsModule } from './forms/forms.module';
     WebhooksModule, // Webhook event system
     DashboardsModule, // Dashboard builder framework module
     FormsModule, // Form builder API module
+    ReportsModule, // Advanced reporting engine module
   ],
   controllers: [AppController],
   providers: [AppService],

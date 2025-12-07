@@ -10,8 +10,8 @@ import {
 import { Type } from 'class-transformer';
 import {
   ReportType,
-  ReportStatus,
   ReportOutputFormat,
+  ReportStatus,
 } from '../entities/report-definition.entity';
 
 /**

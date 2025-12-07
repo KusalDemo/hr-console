@@ -92,3 +92,4 @@ export class LeadScoringRuleRepository extends Repository<LeadScoringRule> {
   }
 }
 
+

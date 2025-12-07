@@ -153,3 +153,4 @@ INSERT INTO admin.subscription_plans (
  true, false, 3)
 ON CONFLICT (plan_key) DO NOTHING;
 
+

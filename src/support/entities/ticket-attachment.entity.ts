@@ -11,7 +11,7 @@ import { SupportTicket } from './support-ticket.entity';
 
 /**
  * Ticket Attachment Entity
- * 
+ *
  * File attachments for support tickets
  */
 @Entity('ticket_attachments')

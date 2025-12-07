@@ -8,17 +8,14 @@ import {
 import { HolidayCalendarRepository } from '../repositories/holiday-calendar.repository';
 import { HolidayRepository } from '../repositories/holiday.repository';
 import { EmployeeHolidayCalendarAssignmentRepository } from '../repositories/employee-holiday-calendar-assignment.repository';
-import {
-  HolidayCalendar,
-  CalendarType,
-} from '../entities/holiday-calendar.entity';
+import { HolidayCalendar, CalendarType } from '../entities/holiday-calendar.entity';
 import { Holiday, HolidayType } from '../entities/holiday.entity';
 import { EmployeeHolidayCalendarAssignment } from '../entities/employee-holiday-calendar-assignment.entity';
 import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Holiday Service
- * 
+ *
  * Manages holiday calendars and holidays with:
  * - Calendar CRUD operations
  * - Holiday management (fixed, recurring, floating)
@@ -56,10 +53,11 @@ export class HolidayService {
     });
 
     const saved = await this.calendarRepository.save(calendar);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created holiday calendar: ${saved.id} (${saved.name})`);
+    this.logger.log(`Created holiday calendar: ${savedEntity.id} (${savedEntity.name})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -91,11 +89,7 @@ export class HolidayService {
   /**
    * Update calendar
    */
-  async updateCalendar(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<HolidayCalendar> {
+  async updateCalendar(id: number, updateDto: any, updatedBy?: number): Promise<HolidayCalendar> {
     const calendar = await this.calendarRepository.findById(id);
 
     if (!calendar) {
@@ -139,7 +133,10 @@ export class HolidayService {
   /**
    * Get default calendar for country/region
    */
-  async getDefaultCalendar(countryCode: string, regionCode?: string): Promise<HolidayCalendar | null> {
+  async getDefaultCalendar(
+    countryCode: string,
+    regionCode?: string,
+  ): Promise<HolidayCalendar | null> {
     return this.calendarRepository.findDefault(countryCode, regionCode);
   }
 
@@ -178,7 +175,9 @@ export class HolidayService {
     // Verify calendar exists
     const calendar = await this.calendarRepository.findById(createDto.holidayCalendarId);
     if (!calendar) {
-      throw new NotFoundException(`Holiday calendar with ID ${createDto.holidayCalendarId} not found`);
+      throw new NotFoundException(
+        `Holiday calendar with ID ${createDto.holidayCalendarId} not found`,
+      );
     }
 
     // Calculate observed date if needed
@@ -198,9 +197,10 @@ export class HolidayService {
 
     const saved = await this.holidayRepository.save(holiday);
 
-    this.logger.log(`Created holiday: ${saved.id} (${saved.name})`);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Created holiday: ${savedEntity.id} (${savedEntity.name})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -280,7 +280,10 @@ export class HolidayService {
 
       if (holidayDate) {
         // Check if holiday already exists for this date
-        const existing = await this.holidayRepository.findByCalendarAndDate(calendarId, holidayDate);
+        const existing = await this.holidayRepository.findByCalendarAndDate(
+          calendarId,
+          holidayDate,
+        );
 
         if (existing.length === 0) {
           const observedDate = this.calculateObservedDate(
@@ -406,7 +409,7 @@ export class HolidayService {
     }
 
     assignment.isActive = false;
-    assignment.updatedBy = updatedBy;
+    assignment.updatedBy = updatedBy ?? null;
 
     await this.assignmentRepository.save(assignment);
 
@@ -531,7 +534,7 @@ export class HolidayService {
     const lastDay = new Date(year, month, 0); // Last day of month
     const lastDayOfWeek = lastDay.getDay();
 
-    let daysToSubtract = (lastDayOfWeek - targetDay + 7) % 7;
+    const daysToSubtract = (lastDayOfWeek - targetDay + 7) % 7;
 
     const result = new Date(year, month - 1, lastDay.getDate() - daysToSubtract);
     return result;
@@ -540,12 +543,7 @@ export class HolidayService {
   /**
    * Check if two date ranges overlap
    */
-  private datesOverlap(
-    start1: Date,
-    end1: Date | null,
-    start2: Date,
-    end2: Date | null,
-  ): boolean {
+  private datesOverlap(start1: Date, end1: Date | null, start2: Date, end2: Date | null): boolean {
     const end1Date = end1 || new Date('9999-12-31');
     const end2Date = end2 || new Date('9999-12-31');
 

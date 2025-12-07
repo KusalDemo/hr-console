@@ -21,4 +21,3 @@ export class TimesheetEntryResponseDto {
   updatedBy: number | null;
 }
 
-

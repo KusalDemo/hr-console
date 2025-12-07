@@ -17,10 +17,7 @@ export class TenantAdminRepository extends Repository<TenantAdmin> {
    * Find tenant admin by email and tenant key (case-insensitive)
    * Only returns active tenant admins
    */
-  async findByEmailAndTenant(
-    email: string,
-    tenantKey: string,
-  ): Promise<TenantAdmin | null> {
+  async findByEmailAndTenant(email: string, tenantKey: string): Promise<TenantAdmin | null> {
     return this.findOne({
       where: {
         email: email.trim().toLowerCase(),
@@ -38,10 +35,7 @@ export class TenantAdminRepository extends Repository<TenantAdmin> {
    * Find tenant admin by email and tenant ID
    * Only returns active tenant admins
    */
-  async findByEmailAndTenantId(
-    email: string,
-    tenantId: number,
-  ): Promise<TenantAdmin | null> {
+  async findByEmailAndTenantId(email: string, tenantId: number): Promise<TenantAdmin | null> {
     return this.findOne({
       where: {
         email: email.trim().toLowerCase(),
@@ -217,11 +211,7 @@ export class TenantAdminRepository extends Repository<TenantAdmin> {
   /**
    * Update password and related fields
    */
-  async updatePassword(
-    id: number,
-    passwordHash: string,
-    expiresAt?: Date,
-  ): Promise<void> {
+  async updatePassword(id: number, passwordHash: string, expiresAt?: Date): Promise<void> {
     await this.update(id, {
       passwordHash,
       passwordChangedAt: new Date(),
@@ -298,4 +288,3 @@ export class TenantAdminRepository extends Repository<TenantAdmin> {
     return this.save(tenantAdmin);
   }
 }
-

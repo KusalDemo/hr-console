@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsEnum,
-  IsNumber,
-  IsDecimal,
-} from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNumber, IsDecimal } from 'class-validator';
 import { DepartmentType, DepartmentStatus } from '../entities/department.entity';
 
 /**
@@ -65,4 +59,3 @@ export class CreateDepartmentDto {
   @IsNumber()
   organizationId: number;
 }
-

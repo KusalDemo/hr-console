@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Advanced Search & Filtering Migration
- * 
+ *
  * This migration creates:
  * - search_vector columns for full-text search on major entity tables
  * - GIN indexes for fast full-text search
  * - Search configurations table (optional)
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class SearchIndexes0000000000044 implements MigrationInterface {

@@ -50,10 +50,7 @@ export class DocumentRepository extends Repository<Document> {
   /**
    * Find documents by entity
    */
-  async findByEntity(
-    entityType: string,
-    entityId: number,
-  ): Promise<Document[]> {
+  async findByEntity(entityType: string, entityId: number): Promise<Document[]> {
     return this.find({
       where: { entityType, entityId, documentStatus: DocumentStatus.PUBLISHED },
       order: { createdAt: 'DESC' },

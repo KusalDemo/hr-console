@@ -32,7 +32,7 @@ import {
 
 /**
  * Tenant Management Controller
- * 
+ *
  * Handles tenant management operations (super admin only):
  * - POST /admin/tenants - Create tenant
  * - GET /admin/tenants - List tenants
@@ -52,11 +52,11 @@ export class TenantsController {
 
   /**
    * Create a new tenant
-   * 
+   *
    * This endpoint:
    * 1. Provisions the tenant (creates schema, runs migrations, creates tenant record)
    * 2. Initializes the tenant (creates default roles, tenant admin user, default organization)
-   * 
+   *
    * @param createTenantDto - Tenant creation data
    * @param user - Current user (super admin)
    * @returns Created tenant information
@@ -72,7 +72,7 @@ export class TenantsController {
 
   /**
    * List all tenants
-   * 
+   *
    * @param page - Page number (default: 1)
    * @param limit - Items per page (default: 10)
    * @param includeInactive - Include inactive tenants (default: false)
@@ -97,31 +97,24 @@ export class TenantsController {
     const limitNum = limit ? parseInt(limit, 10) : 10;
     const includeInactiveFlag = includeInactive === 'true';
 
-    return this.tenantsService.findAll(
-      pageNum,
-      limitNum,
-      includeInactiveFlag,
-      search,
-    );
+    return this.tenantsService.findAll(pageNum, limitNum, includeInactiveFlag, search);
   }
 
   /**
    * Get tenant details by ID
-   * 
+   *
    * @param id - Tenant ID
    * @returns Tenant details
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getTenant(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<TenantDetailResponseDto> {
+  async getTenant(@Param('id', ParseIntPipe) id: number): Promise<TenantDetailResponseDto> {
     return this.tenantsService.findOne(id, true);
   }
 
   /**
    * Update tenant (PUT - supports both full and partial updates)
-   * 
+   *
    * @param id - Tenant ID
    * @param updateTenantDto - Tenant update data
    * @returns Updated tenant
@@ -137,7 +130,7 @@ export class TenantsController {
 
   /**
    * Update tenant (PATCH - partial update)
-   * 
+   *
    * @param id - Tenant ID
    * @param updateTenantDto - Tenant update data
    * @returns Updated tenant
@@ -154,7 +147,7 @@ export class TenantsController {
   /**
    * Fix tenant admin record for existing tenant
    * This endpoint fixes tenants that were created before tenant admin record creation was added
-   * 
+   *
    * @param id - Tenant ID
    * @param body - Tenant admin credentials
    * @returns Success message
@@ -169,7 +162,7 @@ export class TenantsController {
     if (!tenant) {
       throw new NotFoundException(`Tenant with ID ${id} not found.`);
     }
-    
+
     const fixed = await this.fixTenantAdminService.fixTenantAdmin(
       tenant.tenantKey,
       body.email,
@@ -189,4 +182,3 @@ export class TenantsController {
     }
   }
 }
-

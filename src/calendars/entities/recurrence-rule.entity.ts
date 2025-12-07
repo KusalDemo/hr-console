@@ -21,7 +21,7 @@ export enum RecurrenceFrequency {
 
 /**
  * Recurrence Rule Entity
- * 
+ *
  * Recurrence rules for recurring calendar events with complex patterns.
  */
 @Entity('recurrence_rules')
@@ -117,4 +117,3 @@ export class RecurrenceRule {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-

@@ -32,7 +32,7 @@ export enum FormAccessType {
 
 /**
  * Form Definition Entity
- * 
+ *
  * Dynamic form creation with:
  * - Form schemas (fields, validation, conditional logic)
  * - Form templates, cloning, versioning

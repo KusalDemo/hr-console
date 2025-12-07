@@ -20,4 +20,3 @@ export class TransitionWorkflowDto {
   updateData?: Record<string, any>;
 }
 
-

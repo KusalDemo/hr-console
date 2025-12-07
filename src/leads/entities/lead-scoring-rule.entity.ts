@@ -41,7 +41,7 @@ export enum ScoringRuleOperator {
 
 /**
  * Lead Scoring Rule Entity
- * 
+ *
  * Automated scoring rules for leads with conditions, actions, and priority.
  * Supports rule activation dates, tenant/org scoping, and rule evaluation.
  */
@@ -194,5 +194,3 @@ export class LeadScoringRule {
     return true;
   }
 }
-
-

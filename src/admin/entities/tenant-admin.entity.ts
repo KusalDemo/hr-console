@@ -94,4 +94,3 @@ export class TenantAdmin {
     return this.passwordExpiresAt < new Date();
   }
 }
-

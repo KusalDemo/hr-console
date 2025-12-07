@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Clients Vendors Migration
- * 
+ *
  * This migration creates:
  * - clients table (client relationship management with SLA tracking, contract management)
  * - vendors table (vendor relationship management with performance tracking)
@@ -13,7 +13,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - contracts table (contracts and agreements with renewal management)
  * - Full-text search indexes
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class ClientsVendors0000000000021 implements MigrationInterface {
@@ -572,4 +572,3 @@ export class ClientsVendors0000000000021 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS clients CASCADE`);
   }
 }
-

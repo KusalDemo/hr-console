@@ -9,7 +9,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { SubscriptionStatus, PaymentGateway, SubscriptionMetadata } from '../entities/subscription.entity';
+import {
+  SubscriptionStatus,
+  PaymentGateway,
+  SubscriptionMetadata,
+} from '../entities/subscription.entity';
 import { BillingCycle } from '../entities/subscription-plan.entity';
 
 /**
@@ -281,5 +285,3 @@ export class SubscriptionSummaryResponseDto {
   @IsBoolean()
   isActive?: boolean;
 }
-
-

@@ -43,7 +43,7 @@ export enum ExportDeliveryMethod {
 
 /**
  * Export Job Entity
- * 
+ *
  * Tracks export jobs with:
  * - Job status and progress
  * - Export format and delivery method
@@ -147,7 +147,14 @@ export class ExportJob {
   /**
    * Progress percentage (0-100)
    */
-  @Column({ name: 'progress_percentage', type: 'decimal', precision: 5, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'progress_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   progressPercentage: number;
 
   /**
@@ -299,9 +306,6 @@ export class ExportJob {
    * Check if job is completed
    */
   isCompleted(): boolean {
-    return (
-      this.status === ExportJobStatus.COMPLETED ||
-      this.status === ExportJobStatus.FAILED
-    );
+    return this.status === ExportJobStatus.COMPLETED || this.status === ExportJobStatus.FAILED;
   }
 }

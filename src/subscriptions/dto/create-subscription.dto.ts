@@ -13,7 +13,11 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { BillingCycle } from '../entities/subscription-plan.entity';
-import { SubscriptionStatus, PaymentGateway, SubscriptionMetadata } from '../entities/subscription.entity';
+import {
+  SubscriptionStatus,
+  PaymentGateway,
+  SubscriptionMetadata,
+} from '../entities/subscription.entity';
 
 /**
  * Plan Selection DTO
@@ -207,5 +211,3 @@ export class CreateSubscriptionWithPlanDto {
   @MaxLength(8, { message: 'Currency must not exceed 8 characters' })
   currency?: string;
 }
-
-

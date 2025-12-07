@@ -32,7 +32,7 @@ import { DashboardType } from './entities/dashboard.entity';
 
 /**
  * Dashboards Controller
- * 
+ *
  * REST API endpoints for dashboard management:
  * - Dashboard CRUD operations
  * - Dashboard templates and cloning
@@ -58,10 +58,7 @@ export class DashboardsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'MANAGER')
-  async createDashboard(
-    @Body() createDto: CreateDashboardDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createDashboard(@Body() createDto: CreateDashboardDto, @CurrentUser() user: JwtPayload) {
     return this.dashboardService.createDashboard(createDto, user.userId);
   }
 
@@ -132,10 +129,7 @@ export class DashboardsController {
     @Param('organizationId', ParseIntPipe) organizationId: number,
     @Query('includeInactive', new ParseBoolPipe({ optional: true })) includeInactive = false,
   ) {
-    return this.dashboardService.getDashboardsByOrganization(
-      organizationId,
-      includeInactive,
-    );
+    return this.dashboardService.getDashboardsByOrganization(organizationId, includeInactive);
   }
 
   /**
@@ -147,10 +141,7 @@ export class DashboardsController {
     @Query('organizationId', ParseIntPipe) organizationId: number,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.dashboardService.getPersonalDashboards(
-      user.userId,
-      organizationId,
-    );
+    return this.dashboardService.getPersonalDashboards(user.userId, organizationId);
   }
 
   /**
@@ -162,10 +153,7 @@ export class DashboardsController {
     @Query('organizationId', ParseIntPipe) organizationId: number,
     @Query('includeInactive', new ParseBoolPipe({ optional: true })) includeInactive = false,
   ) {
-    return this.dashboardService.getSharedDashboards(
-      organizationId,
-      includeInactive,
-    );
+    return this.dashboardService.getSharedDashboards(organizationId, includeInactive);
   }
 
   /**
@@ -185,10 +173,10 @@ export class DashboardsController {
    */
   @Get('accessible')
   async getAccessibleDashboards(
+    @CurrentUser() user: JwtPayload,
     @Query('organizationId', ParseIntPipe) organizationId: number,
     @Query('departmentId', new ParseIntPipe({ optional: true })) departmentId?: number,
     @Query('teamId', new ParseIntPipe({ optional: true })) teamId?: number,
-    @CurrentUser() user: JwtPayload,
   ) {
     return this.dashboardService.getAccessibleDashboards(
       user.userId,
@@ -233,11 +221,7 @@ export class DashboardsController {
     @Body() createWidgetDto: CreateDashboardWidgetDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.dashboardService.addWidgetToDashboard(
-      dashboardId,
-      createWidgetDto,
-      user.userId,
-    );
+    return this.dashboardService.addWidgetToDashboard(dashboardId, createWidgetDto, user.userId);
   }
 
   /**
@@ -298,10 +282,7 @@ export class DashboardsController {
     @Param('dashboardId', ParseIntPipe) dashboardId: number,
     @Body() updateDto: UpdateWidgetOrderDto,
   ) {
-    await this.dashboardService.updateWidgetOrder(
-      dashboardId,
-      updateDto.widgetOrders,
-    );
+    await this.dashboardService.updateWidgetOrder(dashboardId, updateDto.widgetOrders);
   }
 
   // ========== Widget Data Endpoints ==========
@@ -338,9 +319,6 @@ export class DashboardsController {
   async getMultipleWidgetsData(
     @Body() body: { widgetIds: number[]; filters?: Record<string, any> },
   ) {
-    return this.widgetDataService.getMultipleWidgetsData(
-      body.widgetIds,
-      body.filters,
-    );
+    return this.widgetDataService.getMultipleWidgetsData(body.widgetIds, body.filters);
   }
 }

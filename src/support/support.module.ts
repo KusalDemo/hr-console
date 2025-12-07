@@ -21,7 +21,7 @@ import { EmployeesModule } from '../employees/employees.module';
 
 /**
  * Support Module
- * 
+ *
  * Provides support ticket management:
  * - Ticket lifecycle (open, assigned, in-progress, resolved, closed)
  * - SLA tracking and alerts

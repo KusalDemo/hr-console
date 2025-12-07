@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { Organization, OrganizationStatus } from '../entities/organization.entity';
 
@@ -20,7 +15,7 @@ export interface OrganizationTreeNode {
 
 /**
  * Organization Hierarchy Service
- * 
+ *
  * Provides functionality for managing organization hierarchies:
  * - Build organization tree
  * - Get parent organizations
@@ -28,7 +23,7 @@ export interface OrganizationTreeNode {
  * - Validate hierarchy (prevent cycles)
  * - Get organization path (root to organization)
  * - Get organization depth
- * 
+ *
  * This service helps manage the hierarchical structure of organizations
  * within a tenant, ensuring data integrity and preventing circular references.
  */
@@ -41,7 +36,7 @@ export class OrganizationHierarchyService {
   /**
    * Build organization tree
    * Recursively builds a tree structure starting from root organizations
-   * 
+   *
    * @param includeInactive - Include inactive organizations (default: false)
    * @param rootOrganizationId - Specific root organization ID to build tree from (optional)
    * @returns Array of root organization tree nodes
@@ -52,10 +47,7 @@ export class OrganizationHierarchyService {
   ): Promise<OrganizationTreeNode[]> {
     if (rootOrganizationId) {
       // Build tree from specific root organization
-      const root = await this.organizationRepository.findById(
-        rootOrganizationId,
-        includeInactive,
-      );
+      const root = await this.organizationRepository.findById(rootOrganizationId, includeInactive);
       if (!root) {
         throw new NotFoundException(`Organization with ID ${rootOrganizationId} not found`);
       }
@@ -64,9 +56,8 @@ export class OrganizationHierarchyService {
     }
 
     // Build tree from all root organizations
-    const rootOrganizations = await this.organizationRepository.findRootOrganizations(
-      includeInactive,
-    );
+    const rootOrganizations =
+      await this.organizationRepository.findRootOrganizations(includeInactive);
 
     const tree: OrganizationTreeNode[] = [];
     for (const root of rootOrganizations) {
@@ -78,7 +69,7 @@ export class OrganizationHierarchyService {
 
   /**
    * Build tree node recursively
-   * 
+   *
    * @param organization - Organization entity
    * @param includeInactive - Include inactive organizations
    * @param depth - Current depth in tree
@@ -122,7 +113,7 @@ export class OrganizationHierarchyService {
   /**
    * Get parent organizations
    * Returns all ancestors (parent, grandparent, etc.) of an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Array of parent organizations (ordered from immediate parent to root)
@@ -131,7 +122,10 @@ export class OrganizationHierarchyService {
     organizationId: number,
     includeInactive: boolean = false,
   ): Promise<Organization[]> {
-    const organization = await this.organizationRepository.findById(organizationId, includeInactive);
+    const organization = await this.organizationRepository.findById(
+      organizationId,
+      includeInactive,
+    );
     if (!organization) {
       throw new NotFoundException(`Organization with ID ${organizationId} not found`);
     }
@@ -141,7 +135,7 @@ export class OrganizationHierarchyService {
 
   /**
    * Get immediate parent organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Parent organization or null if root
@@ -150,7 +144,10 @@ export class OrganizationHierarchyService {
     organizationId: number,
     includeInactive: boolean = false,
   ): Promise<Organization | null> {
-    const organization = await this.organizationRepository.findById(organizationId, includeInactive);
+    const organization = await this.organizationRepository.findById(
+      organizationId,
+      includeInactive,
+    );
     if (!organization) {
       throw new NotFoundException(`Organization with ID ${organizationId} not found`);
     }
@@ -165,7 +162,7 @@ export class OrganizationHierarchyService {
   /**
    * Get child organizations
    * Returns all descendants (children, grandchildren, etc.) of an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Array of child organizations
@@ -174,7 +171,10 @@ export class OrganizationHierarchyService {
     organizationId: number,
     includeInactive: boolean = false,
   ): Promise<Organization[]> {
-    const organization = await this.organizationRepository.findById(organizationId, includeInactive);
+    const organization = await this.organizationRepository.findById(
+      organizationId,
+      includeInactive,
+    );
     if (!organization) {
       throw new NotFoundException(`Organization with ID ${organizationId} not found`);
     }
@@ -184,7 +184,7 @@ export class OrganizationHierarchyService {
 
   /**
    * Get direct children (immediate children only)
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Array of direct child organizations
@@ -212,7 +212,7 @@ export class OrganizationHierarchyService {
   /**
    * Get organization path
    * Returns array of organization IDs from root to the specified organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Array of organization IDs (root to organization)
@@ -221,7 +221,10 @@ export class OrganizationHierarchyService {
     organizationId: number,
     includeInactive: boolean = false,
   ): Promise<number[]> {
-    const organization = await this.organizationRepository.findById(organizationId, includeInactive);
+    const organization = await this.organizationRepository.findById(
+      organizationId,
+      includeInactive,
+    );
     if (!organization) {
       throw new NotFoundException(`Organization with ID ${organizationId} not found`);
     }
@@ -236,7 +239,7 @@ export class OrganizationHierarchyService {
   /**
    * Get organization depth
    * Returns the depth of an organization in the hierarchy (0 for root)
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Depth (0 = root, 1 = first level child, etc.)
@@ -252,7 +255,7 @@ export class OrganizationHierarchyService {
   /**
    * Get root organization
    * Returns the root organization (top-level ancestor) of an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Root organization
@@ -261,7 +264,10 @@ export class OrganizationHierarchyService {
     organizationId: number,
     includeInactive: boolean = false,
   ): Promise<Organization> {
-    const organization = await this.organizationRepository.findById(organizationId, includeInactive);
+    const organization = await this.organizationRepository.findById(
+      organizationId,
+      includeInactive,
+    );
     if (!organization) {
       throw new NotFoundException(`Organization with ID ${organizationId} not found`);
     }
@@ -282,7 +288,7 @@ export class OrganizationHierarchyService {
   /**
    * Validate hierarchy
    * Checks if setting a parent organization would create a cycle
-   * 
+   *
    * @param organizationId - Organization ID to update
    * @param newParentId - New parent organization ID (or null for root)
    * @throws BadRequestException if cycle would be created
@@ -313,7 +319,7 @@ export class OrganizationHierarchyService {
 
   /**
    * Check if organization is ancestor of another
-   * 
+   *
    * @param ancestorId - Potential ancestor organization ID
    * @param descendantId - Potential descendant organization ID
    * @returns True if ancestorId is an ancestor of descendantId
@@ -329,7 +335,7 @@ export class OrganizationHierarchyService {
 
   /**
    * Check if organization is descendant of another
-   * 
+   *
    * @param descendantId - Potential descendant organization ID
    * @param ancestorId - Potential ancestor organization ID
    * @returns True if descendantId is a descendant of ancestorId
@@ -341,7 +347,7 @@ export class OrganizationHierarchyService {
   /**
    * Get all root organizations
    * Returns all organizations that have no parent
-   * 
+   *
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Array of root organizations
    */
@@ -352,7 +358,7 @@ export class OrganizationHierarchyService {
   /**
    * Get organization siblings
    * Returns all organizations that share the same parent
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Array of sibling organizations (excluding the organization itself)
@@ -361,7 +367,10 @@ export class OrganizationHierarchyService {
     organizationId: number,
     includeInactive: boolean = false,
   ): Promise<Organization[]> {
-    const organization = await this.organizationRepository.findById(organizationId, includeInactive);
+    const organization = await this.organizationRepository.findById(
+      organizationId,
+      includeInactive,
+    );
     if (!organization) {
       throw new NotFoundException(`Organization with ID ${organizationId} not found`);
     }
@@ -373,14 +382,17 @@ export class OrganizationHierarchyService {
     }
 
     // Get all organizations with same parent
-    const siblings = await this.getDirectChildren(organization.parentOrganizationId, includeInactive);
+    const siblings = await this.getDirectChildren(
+      organization.parentOrganizationId,
+      includeInactive,
+    );
     return siblings.filter((sibling) => sibling.id !== organizationId);
   }
 
   /**
    * Get organization count by level
    * Returns count of organizations at each depth level
-   * 
+   *
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Map of depth level to organization count
    */
@@ -399,6 +411,4 @@ export class OrganizationHierarchyService {
     return countByLevel;
   }
 }
-
-
 

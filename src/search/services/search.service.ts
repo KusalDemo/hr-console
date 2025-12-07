@@ -5,16 +5,11 @@ import { Project } from '../../projects/entities/project.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Contact } from '../../contacts/entities/contact.entity';
 import { Document } from '../../documents/entities/document.entity';
-import {
-  SearchRequestDto,
-  SearchResponseDto,
-  SearchResultDto,
-  FacetDto,
-} from '../dto';
+import { SearchRequestDto, SearchResponseDto, SearchResultDto, FacetDto } from '../dto';
 
 /**
  * Search Service
- * 
+ *
  * Provides advanced search capabilities:
  * - Full-text search across multiple entities
  * - Faceted search
@@ -57,7 +52,11 @@ export class SearchService {
         results.push(...entityResults);
 
         // Collect facets
-        const entityFacets = await this.getFacets(entityType, searchDto.query, searchDto.filters || {});
+        const entityFacets = await this.getFacets(
+          entityType,
+          searchDto.query,
+          searchDto.filters || {},
+        );
         if (entityFacets.length > 0) {
           facets[entityType] = entityFacets;
         }
@@ -236,7 +235,7 @@ export class SearchService {
     return projects.map((project) => ({
       id: project.id,
       entityType: 'projects',
-      title: project.projectName,
+      title: project.name,
       description: project.description || '',
       url: `/projects/${project.id}`,
       relevance: 1.0,
@@ -295,7 +294,7 @@ export class SearchService {
     return tasks.map((task) => ({
       id: task.id,
       entityType: 'tasks',
-      title: task.taskName,
+      title: task.title,
       description: task.description || '',
       url: `/tasks/${task.id}`,
       relevance: 1.0,
@@ -316,7 +315,13 @@ export class SearchService {
   ): Promise<SearchResultDto[]> {
     const queryBuilder = this.dataSource
       .createQueryBuilder(Contact, 'contact')
-      .select(['contact.id', 'contact.firstName', 'contact.lastName', 'contact.email', 'contact.companyName'])
+      .select([
+        'contact.id',
+        'contact.firstName',
+        'contact.lastName',
+        'contact.email',
+        'contact.companyName',
+      ])
       .where(
         `(
           to_tsvector('english', 

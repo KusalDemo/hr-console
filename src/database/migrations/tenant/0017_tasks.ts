@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Tasks Migration
- * 
+ *
  * This migration creates:
  * - tasks table (hierarchical task management with dependencies, assignments)
  * - task_dependencies table (task dependencies with types FS, SS, FF, SF)
  * - task_assignees table (many-to-many for additional assignees)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Tasks0000000000017 implements MigrationInterface {
@@ -210,5 +210,4 @@ export class Tasks0000000000017 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS tasks CASCADE`);
   }
 }
-
 

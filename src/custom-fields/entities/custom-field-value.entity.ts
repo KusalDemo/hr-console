@@ -12,13 +12,13 @@ import { CustomFieldDefinition } from './custom-field-definition.entity';
 
 /**
  * Custom Field Value Entity
- * 
+ *
  * Stores actual values for custom fields on entity instances.
  * Supports different storage strategies based on field type:
  * - Simple types: stored in text_value, number_value, boolean_value, date_value
  * - Complex types: stored in json_value
  * - Files: stored in file_value (reference to file storage)
- * 
+ *
  * The entity_type and entity_id columns create a polymorphic relationship
  * to any entity in the system.
  */
@@ -220,5 +220,4 @@ export class CustomFieldValue {
     }
   }
 }
-
 

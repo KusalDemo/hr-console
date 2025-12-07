@@ -13,11 +13,7 @@ import {
   ParseBoolPipe,
 } from '@nestjs/common';
 import { PerformanceService } from './services/performance.service';
-import {
-  CreateReviewCycleDto,
-  CreatePerformanceReviewDto,
-  CreateReviewFormDto,
-} from './dto';
+import { CreateReviewCycleDto, CreatePerformanceReviewDto, CreateReviewFormDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -28,7 +24,7 @@ import { ReviewStatus, OverallRating } from './entities/performance-review.entit
 
 /**
  * Performance Controller
- * 
+ *
  * REST API endpoints for performance review management:
  * - Review cycles (CRUD, templates)
  * - Performance reviews (CRUD, workflows)
@@ -74,9 +70,7 @@ export class PerformanceController {
         calibrationStart: createDto.calibrationStart
           ? new Date(createDto.calibrationStart)
           : undefined,
-        calibrationEnd: createDto.calibrationEnd
-          ? new Date(createDto.calibrationEnd)
-          : undefined,
+        calibrationEnd: createDto.calibrationEnd ? new Date(createDto.calibrationEnd) : undefined,
       },
       user.userId,
     );
@@ -114,10 +108,7 @@ export class PerformanceController {
    */
   @Post('cycles/:id/start')
   @Roles('ADMIN', 'HR')
-  async startReviewCycle(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async startReviewCycle(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     return this.performanceService.startReviewCycle(id, user.userId);
   }
 
@@ -209,9 +200,9 @@ export class PerformanceController {
   @Roles('ADMIN', 'HR')
   async completeManagerReview(
     @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: JwtPayload,
     @Body('overallRating') overallRating?: OverallRating,
     @Body('overallScore', new ParseIntPipe({ optional: true })) overallScore?: number,
-    @CurrentUser() user: JwtPayload,
   ) {
     return this.performanceService.completeManagerReview(
       id,
@@ -227,10 +218,7 @@ export class PerformanceController {
    */
   @Post('reviews/:id/complete')
   @Roles('ADMIN', 'HR')
-  async completeReview(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async completeReview(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     return this.performanceService.completeReview(id, user.userId);
   }
 
@@ -240,10 +228,7 @@ export class PerformanceController {
    */
   @Post('reviews/:id/acknowledge')
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async acknowledgeReview(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async acknowledgeReview(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     return this.performanceService.acknowledgeReview(id, user.userId);
   }
 
@@ -294,10 +279,7 @@ export class PerformanceController {
   @Post('forms')
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async createReviewForm(
-    @Body() createDto: CreateReviewFormDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createReviewForm(@Body() createDto: CreateReviewFormDto, @CurrentUser() user: JwtPayload) {
     return this.performanceService.createReviewForm(createDto, user.userId);
   }
 
@@ -321,10 +303,7 @@ export class PerformanceController {
    */
   @Post('forms/:id/submit')
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async submitReviewForm(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async submitReviewForm(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     return this.performanceService.submitReviewForm(id, user.userId);
   }
 }

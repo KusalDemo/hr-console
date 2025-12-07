@@ -50,7 +50,7 @@ export enum NormalBalance {
 
 /**
  * Account Entity
- * 
+ *
  * Chart of accounts with account types, categories, and hierarchy.
  * Supports account balances, currency, and double-entry bookkeeping.
  */

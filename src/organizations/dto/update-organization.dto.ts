@@ -115,4 +115,3 @@ export class UpdateOrganizationDto {
   @IsBoolean({ message: 'isDefault must be a boolean' })
   isDefault?: boolean;
 }
-

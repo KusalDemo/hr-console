@@ -12,7 +12,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Document Version Entity
- * 
+ *
  * Tracks document version history:
  * - Version numbers
  * - File changes

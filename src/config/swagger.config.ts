@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 
 /**
  * Swagger/OpenAPI Configuration
- * 
+ *
  * Configures Swagger UI for interactive API documentation
  * Access at: http://localhost:3000/api/docs
  */
@@ -12,11 +12,15 @@ export function setupSwagger(app: INestApplication): void {
     .setTitle('HR Console API')
     .setDescription(
       'Comprehensive HR Management System API with multi-tenancy support. ' +
-      'This API provides endpoints for managing employees, organizations, projects, ' +
-      'time tracking, workflows, and more.',
+        'This API provides endpoints for managing employees, organizations, projects, ' +
+        'time tracking, workflows, and more.',
     )
     .setVersion('1.0')
-    .setContact('HR Console Support', 'https://support.your-hr-saas.com', 'support@your-hr-saas.com')
+    .setContact(
+      'HR Console Support',
+      'https://support.your-hr-saas.com',
+      'support@your-hr-saas.com',
+    )
     .setLicense('Proprietary', 'https://your-hr-saas.com/license')
     .addServer('http://localhost:3000/api', 'Development Server')
     .addServer('https://api.your-hr-saas.com/api', 'Production Server')
@@ -68,7 +72,7 @@ export function setupSwagger(app: INestApplication): void {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  
+
   SwaggerModule.setup('api/docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
@@ -86,3 +90,4 @@ export function setupSwagger(app: INestApplication): void {
     `,
   });
 }
+

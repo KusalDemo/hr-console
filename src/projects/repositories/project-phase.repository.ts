@@ -42,10 +42,7 @@ export class ProjectPhaseRepository extends Repository<ProjectPhase> {
   /**
    * Find phases by status
    */
-  async findByStatus(
-    status: PhaseStatus,
-    projectId?: number,
-  ): Promise<ProjectPhase[]> {
+  async findByStatus(status: PhaseStatus, projectId?: number): Promise<ProjectPhase[]> {
     const query = this.createQueryBuilder('phase')
       .where('phase.status = :status', { status })
       .orderBy('phase.sequence', 'ASC');
@@ -69,5 +66,4 @@ export class ProjectPhaseRepository extends Repository<ProjectPhase> {
     return (result?.maxSequence || 0) + 1;
   }
 }
-
 

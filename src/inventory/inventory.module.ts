@@ -7,15 +7,11 @@ import {
   InventoryTransactionRepository,
   InventoryLocationRepository,
 } from './repositories';
-import {
-  InventoryItem,
-  InventoryTransaction,
-  InventoryLocation,
-} from './entities';
+import { InventoryItem, InventoryTransaction, InventoryLocation } from './entities';
 
 /**
  * Inventory Module
- * 
+ *
  * Provides complete inventory tracking and valuation:
  * - Inventory items with SKU, categories, stock levels, locations
  * - Inventory transactions for stock movements (in, out, transfer, adjustment)
@@ -26,13 +22,7 @@ import {
  * - Support for item variants, bundles, assembly/disassembly
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      InventoryItem,
-      InventoryTransaction,
-      InventoryLocation,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([InventoryItem, InventoryTransaction, InventoryLocation])],
   controllers: [InventoryController],
   providers: [
     InventoryService,

@@ -4,7 +4,7 @@ import { EquipmentAssignment, AssignmentStatus } from '../entities/equipment-ass
 
 /**
  * Equipment Assignment Repository
- * 
+ *
  * Custom repository methods for equipment assignment queries.
  */
 @Injectable()

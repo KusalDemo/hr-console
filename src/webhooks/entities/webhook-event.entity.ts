@@ -22,7 +22,7 @@ export enum WebhookEventStatus {
 
 /**
  * Webhook Event Entity
- * 
+ *
  * Represents a webhook event that needs to be delivered.
  * Tracks:
  * - Event payload

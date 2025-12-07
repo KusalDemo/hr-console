@@ -44,4 +44,3 @@ export class TenantCreationResponseDto {
   emailSent?: boolean;
   emailError?: string;
 }
-

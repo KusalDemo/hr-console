@@ -27,15 +27,11 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
-import {
-  ReportType,
-  ReportStatus,
-  ReportOutputFormat,
-} from './entities/report-definition.entity';
+import { ReportType, ReportStatus, ReportOutputFormat } from './entities/report-definition.entity';
 
 /**
  * Reports Controller
- * 
+ *
  * REST API endpoints for report management:
  * - Report definition CRUD operations
  * - Report templates and cloning
@@ -199,11 +195,7 @@ export class ReportsController {
     @Body() createScheduleDto: CreateReportScheduleDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.reportService.createSchedule(
-      reportId,
-      createScheduleDto,
-      user.userId,
-    );
+    return this.reportService.createSchedule(reportId, createScheduleDto, user.userId);
   }
 
   /**
@@ -260,9 +252,7 @@ export class ReportsController {
    */
   @Get('schedules/due')
   @Roles('ADMIN', 'HR')
-  async getSchedulesDueForExecution(
-    @Query('beforeDate') beforeDate?: string,
-  ) {
+  async getSchedulesDueForExecution(@Query('beforeDate') beforeDate?: string) {
     return this.reportService.getSchedulesDueForExecution(
       beforeDate ? new Date(beforeDate) : undefined,
     );

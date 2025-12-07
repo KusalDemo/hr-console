@@ -4,7 +4,7 @@ import { Vendor, VendorType, VendorStatus } from '../entities/vendor.entity';
 
 /**
  * Vendor Repository
- * 
+ *
  * Custom repository methods for vendor queries.
  */
 @Injectable()
@@ -144,8 +144,9 @@ export class VendorRepository extends Repository<Vendor> {
    * Check if vendor number exists
    */
   async vendorNumberExists(vendorNumber: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('vendor')
-      .where('vendor.vendorNumber = :vendorNumber', { vendorNumber });
+    const query = this.createQueryBuilder('vendor').where('vendor.vendorNumber = :vendorNumber', {
+      vendorNumber,
+    });
 
     if (excludeId) {
       query.andWhere('vendor.id != :excludeId', { excludeId });
@@ -155,4 +156,3 @@ export class VendorRepository extends Repository<Vendor> {
     return count > 0;
   }
 }
-

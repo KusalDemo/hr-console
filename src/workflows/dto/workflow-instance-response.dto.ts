@@ -24,4 +24,3 @@ export class WorkflowInstanceResponseDto {
   updatedBy: number | null;
 }
 
-

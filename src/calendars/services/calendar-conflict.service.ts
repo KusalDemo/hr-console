@@ -4,16 +4,14 @@ import { CalendarEvent } from '../entities/calendar-event.entity';
 
 /**
  * Calendar Conflict Service
- * 
+ *
  * Conflict detection algorithms for calendar events.
  */
 @Injectable()
 export class CalendarConflictService {
   private readonly logger = new Logger(CalendarConflictService.name);
 
-  constructor(
-    private readonly calendarEventRepository: CalendarEventRepository,
-  ) {}
+  constructor(private readonly calendarEventRepository: CalendarEventRepository) {}
 
   /**
    * Check for conflicts with a new event
@@ -45,12 +43,7 @@ export class CalendarConflictService {
   /**
    * Check if two time ranges overlap
    */
-  private timeRangesOverlap(
-    start1: Date,
-    end1: Date,
-    start2: Date,
-    end2: Date,
-  ): boolean {
+  private timeRangesOverlap(start1: Date, end1: Date, start2: Date, end2: Date): boolean {
     return start1 < end2 && end1 > start2;
   }
 
@@ -86,4 +79,3 @@ export class CalendarConflictService {
     };
   }
 }
-

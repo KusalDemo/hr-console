@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -13,7 +7,7 @@ import { CACHE_METADATA_KEY, CacheOptions } from '../decorators/cache.decorator'
 
 /**
  * Cache Interceptor
- * 
+ *
  * Automatically caches method results based on @Cache() decorator.
  * Supports:
  * - Automatic caching of method results
@@ -30,16 +24,10 @@ export class CacheInterceptor implements NestInterceptor {
     private readonly reflector: Reflector,
   ) {}
 
-  async intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Promise<Observable<any>> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
     const handler = context.getHandler();
-    const cacheOptions = this.reflector.get<CacheOptions>(
-      CACHE_METADATA_KEY,
-      handler,
-    );
+    const cacheOptions = this.reflector.get<CacheOptions>(CACHE_METADATA_KEY, handler);
 
     // If no cache decorator, proceed normally
     if (!cacheOptions) {
@@ -85,12 +73,7 @@ export class CacheInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(async (data) => {
         try {
-          await this.cacheService.set(
-            cacheKey,
-            data,
-            cacheOptions.ttl,
-            cacheOptions.namespace,
-          );
+          await this.cacheService.set(cacheKey, data, cacheOptions.ttl, cacheOptions.namespace);
           this.logger.debug(`Cached result for key: ${cacheKey}`);
         } catch (error) {
           this.logger.error(`Error setting cache for key ${cacheKey}:`, error);
@@ -102,11 +85,7 @@ export class CacheInterceptor implements NestInterceptor {
   /**
    * Generate cache key from template and request parameters
    */
-  private generateCacheKey(
-    keyTemplate: string,
-    request: any,
-    context: ExecutionContext,
-  ): string {
+  private generateCacheKey(keyTemplate: string, request: any, context: ExecutionContext): string {
     let cacheKey = keyTemplate;
 
     // Replace route parameters
@@ -169,12 +148,11 @@ export class CacheInterceptor implements NestInterceptor {
     // Add query parameters (sorted for consistency)
     if (request.query && Object.keys(request.query).length > 0) {
       const queryKeys = Object.keys(request.query).sort();
-      const queryString = queryKeys
-        .map((k) => `${k}=${request.query[k]}`)
-        .join('&');
+      const queryString = queryKeys.map((k) => `${k}=${request.query[k]}`).join('&');
       key += `:${queryString}`;
     }
 
     return key;
   }
 }
+

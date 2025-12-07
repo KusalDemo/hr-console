@@ -1,12 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsArray,
-  IsObject,
-  IsNumber,
-  Min,
-  Max,
-} from 'class-validator';
+import { IsString, IsOptional, IsArray, IsObject, IsNumber, Min, Max } from 'class-validator';
 
 export class SearchRequestDto {
   @IsString()

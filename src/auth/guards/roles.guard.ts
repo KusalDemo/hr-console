@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
@@ -52,9 +47,7 @@ export class RolesGuard implements CanActivate {
     }
 
     // Normalize required roles (add ROLE_ prefix if missing)
-    const normalizedRequiredRoles = requiredRoles.map((role) =>
-      this.normalizeRole(role),
-    );
+    const normalizedRequiredRoles = requiredRoles.map((role) => this.normalizeRole(role));
 
     // Get user roles
     const userRoles = user.roles || [];
@@ -78,8 +71,7 @@ export class RolesGuard implements CanActivate {
    */
   private isSuperAdmin(user: JwtPayload): boolean {
     return (
-      user.userType === 'SUPER_ADMIN' ||
-      (user.roles && user.roles.includes(this.SUPER_ADMIN_ROLE))
+      user.userType === 'SUPER_ADMIN' || (user.roles && user.roles.includes(this.SUPER_ADMIN_ROLE))
     );
   }
 
@@ -140,4 +132,3 @@ export class RolesGuard implements CanActivate {
     return roles.every((role) => this.hasRole(user, role));
   }
 }
-

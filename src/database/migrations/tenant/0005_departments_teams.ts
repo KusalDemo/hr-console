@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Departments and Teams Migration
- * 
+ *
  * This migration creates:
  * - Departments table with hierarchical structure
  * - Teams table with department relationship
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class DepartmentsTeams0000000000005 implements MigrationInterface {
@@ -166,4 +166,3 @@ export class DepartmentsTeams0000000000005 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS departments CASCADE`);
   }
 }
-

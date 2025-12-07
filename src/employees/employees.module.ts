@@ -8,24 +8,15 @@ import { OrganizationRepository } from '../organizations/repositories/organizati
 
 /**
  * Employees Module
- * 
+ *
  * Provides employee management functionality:
  * - Employee CRUD operations
  * - Employee search and filtering
  * - Employee repository access
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Employee, Organization]),
-  ],
-  providers: [
-    EmployeesService,
-    EmployeeRepository,
-    OrganizationRepository,
-  ],
-  exports: [
-    EmployeesService,
-    EmployeeRepository,
-  ],
+  imports: [TypeOrmModule.forFeature([Employee, Organization])],
+  providers: [EmployeesService, EmployeeRepository, OrganizationRepository],
+  exports: [EmployeesService, EmployeeRepository],
 })
 export class EmployeesModule {}

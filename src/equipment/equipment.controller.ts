@@ -34,7 +34,7 @@ import { EquipmentStatus } from './entities/equipment.entity';
 
 /**
  * Equipment Controller
- * 
+ *
  * REST API endpoints for equipment and asset tracking:
  * - Equipment (CRUD, search, status management)
  * - Equipment assignments (assign, return, tracking)
@@ -59,10 +59,7 @@ export class EquipmentController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR')
-  async createEquipment(
-    @Body() createDto: CreateEquipmentDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createEquipment(@Body() createDto: CreateEquipmentDto, @CurrentUser() user: JwtPayload) {
     return this.equipmentService.createEquipment(
       {
         ...createDto,
@@ -70,7 +67,9 @@ export class EquipmentController {
         warrantyStartDate: createDto.warrantyStartDate
           ? new Date(createDto.warrantyStartDate)
           : undefined,
-        warrantyEndDate: createDto.warrantyEndDate ? new Date(createDto.warrantyEndDate) : undefined,
+        warrantyEndDate: createDto.warrantyEndDate
+          ? new Date(createDto.warrantyEndDate)
+          : undefined,
         nextMaintenanceDate: createDto.nextMaintenanceDate
           ? new Date(createDto.nextMaintenanceDate)
           : undefined,
@@ -213,11 +212,11 @@ export class EquipmentController {
    */
   @Post('assignments/:assignmentId/return')
   @Roles('ADMIN', 'HR')
-  async returnEquipment(
+  async returnAssignment(
     @Param('assignmentId', ParseIntPipe) assignmentId: number,
+    @CurrentUser() user: JwtPayload,
     @Body('conditionAtReturn') conditionAtReturn?: string,
     @Body('returnNotes') returnNotes?: string,
-    @CurrentUser() user: JwtPayload,
   ) {
     return this.equipmentService.returnEquipment(
       assignmentId,
@@ -282,7 +281,8 @@ export class EquipmentController {
   @Roles('ADMIN', 'HR')
   async completeMaintenance(
     @Param('maintenanceId', ParseIntPipe) maintenanceId: number,
-    @Body() completionData: {
+    @Body()
+    completionData: {
       maintenanceCost?: number;
       partsReplaced?: Array<{ partName: string; partNumber?: string; cost?: number }>;
       maintenanceNotes?: string;
@@ -399,8 +399,8 @@ export class EquipmentController {
   @Post('bookings/:id/cancel')
   async cancelBooking(
     @Param('id', ParseIntPipe) id: number,
-    @Body('cancellationReason') cancellationReason?: string,
     @CurrentUser() user: JwtPayload,
+    @Body('cancellationReason') cancellationReason?: string,
   ) {
     return this.bookingService.cancelBooking(id, cancellationReason, user.userId);
   }
@@ -492,7 +492,12 @@ export class EquipmentController {
   @Post(':equipmentId/bookings/check-conflicts')
   async checkBookingConflicts(
     @Param('equipmentId', ParseIntPipe) equipmentId: number,
-    @Body() { startDate, endDate, excludeBookingId }: { startDate: string; endDate: string; excludeBookingId?: number },
+    @Body()
+    {
+      startDate,
+      endDate,
+      excludeBookingId,
+    }: { startDate: string; endDate: string; excludeBookingId?: number },
   ) {
     return this.bookingService.checkBookingConflicts(
       equipmentId,
@@ -521,7 +526,8 @@ export class EquipmentController {
   @Roles('ADMIN', 'HR')
   async updateBookingAvailability(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateDto: {
+    @Body()
+    updateDto: {
       isBookable: boolean;
       bookingAvailabilityRules?: Record<string, any>;
       maxConcurrentBookings?: number | null;

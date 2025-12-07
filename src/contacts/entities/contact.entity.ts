@@ -54,7 +54,7 @@ export enum CompanySize {
 
 /**
  * Contact Entity
- * 
+ *
  * Unified contact management for clients, customers, vendors, leads.
  * Supports contact types, relationships, segmentation, tags, custom fields integration.
  */
@@ -376,5 +376,4 @@ export class Contact {
     return this.displayName || this.fullName;
   }
 }
-
 

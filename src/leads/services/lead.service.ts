@@ -8,19 +8,14 @@ import {
 import { LeadRepository } from '../repositories/lead.repository';
 import { LeadScoringService } from './lead-scoring.service';
 import { Lead, LeadStatus, LeadSource, LeadPriority } from '../entities/lead.entity';
-import {
-  CreateLeadDto,
-  UpdateLeadDto,
-  LeadResponseDto,
-  ConvertLeadToContactDto,
-} from '../dto';
+import { CreateLeadDto, UpdateLeadDto, LeadResponseDto, ConvertLeadToContactDto } from '../dto';
 import { ContactService } from '../../contacts/services/contact.service';
 import { ContactRepository } from '../../contacts/repositories/contact.repository';
 import { ContactCategory, ContactType } from '../../contacts/entities/contact.entity';
 
 /**
  * Lead Service
- * 
+ *
  * Manages leads with:
  * - Lead CRUD operations
  * - Lead scoring and routing
@@ -42,10 +37,7 @@ export class LeadService {
   /**
    * Create a new lead
    */
-  async createLead(
-    createDto: CreateLeadDto,
-    createdBy?: number,
-  ): Promise<LeadResponseDto> {
+  async createLead(createDto: CreateLeadDto, createdBy?: number): Promise<LeadResponseDto> {
     // Check if email already exists
     if (createDto.email) {
       const existing = await this.leadRepository.findByEmail(createDto.email);
@@ -73,12 +65,8 @@ export class LeadService {
       leadSource: createDto.leadSource || LeadSource.OTHER,
       leadPriority: createDto.leadPriority || LeadPriority.MEDIUM,
       leadScore: createDto.leadScore || 0,
-      expectedCloseDate: createDto.expectedCloseDate
-        ? new Date(createDto.expectedCloseDate)
-        : null,
-      nextFollowUpDate: createDto.nextFollowUpDate
-        ? new Date(createDto.nextFollowUpDate)
-        : null,
+      expectedCloseDate: createDto.expectedCloseDate ? new Date(createDto.expectedCloseDate) : null,
+      nextFollowUpDate: createDto.nextFollowUpDate ? new Date(createDto.nextFollowUpDate) : null,
       createdBy,
     });
 
@@ -98,6 +86,9 @@ export class LeadService {
     this.logger.log(`Created lead: ${saved.id} (${saved.fullName})`);
 
     const reloaded = await this.leadRepository.findById(saved.id);
+    if (!reloaded) {
+      throw new NotFoundException(`Lead not found after save`);
+    }
     return LeadResponseDto.fromEntity(reloaded);
   }
 
@@ -169,6 +160,9 @@ export class LeadService {
     this.logger.log(`Updated lead: ${id}`);
 
     const reloaded = await this.leadRepository.findById(saved.id);
+    if (!reloaded) {
+      throw new NotFoundException(`Lead not found after save`);
+    }
     return LeadResponseDto.fromEntity(reloaded);
   }
 
@@ -245,7 +239,11 @@ export class LeadService {
     organizationId?: number,
     includeArchived = false,
   ): Promise<LeadResponseDto[]> {
-    const leads = await this.leadRepository.findByPriority(priority, organizationId, includeArchived);
+    const leads = await this.leadRepository.findByPriority(
+      priority,
+      organizationId,
+      includeArchived,
+    );
 
     return leads.map((lead) => LeadResponseDto.fromEntity(lead));
   }
@@ -275,7 +273,11 @@ export class LeadService {
     organizationId?: number,
     includeArchived = false,
   ): Promise<LeadResponseDto[]> {
-    const leads = await this.leadRepository.findByCampaign(campaignId, organizationId, includeArchived);
+    const leads = await this.leadRepository.findByCampaign(
+      campaignId,
+      organizationId,
+      includeArchived,
+    );
 
     return leads.map((lead) => LeadResponseDto.fromEntity(lead));
   }
@@ -288,7 +290,11 @@ export class LeadService {
     organizationId?: number,
     includeArchived = false,
   ): Promise<LeadResponseDto[]> {
-    const leads = await this.leadRepository.findHighScoring(minScore, organizationId, includeArchived);
+    const leads = await this.leadRepository.findHighScoring(
+      minScore,
+      organizationId,
+      includeArchived,
+    );
 
     return leads.map((lead) => LeadResponseDto.fromEntity(lead));
   }
@@ -323,11 +329,7 @@ export class LeadService {
   /**
    * Assign lead to user
    */
-  async assignLead(
-    id: number,
-    assignedTo: number,
-    updatedBy?: number,
-  ): Promise<LeadResponseDto> {
+  async assignLead(id: number, assignedTo: number, updatedBy?: number): Promise<LeadResponseDto> {
     const lead = await this.leadRepository.findById(id);
 
     if (!lead) {
@@ -339,13 +341,16 @@ export class LeadService {
     }
 
     lead.assignedTo = assignedTo;
-    lead.updatedBy = updatedBy;
+    lead.updatedBy = updatedBy ?? null;
 
     const saved = await this.leadRepository.save(lead);
 
     this.logger.log(`Assigned lead ${id} to user ${assignedTo}`);
 
     const reloaded = await this.leadRepository.findById(saved.id);
+    if (!reloaded) {
+      throw new NotFoundException(`Lead not found after save`);
+    }
     return LeadResponseDto.fromEntity(reloaded);
   }
 
@@ -380,13 +385,16 @@ export class LeadService {
       lead.actualCloseDate = new Date();
     }
 
-    lead.updatedBy = updatedBy;
+    lead.updatedBy = updatedBy ?? null;
 
     const saved = await this.leadRepository.save(lead);
 
     this.logger.log(`Updated lead ${id} status to ${status}`);
 
     const reloaded = await this.leadRepository.findById(saved.id);
+    if (!reloaded) {
+      throw new NotFoundException(`Lead not found after save`);
+    }
     return LeadResponseDto.fromEntity(reloaded);
   }
 
@@ -413,6 +421,9 @@ export class LeadService {
     this.logger.log(`Recalculated score for lead ${id}: ${calculatedScore}`);
 
     const reloaded = await this.leadRepository.findById(saved.id);
+    if (!reloaded) {
+      throw new NotFoundException(`Lead not found after save`);
+    }
     return LeadResponseDto.fromEntity(reloaded);
   }
 
@@ -453,24 +464,24 @@ export class LeadService {
       const createContactDto = {
         fullName: lead.fullName,
         displayName: lead.displayName || lead.fullName,
-        firstName: lead.firstName,
-        lastName: lead.lastName,
-        companyName: lead.companyName,
-        email: lead.email,
-        emailSecondary: lead.emailSecondary,
-        phone: lead.phone,
-        phoneMobile: lead.phoneMobile,
-        website: lead.website,
-        addressLine1: lead.addressLine1,
-        addressLine2: lead.addressLine2,
-        city: lead.city,
-        state: lead.state,
-        postalCode: lead.postalCode,
-        country: lead.country,
+        firstName: lead.firstName ?? undefined,
+        lastName: lead.lastName ?? undefined,
+        companyName: lead.companyName ?? undefined,
+        email: lead.email ?? undefined,
+        emailSecondary: lead.emailSecondary ?? undefined,
+        phone: lead.phone ?? undefined,
+        phoneMobile: lead.phoneMobile ?? undefined,
+        website: lead.website ?? undefined,
+        addressLine1: lead.addressLine1 ?? undefined,
+        addressLine2: lead.addressLine2 ?? undefined,
+        city: lead.city ?? undefined,
+        state: lead.state ?? undefined,
+        postalCode: lead.postalCode ?? undefined,
+        country: lead.country ?? undefined,
         contactType: convertDto.contactType || ContactType.PERSON,
         contactCategory: convertDto.contactCategory || ContactCategory.CLIENT,
-        contactSource: lead.leadSource,
-        organizationId: lead.organizationId,
+        contactSource: lead.leadSource ?? undefined,
+        organizationId: lead.organizationId ?? undefined,
         industry: lead.industry,
         tags: lead.tags,
         notes: lead.notes || `Converted from lead ${lead.leadNumber}`,
@@ -482,7 +493,13 @@ export class LeadService {
         },
       };
 
-      const createdContact = await this.contactService.createContact(createContactDto, convertedBy);
+      // Convert null to undefined for industry and tags fields
+      const contactDtoForCreation = {
+        ...createContactDto,
+        industry: createContactDto.industry ?? undefined,
+        tags: createContactDto.tags ?? undefined,
+      };
+      const createdContact = await this.contactService.createContact(contactDtoForCreation, convertedBy);
       contactId = createdContact.id;
     }
 
@@ -493,13 +510,16 @@ export class LeadService {
     lead.conversionReason = convertDto.conversionReason || 'Manual conversion';
     lead.leadStatus = LeadStatus.WON;
     lead.actualCloseDate = new Date();
-    lead.updatedBy = convertedBy;
+    lead.updatedBy = convertedBy ?? null;
 
     const saved = await this.leadRepository.save(lead);
 
     this.logger.log(`Converted lead ${id} to contact ${contactId}`);
 
     const reloaded = await this.leadRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Lead with ID ${saved.id} not found after conversion`);
+    }
     return LeadResponseDto.fromEntity(reloaded, true);
   }
 
@@ -519,13 +539,16 @@ export class LeadService {
 
     lead.isArchived = true;
     lead.archivedAt = new Date();
-    lead.archivedBy = archivedBy;
+    lead.archivedBy = archivedBy ?? null;
 
     const saved = await this.leadRepository.save(lead);
 
     this.logger.log(`Archived lead: ${id}`);
 
     const reloaded = await this.leadRepository.findById(saved.id);
+    if (!reloaded) {
+      throw new NotFoundException(`Lead not found after save`);
+    }
     return LeadResponseDto.fromEntity(reloaded);
   }
 
@@ -548,4 +571,3 @@ export class LeadService {
     return leadNumber;
   }
 }
-

@@ -2,16 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReportsController } from './reports.controller';
 import { ReportService, ReportQueryBuilderService } from './services';
-import {
-  ReportDefinitionRepository,
-  ReportScheduleRepository,
-} from './repositories';
+import { ReportDefinitionRepository, ReportScheduleRepository } from './repositories';
 import { ReportDefinition, ReportSchedule } from './entities';
 import { Organization } from '../organizations/entities/organization.entity';
 
 /**
  * Reports Module
- * 
+ *
  * Provides custom report generation with scheduling:
  * - Report definition CRUD operations
  * - Report templates and cloning
@@ -22,13 +19,7 @@ import { Organization } from '../organizations/entities/organization.entity';
  * - Report sharing and permissions
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      ReportDefinition,
-      ReportSchedule,
-      Organization,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([ReportDefinition, ReportSchedule, Organization])],
   controllers: [ReportsController],
   providers: [
     ReportService,

@@ -8,6 +8,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
+import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
 import { Organization } from '../../organizations/entities/organization.entity';
 
 /**
@@ -22,6 +23,10 @@ export enum EmployeeType {
   VOLUNTEER = 'VOLUNTEER',
 }
 
+registerEnumType(EmployeeType, {
+  name: 'EmployeeType',
+});
+
 /**
  * Employment Status Enum
  */
@@ -33,9 +38,13 @@ export enum EmploymentStatus {
   SUSPENDED = 'SUSPENDED',
 }
 
+registerEnumType(EmploymentStatus, {
+  name: 'EmploymentStatus',
+});
+
 /**
  * Employee Entity - Represents employees within an organization
- * 
+ *
  * Employees belong to organizations and can have:
  * - Department assignment (via departmentId)
  * - Manager relationship (self-referential)
@@ -43,6 +52,7 @@ export enum EmploymentStatus {
  * - Personal and contact information
  * - Emergency contact information
  */
+@ObjectType()
 @Entity('employees')
 @Index('idx_employees_employee_number', ['employeeNumber'])
 @Index('idx_employees_email', ['email'])
@@ -52,36 +62,42 @@ export enum EmploymentStatus {
 @Index('idx_employees_status', ['employmentStatus'])
 @Index('idx_employees_active', ['active'])
 export class Employee {
+  @Field(() => Int)
   @PrimaryGeneratedColumn('increment')
   id: number;
 
   /**
    * External ID (for integration with external systems)
    */
+  @Field(() => String, { nullable: true })
   @Column({ name: 'external_id', type: 'varchar', length: 128, nullable: true })
   externalId: string | null;
 
   /**
    * Unique employee number
    */
+  @Field(() => String, { nullable: true })
   @Column({ name: 'employee_number', type: 'varchar', length: 64, unique: true, nullable: true })
   employeeNumber: string | null;
 
   /**
    * First name
    */
+  @Field(() => String)
   @Column({ name: 'first_name', type: 'varchar', length: 255, nullable: false })
   firstName: string;
 
   /**
    * Last name
    */
+  @Field(() => String)
   @Column({ name: 'last_name', type: 'varchar', length: 255, nullable: false })
   lastName: string;
 
   /**
    * Email address (unique)
    */
+  @Field(() => String)
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
   email: string;
 
@@ -263,6 +279,7 @@ export class Employee {
   @JoinColumn({ name: 'organization_id' })
   organization: Organization;
 
+  @Field(() => Int)
   @Column({ name: 'organization_id', type: 'bigint', nullable: false })
   organizationId: number;
 
@@ -322,4 +339,3 @@ export class Employee {
     return Math.floor(diffYears);
   }
 }
-

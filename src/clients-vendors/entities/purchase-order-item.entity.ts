@@ -12,7 +12,7 @@ import { PurchaseOrder } from './purchase-order.entity';
 
 /**
  * Purchase Order Item Entity
- * 
+ *
  * Line items for purchase orders with quantity, price, and received quantity tracking.
  */
 @Entity('purchase_order_items')
@@ -61,7 +61,14 @@ export class PurchaseOrderItem {
   /**
    * Quantity received
    */
-  @Column({ name: 'quantity_received', type: 'decimal', precision: 15, scale: 3, nullable: false, default: 0 })
+  @Column({
+    name: 'quantity_received',
+    type: 'decimal',
+    precision: 15,
+    scale: 3,
+    nullable: false,
+    default: 0,
+  })
   quantityReceived: number;
 
   /**
@@ -85,13 +92,27 @@ export class PurchaseOrderItem {
   /**
    * Tax rate (percentage)
    */
-  @Column({ name: 'tax_rate', type: 'decimal', precision: 5, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'tax_rate',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   taxRate: number;
 
   /**
    * Tax amount
    */
-  @Column({ name: 'tax_amount', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'tax_amount',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   taxAmount: number;
 
   /**
@@ -138,4 +159,3 @@ export class PurchaseOrderItem {
     return Math.max(0, this.quantityOrdered - this.quantityReceived);
   }
 }
-

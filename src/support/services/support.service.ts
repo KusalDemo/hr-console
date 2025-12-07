@@ -42,7 +42,7 @@ import { EmployeeRepository } from '../../employees/repositories/employee.reposi
 
 /**
  * Support Service
- * 
+ *
  * Manages support ticket operations:
  * - Ticket CRUD
  * - Ticket assignment and routing
@@ -72,7 +72,7 @@ export class SupportService {
   private async generateTicketNumber(): Promise<string> {
     const year = new Date().getFullYear();
     const prefix = `TKT-${year}-`;
-    
+
     // Get the last ticket number for this year
     const lastTicket = await this.ticketRepository
       .createQueryBuilder('ticket')
@@ -101,13 +101,9 @@ export class SupportService {
     this.logger.log(`Creating support ticket: ${createDto.subject}`);
 
     // Validate organization
-    const organization = await this.organizationRepository.findById(
-      createDto.organizationId,
-    );
+    const organization = await this.organizationRepository.findById(createDto.organizationId);
     if (!organization) {
-      throw new NotFoundException(
-        `Organization not found: ${createDto.organizationId}`,
-      );
+      throw new NotFoundException(`Organization not found: ${createDto.organizationId}`);
     }
 
     // Validate requester
@@ -168,7 +164,7 @@ export class SupportService {
 
       return SupportTicketResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create ticket: ${error.message}`, error);
+      this.logger.error(`Failed to create ticket: ${error instanceof Error ? error.message : String(error)}`, error);
       throw error;
     }
   }
@@ -221,7 +217,7 @@ export class SupportService {
       const saved = await this.ticketRepository.save(ticket);
       return SupportTicketResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to update ticket: ${error.message}`, error);
+      this.logger.error(`Failed to update ticket: ${error instanceof Error ? error.message : String(error)}`, error);
       throw error;
     }
   }
@@ -276,7 +272,7 @@ export class SupportService {
     }
 
     ticket.status = newStatus;
-    ticket.updatedBy = updatedBy;
+    ticket.updatedBy = updatedBy ?? null;
 
     // Set timestamps based on status
     if (newStatus === TicketStatus.RESOLVED && !ticket.resolvedAt) {
@@ -418,13 +414,9 @@ export class SupportService {
   ): Promise<TicketCategoryResponseDto> {
     // Validate organization if provided
     if (createDto.organizationId) {
-      const organization = await this.organizationRepository.findById(
-        createDto.organizationId,
-      );
+      const organization = await this.organizationRepository.findById(createDto.organizationId);
       if (!organization) {
-        throw new NotFoundException(
-          `Organization not found: ${createDto.organizationId}`,
-        );
+        throw new NotFoundException(`Organization not found: ${createDto.organizationId}`);
       }
     }
 
@@ -445,7 +437,7 @@ export class SupportService {
       const saved = await this.categoryRepository.save(category);
       return TicketCategoryResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create category: ${error.message}`, error);
+      this.logger.error(`Failed to create category: ${error instanceof Error ? error.message : String(error)}`, error);
       throw error;
     }
   }
@@ -483,7 +475,7 @@ export class SupportService {
       const saved = await this.categoryRepository.save(category);
       return TicketCategoryResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to update category: ${error.message}`, error);
+      this.logger.error(`Failed to update category: ${error instanceof Error ? error.message : String(error)}`, error);
       throw error;
     }
   }
@@ -521,21 +513,15 @@ export class SupportService {
   ): Promise<TicketSLAResponseDto> {
     // Validate organization if provided
     if (createDto.organizationId) {
-      const organization = await this.organizationRepository.findById(
-        createDto.organizationId,
-      );
+      const organization = await this.organizationRepository.findById(createDto.organizationId);
       if (!organization) {
-        throw new NotFoundException(
-          `Organization not found: ${createDto.organizationId}`,
-        );
+        throw new NotFoundException(`Organization not found: ${createDto.organizationId}`);
       }
     }
 
     // If this is set as default, unset other defaults
     if (createDto.isDefault) {
-      const existingDefault = await this.slaRepository.findDefaultSLA(
-        createDto.organizationId,
-      );
+      const existingDefault = await this.slaRepository.findDefaultSLA(createDto.organizationId);
       if (existingDefault) {
         existingDefault.isDefault = false;
         await this.slaRepository.save(existingDefault);
@@ -564,7 +550,7 @@ export class SupportService {
       const saved = await this.slaRepository.save(sla);
       return TicketSLAResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create SLA: ${error.message}`, error);
+      this.logger.error(`Failed to create SLA: ${error instanceof Error ? error.message : String(error)}`, error);
       throw error;
     }
   }
@@ -595,7 +581,7 @@ export class SupportService {
 
     // Handle default flag change
     if (updateDto.isDefault && !sla.isDefault) {
-      const existingDefault = await this.slaRepository.findDefaultSLA(sla.organizationId);
+      const existingDefault = await this.slaRepository.findDefaultSLA(sla.organizationId ?? undefined);
       if (existingDefault && existingDefault.id !== id) {
         existingDefault.isDefault = false;
         await this.slaRepository.save(existingDefault);
@@ -611,7 +597,7 @@ export class SupportService {
       const saved = await this.slaRepository.save(sla);
       return TicketSLAResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to update SLA: ${error.message}`, error);
+      this.logger.error(`Failed to update SLA: ${error instanceof Error ? error.message : String(error)}`, error);
       throw error;
     }
   }

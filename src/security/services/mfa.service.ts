@@ -10,12 +10,12 @@ import * as speakeasy from 'speakeasy';
 
 /**
  * MFA Service
- * 
+ *
  * Provides multi-factor authentication functionality:
  * - TOTP (Time-based One-Time Password) using authenticator apps
  * - SMS codes (requires SMS service integration)
  * - Email codes
- * 
+ *
  * Note: For TOTP, install: npm install speakeasy qrcode @types/qrcode
  */
 @Injectable()
@@ -138,11 +138,7 @@ export class MfaService {
    * @param mfaType - MFA type to enable
    * @param verificationCode - Verification code to confirm setup
    */
-  async enableMfa(
-    userId: number,
-    mfaType: MfaType,
-    verificationCode?: string,
-  ): Promise<void> {
+  async enableMfa(userId: number, mfaType: MfaType, verificationCode?: string): Promise<void> {
     const mfaConfig = await this.mfaConfigRepository.findOne({
       where: { userId, mfaType, isActive: true },
     });
@@ -377,10 +373,7 @@ export class MfaService {
    * @param mfaType - MFA type
    * @returns Backup codes
    */
-  async generateBackupCodes(
-    userId: number,
-    mfaType: MfaType,
-  ): Promise<string[]> {
+  async generateBackupCodes(userId: number, mfaType: MfaType): Promise<string[]> {
     const codes: string[] = [];
     for (let i = 0; i < 10; i++) {
       codes.push(this.generateBackupCode());
@@ -477,11 +470,7 @@ export class MfaService {
     return result;
   }
 
-  private generateOtpAuthUrl(
-    email: string,
-    issuer: string,
-    secret: string,
-  ): string {
+  private generateOtpAuthUrl(email: string, issuer: string, secret: string): string {
     return `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}`;
   }
 
@@ -521,3 +510,4 @@ export class MfaService {
     return crypto.createHash('sha256').update(code).digest('hex');
   }
 }
+

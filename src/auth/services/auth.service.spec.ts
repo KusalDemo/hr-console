@@ -88,11 +88,7 @@ describe('AuthService', () => {
 
       const result = await service.login(undefined, loginDto, '127.0.0.1', 'test-agent');
 
-      expect(superAdminAuthService.login).toHaveBeenCalledWith(
-        loginDto,
-        '127.0.0.1',
-        'test-agent',
-      );
+      expect(superAdminAuthService.login).toHaveBeenCalledWith(loginDto, '127.0.0.1', 'test-agent');
       expect(tenantAdminAuthService.login).not.toHaveBeenCalled();
       expect(userAuthService.login).not.toHaveBeenCalled();
       expect(result).toEqual({
@@ -180,9 +176,7 @@ describe('AuthService', () => {
       tenantAdminAuthService.login.mockRejectedValue(
         new BusinessException(ErrorCode.VALIDATION_ERROR, 'Tenant not found'),
       );
-      userAuthService.login.mockRejectedValue(
-        new UnauthorizedException('Invalid credentials'),
-      );
+      userAuthService.login.mockRejectedValue(new UnauthorizedException('Invalid credentials'));
 
       await expect(
         service.login('test-tenant', loginDto, '127.0.0.1', 'test-agent'),
@@ -240,10 +234,7 @@ describe('AuthService', () => {
 
       const result = await service.verifyMfa(undefined, 'test@example.com', '123456');
 
-      expect(superAdminAuthService.verifyMfa).toHaveBeenCalledWith(
-        'test@example.com',
-        '123456',
-      );
+      expect(superAdminAuthService.verifyMfa).toHaveBeenCalledWith('test@example.com', '123456');
       expect(result).toEqual({
         token: mockTokenResponse,
         user: mockUserInfo,
@@ -274,9 +265,9 @@ describe('AuthService', () => {
         new BusinessException(ErrorCode.VALIDATION_ERROR, 'Invalid MFA code'),
       );
 
-      await expect(
-        service.verifyMfa('test-tenant', 'test@example.com', '123456'),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.verifyMfa('test-tenant', 'test@example.com', '123456')).rejects.toThrow(
+        BusinessException,
+      );
     });
   });
 
@@ -303,9 +294,7 @@ describe('AuthService', () => {
     });
 
     it('should return false when tenant admin check fails', async () => {
-      tenantAdminAuthService.isAccountLocked.mockRejectedValue(
-        new Error('Tenant not found'),
-      );
+      tenantAdminAuthService.isAccountLocked.mockRejectedValue(new Error('Tenant not found'));
 
       const result = await service.isAccountLocked('test-tenant', 'test@example.com');
 
@@ -336,9 +325,7 @@ describe('AuthService', () => {
     });
 
     it('should return 0 when tenant admin check fails', async () => {
-      tenantAdminAuthService.getRemainingAttempts.mockRejectedValue(
-        new Error('Tenant not found'),
-      );
+      tenantAdminAuthService.getRemainingAttempts.mockRejectedValue(new Error('Tenant not found'));
 
       const result = await service.getRemainingAttempts('test-tenant', 'test@example.com');
 
@@ -346,3 +333,4 @@ describe('AuthService', () => {
     });
   });
 });
+

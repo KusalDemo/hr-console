@@ -82,10 +82,7 @@ export class UserRepository extends Repository<User> {
   /**
    * Find users by organization ID with role filter
    */
-  async findByOrganizationIdAndRole(
-    organizationId: number,
-    roleName: string,
-  ): Promise<User[]> {
+  async findByOrganizationIdAndRole(organizationId: number, roleName: string): Promise<User[]> {
     return this.createQueryBuilder('user')
       .innerJoin('user.organizationMemberships', 'membership')
       .innerJoin('user.roles', 'role')
@@ -102,10 +99,7 @@ export class UserRepository extends Repository<User> {
    * Find user by email and organization ID
    * Used for organization-scoped authentication
    */
-  async findByEmailAndOrganization(
-    email: string,
-    organizationId: number,
-  ): Promise<User | null> {
+  async findByEmailAndOrganization(email: string, organizationId: number): Promise<User | null> {
     return this.createQueryBuilder('user')
       .innerJoin('user.organizationMemberships', 'membership')
       .where('user.email = :email', { email: email.trim().toLowerCase() })
@@ -206,11 +200,7 @@ export class UserRepository extends Repository<User> {
   /**
    * Update password and related fields
    */
-  async updatePassword(
-    id: number,
-    passwordHash: string,
-    expiresAt?: Date,
-  ): Promise<void> {
+  async updatePassword(id: number, passwordHash: string, expiresAt?: Date): Promise<void> {
     await this.update(id, {
       passwordHash,
       passwordChangedAt: new Date(),
@@ -267,4 +257,3 @@ export class UserRepository extends Repository<User> {
     });
   }
 }
-

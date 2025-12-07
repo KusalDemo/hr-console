@@ -2,15 +2,15 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Leave Management Migration
- * 
+ *
  * This migration creates:
  * - Leave policies table (foundation for leave policy management)
  * - Leave requests table (foundation for leave request tracking)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
- * 
+ *
  * Future migrations will add:
  * - Leave types table (linked to policies)
  * - Leave balances table (tracking accrued/used/available leave)
@@ -185,4 +185,3 @@ export class LeaveManagement0000000000006 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS leave_policies CASCADE`);
   }
 }
-

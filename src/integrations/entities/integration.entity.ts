@@ -32,7 +32,7 @@ export enum IntegrationStatus {
 
 /**
  * Integration Entity
- * 
+ *
  * Stores integration configurations for external systems:
  * - OAuth2 integrations (Slack, Google, etc.)
  * - API key integrations

@@ -35,7 +35,7 @@ export enum ItemStatus {
 
 /**
  * Inventory Item Entity
- * 
+ *
  * Inventory items with SKU, categories, stock levels, locations, and valuation.
  */
 @Entity('inventory_items')
@@ -122,19 +122,40 @@ export class InventoryItem {
   /**
    * Current stock quantity
    */
-  @Column({ name: 'stock_quantity', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'stock_quantity',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   stockQuantity: number;
 
   /**
    * Reserved quantity (allocated but not yet shipped)
    */
-  @Column({ name: 'reserved_quantity', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'reserved_quantity',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   reservedQuantity: number;
 
   /**
    * Available quantity (stock - reserved)
    */
-  @Column({ name: 'available_quantity', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'available_quantity',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   availableQuantity: number;
 
   /**
@@ -170,7 +191,13 @@ export class InventoryItem {
   /**
    * Valuation method (FIFO, LIFO, AVERAGE)
    */
-  @Column({ name: 'valuation_method', type: 'varchar', length: 32, nullable: true, default: 'AVERAGE' })
+  @Column({
+    name: 'valuation_method',
+    type: 'varchar',
+    length: 32,
+    nullable: true,
+    default: 'AVERAGE',
+  })
   valuationMethod: string | null;
 
   /**

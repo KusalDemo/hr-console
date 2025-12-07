@@ -4,4 +4,3 @@
  * New code should import directly from roles/entities/role.entity
  */
 export { Role } from '../../roles/entities/role.entity';
-

@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
 
 /**
  * Session Service
- * 
+ *
  * Manages user sessions with device tracking, IP geolocation, and session revocation.
  */
 @Injectable()
@@ -97,11 +97,7 @@ export class SessionService {
   /**
    * Revoke a session
    */
-  async revokeSession(
-    sessionId: number,
-    revokedById?: number,
-    reason?: string,
-  ): Promise<void> {
+  async revokeSession(sessionId: number, revokedById?: number, reason?: string): Promise<void> {
     await this.sessionRepository.update(sessionId, {
       isActive: false,
       revokedAt: new Date(),
@@ -277,3 +273,4 @@ export class SessionService {
     return null;
   }
 }
+

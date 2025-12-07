@@ -5,21 +5,21 @@ import { TenantContext } from '../services/tenant-context.service';
  * Current Tenant decorator
  * Extracts the current tenant context from the request
  * The tenant context is set by the TenantContextMiddleware
- * 
+ *
  * @example
  * // Get full tenant context
  * @Get('info')
  * getTenantInfo(@CurrentTenant() context: TenantContext) {
  *   return { tenantKey: context.tenantKey, schemaName: context.schemaName };
  * }
- * 
+ *
  * @example
  * // Get specific property
  * @Get('key')
  * getTenantKey(@CurrentTenant('tenantKey') tenantKey: string) {
  *   return { tenantKey };
  * }
- * 
+ *
  * @example
  * // Get tenant ID
  * @Get('id')
@@ -28,10 +28,7 @@ import { TenantContext } from '../services/tenant-context.service';
  * }
  */
 export const CurrentTenant = createParamDecorator(
-  (
-    data: keyof TenantContext | undefined,
-    ctx: ExecutionContext,
-  ): TenantContext | any => {
+  (data: keyof TenantContext | undefined, ctx: ExecutionContext): TenantContext | any => {
     const request = ctx.switchToHttp().getRequest();
 
     // Get tenant context from request object (set by TenantContextMiddleware)
@@ -51,7 +48,7 @@ export const CurrentTenant = createParamDecorator(
 /**
  * Current Tenant Key decorator
  * Convenience decorator to extract just the tenant key
- * 
+ *
  * @example
  * @Get('key')
  * getTenantKey(@CurrentTenantKey() tenantKey: string | null) {
@@ -69,7 +66,7 @@ export const CurrentTenantKey = createParamDecorator(
 /**
  * Current Tenant ID decorator
  * Convenience decorator to extract just the tenant ID
- * 
+ *
  * @example
  * @Get('id')
  * getTenantId(@CurrentTenantId() tenantId: number | null) {
@@ -87,7 +84,7 @@ export const CurrentTenantId = createParamDecorator(
 /**
  * Current Schema Name decorator
  * Convenience decorator to extract just the schema name
- * 
+ *
  * @example
  * @Get('schema')
  * getSchemaName(@CurrentSchemaName() schemaName: string) {
@@ -101,4 +98,3 @@ export const CurrentSchemaName = createParamDecorator(
     return context?.schemaName || 'admin';
   },
 );
-

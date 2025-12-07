@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Integration Framework Migration
- * 
+ *
  * This migration creates:
  * - integrations table (OAuth2, API key, webhook, basic auth integrations)
  * - integration_health table (integration health monitoring)
  * - Indexes for performance optimization
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Integrations0000000000042 implements MigrationInterface {

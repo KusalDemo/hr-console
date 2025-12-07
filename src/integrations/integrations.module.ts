@@ -3,15 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { IntegrationsController } from './integrations.controller';
 import { IntegrationService, WebhookService } from './services';
-import {
-  IntegrationRepository,
-  IntegrationHealthRepository,
-} from './repositories';
+import { IntegrationRepository, IntegrationHealthRepository } from './repositories';
 import { Integration, IntegrationHealth } from './entities';
 
 /**
  * Integrations Module
- * 
+ *
  * Provides external system integration capabilities:
  * - OAuth2 integrations (Slack, Google, etc.)
  * - API key integrations
@@ -33,11 +30,6 @@ import { Integration, IntegrationHealth } from './entities';
     IntegrationRepository,
     IntegrationHealthRepository,
   ],
-  exports: [
-    IntegrationService,
-    WebhookService,
-    IntegrationRepository,
-    IntegrationHealthRepository,
-  ],
+  exports: [IntegrationService, WebhookService, IntegrationRepository, IntegrationHealthRepository],
 })
 export class IntegrationsModule {}

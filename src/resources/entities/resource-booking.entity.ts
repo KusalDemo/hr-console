@@ -25,7 +25,7 @@ export enum BookingStatus {
 
 /**
  * Resource Booking Entity
- * 
+ *
  * Resource bookings with conflict detection, approval workflows, and usage tracking.
  */
 @Entity('resource_bookings')
@@ -50,7 +50,10 @@ export class ResourceBooking {
   /**
    * Resource relationship
    */
-  @ManyToOne(() => Resource, (resource) => resource.bookings, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => Resource, (resource) => resource.bookings, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'resource_id' })
   resource: Resource;
 

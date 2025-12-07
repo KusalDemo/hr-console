@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { ReportSchedule, ScheduleStatus, ScheduleFrequency } from '../entities/report-schedule.entity';
+import {
+  ReportSchedule,
+  ScheduleStatus,
+  ScheduleFrequency,
+} from '../entities/report-schedule.entity';
 
 /**
  * Report Schedule Repository
- * 
+ *
  * Custom repository methods for report schedule queries.
  */
 @Injectable()
@@ -44,9 +48,7 @@ export class ReportScheduleRepository extends Repository<ReportSchedule> {
   /**
    * Find active schedules
    */
-  async findActiveSchedules(
-    reportDefinitionId?: number,
-  ): Promise<ReportSchedule[]> {
+  async findActiveSchedules(reportDefinitionId?: number): Promise<ReportSchedule[]> {
     const query = this.createQueryBuilder('schedule')
       .where('schedule.status = :status', { status: ScheduleStatus.ACTIVE })
       .andWhere('schedule.nextRunAt IS NOT NULL')
@@ -62,17 +64,14 @@ export class ReportScheduleRepository extends Repository<ReportSchedule> {
   /**
    * Find schedules due for execution
    */
-  async findSchedulesDueForExecution(
-    beforeDate?: Date,
-  ): Promise<ReportSchedule[]> {
+  async findSchedulesDueForExecution(beforeDate?: Date): Promise<ReportSchedule[]> {
     const executionDate = beforeDate || new Date();
     return this.createQueryBuilder('schedule')
       .where('schedule.status = :status', { status: ScheduleStatus.ACTIVE })
       .andWhere('schedule.nextRunAt <= :executionDate', { executionDate })
-      .andWhere(
-        '(schedule.endDate IS NULL OR schedule.endDate >= :executionDate)',
-        { executionDate },
-      )
+      .andWhere('(schedule.endDate IS NULL OR schedule.endDate >= :executionDate)', {
+        executionDate,
+      })
       .orderBy('schedule.nextRunAt', 'ASC')
       .getMany();
   }

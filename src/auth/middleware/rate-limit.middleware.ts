@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NestMiddleware,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, NestMiddleware, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { RateLimitService } from '../services/rate-limit.service';
 
@@ -28,11 +22,7 @@ export class RateLimitMiddleware implements NestMiddleware {
     const identifier = this.extractIdentifier(req);
 
     // Check rate limit
-    const result = this.rateLimitService.checkRateLimit(
-      identifier,
-      req.path,
-      req.method,
-    );
+    const result = this.rateLimitService.checkRateLimit(identifier, req.path, req.method);
 
     // Add rate limit headers to response
     res.setHeader('X-RateLimit-Limit', result.limit.toString());
@@ -92,4 +82,3 @@ export class RateLimitMiddleware implements NestMiddleware {
     return `ip:${ipAddress}`;
   }
 }
-

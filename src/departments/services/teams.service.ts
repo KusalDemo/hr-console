@@ -14,7 +14,7 @@ import { CreateTeamDto, UpdateTeamDto } from '../dto';
 
 /**
  * Teams Service
- * 
+ *
  * Provides business logic for team operations:
  * - Create team
  * - Get team by ID
@@ -22,7 +22,7 @@ import { CreateTeamDto, UpdateTeamDto } from '../dto';
  * - Update team
  * - Delete team (soft delete)
  * - Search teams
- * 
+ *
  * This service handles all team management operations
  * including validation and organization/department relationships.
  */
@@ -39,7 +39,7 @@ export class TeamsService {
 
   /**
    * Create a new team
-   * 
+   *
    * @param createDto - Team creation data
    * @param createdBy - User ID who created the team (optional)
    * @returns Created team information
@@ -130,7 +130,7 @@ export class TeamsService {
 
   /**
    * Get team by ID
-   * 
+   *
    * @param id - Team ID
    * @returns Team information
    */
@@ -145,7 +145,7 @@ export class TeamsService {
 
   /**
    * Get teams by organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param activeOnly - Only return active teams
    * @returns Array of teams
@@ -161,7 +161,7 @@ export class TeamsService {
 
   /**
    * Get teams by department
-   * 
+   *
    * @param departmentId - Department ID
    * @returns Array of teams
    */
@@ -171,7 +171,7 @@ export class TeamsService {
 
   /**
    * Get cross-departmental teams (teams without a department)
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Array of cross-departmental teams
    */
@@ -181,7 +181,7 @@ export class TeamsService {
 
   /**
    * Update team
-   * 
+   *
    * @param id - Team ID
    * @param updateDto - Team update data
    * @param updatedBy - User ID who updated the team (optional)
@@ -198,7 +198,11 @@ export class TeamsService {
 
     // Check if team key is being changed and if it already exists
     if (updateDto.teamKey && updateDto.teamKey !== team.teamKey) {
-      const keyExists = await this.teamRepository.keyExists(team.organizationId, updateDto.teamKey, id);
+      const keyExists = await this.teamRepository.keyExists(
+        team.organizationId,
+        updateDto.teamKey,
+        id,
+      );
       if (keyExists) {
         throw new ConflictException(
           `Team with key ${updateDto.teamKey} already exists in organization`,
@@ -298,7 +302,7 @@ export class TeamsService {
 
   /**
    * Delete team (soft delete)
-   * 
+   *
    * @param id - Team ID
    * @param deletedBy - User ID who deleted the team (optional)
    * @returns Deleted team information
@@ -343,7 +347,7 @@ export class TeamsService {
 
   /**
    * Search teams
-   * 
+   *
    * @param searchTerm - Search term (name or key)
    * @param organizationId - Optional organization filter
    * @returns Array of matching teams
@@ -352,4 +356,3 @@ export class TeamsService {
     return this.teamRepository.search(searchTerm, organizationId);
   }
 }
-

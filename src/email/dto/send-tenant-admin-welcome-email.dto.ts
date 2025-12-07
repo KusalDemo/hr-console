@@ -29,4 +29,3 @@ export class SendTenantAdminWelcomeEmailDto {
   organizationName?: string | null;
 }
 
-

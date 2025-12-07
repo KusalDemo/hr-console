@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsBoolean,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsBoolean, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   KPICalculationType,

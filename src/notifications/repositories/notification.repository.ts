@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository, Between, LessThanOrEqual } from 'typeorm';
+import { DataSource, Repository, Between, LessThanOrEqual, IsNull } from 'typeorm';
 import { Notification, NotificationStatus, NotificationPriority } from '../entities';
 
 @Injectable()
@@ -71,10 +71,9 @@ export class NotificationRepository extends Repository<Notification> {
   async findPending(limit?: number): Promise<Notification[]> {
     const queryBuilder = this.createQueryBuilder('notification')
       .where('notification.status = :status', { status: NotificationStatus.PENDING })
-      .andWhere(
-        '(notification.scheduledAt IS NULL OR notification.scheduledAt <= :now)',
-        { now: new Date() },
-      )
+      .andWhere('(notification.scheduledAt IS NULL OR notification.scheduledAt <= :now)', {
+        now: new Date(),
+      })
       .orderBy('notification.priority', 'DESC')
       .addOrderBy('notification.createdAt', 'ASC');
 
@@ -92,10 +91,9 @@ export class NotificationRepository extends Repository<Notification> {
     const queryBuilder = this.createQueryBuilder('notification')
       .where('notification.status = :status', { status: NotificationStatus.FAILED })
       .andWhere('notification.deliveryAttempts < notification.maxDeliveryAttempts')
-      .andWhere(
-        '(notification.nextRetryAt IS NULL OR notification.nextRetryAt <= :now)',
-        { now: new Date() },
-      )
+      .andWhere('(notification.nextRetryAt IS NULL OR notification.nextRetryAt <= :now)', {
+        now: new Date(),
+      })
       .orderBy('notification.priority', 'DESC')
       .addOrderBy('notification.createdAt', 'ASC');
 
@@ -113,7 +111,7 @@ export class NotificationRepository extends Repository<Notification> {
     return this.count({
       where: {
         userId,
-        readAt: null,
+        readAt: IsNull(),
         channel: 'IN_APP',
       },
     });
@@ -140,11 +138,7 @@ export class NotificationRepository extends Repository<Notification> {
   /**
    * Find notifications by date range
    */
-  async findByDateRange(
-    userId: number,
-    startDate: Date,
-    endDate: Date,
-  ): Promise<Notification[]> {
+  async findByDateRange(userId: number, startDate: Date, endDate: Date): Promise<Notification[]> {
     return this.find({
       where: {
         userId,

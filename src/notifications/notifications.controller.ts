@@ -32,7 +32,7 @@ import { NotificationChannel, NotificationStatus } from './entities';
 
 /**
  * Notifications Controller
- * 
+ *
  * REST API endpoints for notification system:
  * - Template management (CRUD)
  * - Preference management (CRUD)
@@ -221,9 +221,7 @@ export class NotificationsController {
    * GET /notifications/:id
    */
   @Get(':id')
-  async getNotification(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<NotificationResponseDto> {
+  async getNotification(@Param('id', ParseIntPipe) id: number): Promise<NotificationResponseDto> {
     return this.notificationService.getNotificationById(id);
   }
 

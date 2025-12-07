@@ -36,7 +36,7 @@ export enum TransactionStatus {
 
 /**
  * Inventory Transaction Entity
- * 
+ *
  * Stock movements (in, out, transfer, adjustment) with tracking.
  */
 @Entity('inventory_transactions')

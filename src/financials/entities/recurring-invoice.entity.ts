@@ -35,7 +35,7 @@ export enum RecurringInvoiceStatus {
 
 /**
  * Recurring Invoice Entity
- * 
+ *
  * Recurring invoice schedules with automatic generation and delivery.
  */
 @Entity('recurring_invoices')

@@ -4,7 +4,7 @@ import { Lead, LeadStatus, LeadSource, LeadPriority } from '../entities/lead.ent
 
 /**
  * Lead Repository
- * 
+ *
  * Custom repository methods for lead queries with pipeline tracking and conversion.
  */
 @Injectable()
@@ -163,10 +163,7 @@ export class LeadRepository extends Repository<Lead> {
   /**
    * Find converted leads
    */
-  async findConverted(
-    organizationId?: number,
-    includeArchived = false,
-  ): Promise<Lead[]> {
+  async findConverted(organizationId?: number, includeArchived = false): Promise<Lead[]> {
     const query = this.createQueryBuilder('lead')
       .where('lead.isConverted = :isConverted', { isConverted: true })
       .leftJoinAndSelect('lead.convertedContact', 'convertedContact')
@@ -186,10 +183,7 @@ export class LeadRepository extends Repository<Lead> {
   /**
    * Find unconverted leads
    */
-  async findUnconverted(
-    organizationId?: number,
-    includeArchived = false,
-  ): Promise<Lead[]> {
+  async findUnconverted(organizationId?: number, includeArchived = false): Promise<Lead[]> {
     const query = this.createQueryBuilder('lead')
       .where('lead.isConverted = :isConverted', { isConverted: false })
       .orderBy('lead.leadScore', 'DESC')
@@ -295,10 +289,7 @@ export class LeadRepository extends Repository<Lead> {
   /**
    * Find leads needing follow-up
    */
-  async findNeedingFollowUp(
-    organizationId?: number,
-    daysAhead = 7,
-  ): Promise<Lead[]> {
+  async findNeedingFollowUp(organizationId?: number, daysAhead = 7): Promise<Lead[]> {
     const query = this.createQueryBuilder('lead')
       .where('lead.nextFollowUpDate IS NOT NULL')
       .andWhere('lead.nextFollowUpDate <= :endDate', {
@@ -327,8 +318,9 @@ export class LeadRepository extends Repository<Lead> {
     convertedCount: number;
     conversionRate: number;
   }> {
-    const query = this.createQueryBuilder('lead')
-      .where('lead.isArchived = :isArchived', { isArchived: false });
+    const query = this.createQueryBuilder('lead').where('lead.isArchived = :isArchived', {
+      isArchived: false,
+    });
 
     if (organizationId) {
       query.andWhere('lead.organizationId = :organizationId', { organizationId });
@@ -371,8 +363,9 @@ export class LeadRepository extends Repository<Lead> {
    * Check if lead number exists
    */
   async leadNumberExists(leadNumber: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('lead')
-      .where('lead.leadNumber = :leadNumber', { leadNumber });
+    const query = this.createQueryBuilder('lead').where('lead.leadNumber = :leadNumber', {
+      leadNumber,
+    });
 
     if (excludeId) {
       query.andWhere('lead.id != :excludeId', { excludeId });
@@ -382,5 +375,3 @@ export class LeadRepository extends Repository<Lead> {
     return count > 0;
   }
 }
-
-

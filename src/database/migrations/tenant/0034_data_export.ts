@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Data Export & Reporting Service Migration
- * 
+ *
  * This migration creates:
  * - export_templates table (reusable export templates with field selection, formatting, filters)
  * - export_jobs table (export job tracking with status, progress, file generation, email delivery)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class DataExport0000000000034 implements MigrationInterface {

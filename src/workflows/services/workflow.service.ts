@@ -120,7 +120,7 @@ export class WorkflowService {
 
     // Update workflow definition
     Object.assign(workflowDefinition, updateDto);
-    workflowDefinition.updatedBy = updatedBy;
+    workflowDefinition.updatedBy = updatedBy ?? null;
 
     const saved = await this.workflowDefinitionRepository.save(workflowDefinition);
 
@@ -298,13 +298,13 @@ export class WorkflowService {
 
     // Update instance state
     instance.currentState = toState;
-    instance.updatedBy = triggeredBy;
+    instance.updatedBy = triggeredBy ?? null;
 
     // Check if this is a final state
     if (this.stateMachineService.isFinalState(workflowDef, toState)) {
       instance.status = WorkflowStatus.COMPLETED;
       instance.completedAt = new Date();
-      instance.completedBy = triggeredBy;
+      instance.completedBy = triggeredBy ?? null;
     }
 
     // Update workflow data if provided
@@ -376,9 +376,9 @@ export class WorkflowService {
 
     instance.status = WorkflowStatus.CANCELLED;
     instance.completedAt = new Date();
-    instance.completedBy = cancelledBy;
+    instance.completedBy = cancelledBy ?? null;
     instance.completionReason = reason;
-    instance.updatedBy = cancelledBy;
+    instance.updatedBy = cancelledBy ?? null;
 
     await this.workflowInstanceRepository.save(instance);
 
@@ -394,7 +394,9 @@ export class WorkflowService {
     approverId: number,
     comments?: string,
   ): Promise<WorkflowApproval> {
-    const approval = await this.workflowApprovalRepository.findById(approvalId);
+    const approval = await this.workflowApprovalRepository.findOne({
+      where: { id: approvalId },
+    });
 
     if (!approval) {
       throw new NotFoundException(`Approval with ID ${approvalId} not found`);
@@ -429,11 +431,11 @@ export class WorkflowService {
     } else {
       approval.status = ApprovalStatus.REJECTED;
       approval.rejectedAt = new Date();
-      // Reject workflow
-      instance.status = WorkflowStatus.REJECTED;
+      // Reject workflow (use CANCELLED since REJECTED doesn't exist)
+      instance.status = WorkflowStatus.CANCELLED;
       instance.completedAt = new Date();
       instance.completedBy = approverId;
-      instance.completionReason = comments;
+      instance.completionReason = comments ?? null;
       await this.workflowInstanceRepository.save(instance);
     }
 
@@ -503,7 +505,7 @@ export class WorkflowService {
     const autoApprovalCheck = await this.approvalRoutingService.checkAutoApproval(
       instance.workflowDefinition.workflowKey,
       instance.entityType,
-      instance.workflowData,
+      instance.workflowData ?? {},
       stateDef.autoApprovalRules,
     );
 
@@ -533,7 +535,7 @@ export class WorkflowService {
           instance.workflowDefinition.workflowKey,
           instance.entityType,
           approvalDef.routingRules,
-          instance.workflowData,
+          instance.workflowData ?? {},
         );
       } else if (Array.isArray(approvalDef.approvers)) {
         // Use provided approvers
@@ -550,7 +552,7 @@ export class WorkflowService {
             approverId,
             instance.workflowDefinition.workflowKey,
             instance.entityType,
-            instance.workflowData,
+            instance.workflowData ?? {},
           ),
         ),
       );
@@ -636,6 +638,7 @@ export class WorkflowService {
 
         if (!this.stateMachineService.stateExists(workflowDef, transition.toState)) {
           throw new BadRequestException(`Transition references invalid toState: ${transition.toState}`);
+        }
       }
     }
   }
@@ -655,12 +658,13 @@ export class WorkflowService {
     });
 
     const saved = await this.approvalDelegationRepository.save(delegation);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
     this.logger.log(
-      `Created approval delegation: ${saved.id} (delegator: ${saved.delegatorId} -> delegate: ${saved.delegateId})`,
+      `Created approval delegation: ${savedEntity.id} (delegator: ${savedEntity.delegatorId} -> delegate: ${savedEntity.delegateId})`,
     );
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -696,13 +700,12 @@ export class WorkflowService {
     }
 
     delegation.isActive = false;
-    delegation.updatedBy = updatedBy;
+    delegation.updatedBy = updatedBy ?? null;
 
     await this.approvalDelegationRepository.save(delegation);
 
     this.logger.log(`Removed approval delegation: ${delegationId}`);
   }
-}
 
   /**
    * Map entity to response DTO

@@ -13,7 +13,7 @@ import { Organization } from '../../organizations/entities/organization.entity';
 
 /**
  * Notification Preference Entity
- * 
+ *
  * Stores user/tenant notification preferences:
  * - Per-channel preferences (email, SMS, push, in-app)
  * - Per-category preferences

@@ -7,4 +7,3 @@ import { CreateTeamDto } from './create-team.dto';
  * All fields are optional
  */
 export class UpdateTeamDto extends PartialType(CreateTeamDto) {}
-

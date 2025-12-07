@@ -13,7 +13,7 @@ import { User } from '../../users/entities/user.entity';
 
 /**
  * Password Policy Entity
- * 
+ *
  * Configurable password rules for security compliance.
  * Supports organization-specific policies and tenant-wide defaults.
  */
@@ -167,3 +167,4 @@ export class PasswordPolicy {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedById: number | null;
 }
+

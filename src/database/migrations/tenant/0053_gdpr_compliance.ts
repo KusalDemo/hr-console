@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * GDPR & Data Privacy Compliance Migration
- * 
+ *
  * This migration creates:
  * - data_subject_requests table (GDPR data subject requests: access, deletion, portability, etc.)
  * - consents table (consent tracking and management)
  * - privacy_policy_acceptances table (privacy policy and terms acceptance tracking)
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class GdprCompliance0000000000053 implements MigrationInterface {
@@ -257,3 +257,4 @@ export class GdprCompliance0000000000053 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS data_subject_requests`);
   }
 }
+

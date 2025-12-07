@@ -6,7 +6,7 @@ import { JobStatus } from '../entities/job-queue.entity';
 
 /**
  * Job Scheduler Service
- * 
+ *
  * Scheduled job processing:
  * - Processes pending jobs periodically
  * - Handles recurring jobs
@@ -47,11 +47,11 @@ export class JobSchedulerService {
         try {
           await this.jobProcessorService.processJob(job.id);
         } catch (error) {
-          this.logger.error(`Error processing job ${job.id}: ${error.message}`);
+          this.logger.error(`Error processing job ${job.id}: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     } catch (error) {
-      this.logger.error(`Error in job scheduler: ${error.message}`);
+      this.logger.error(`Error in job scheduler: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       this.isProcessing = false;
     }
@@ -74,11 +74,11 @@ export class JobSchedulerService {
             await this.jobProcessorService.processJob(job.id);
           }
         } catch (error) {
-          this.logger.error(`Error retrying job ${job.id}: ${error.message}`);
+          this.logger.error(`Error retrying job ${job.id}: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     } catch (error) {
-      this.logger.error(`Error in retry job scheduler: ${error.message}`);
+      this.logger.error(`Error in retry job scheduler: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -92,7 +92,7 @@ export class JobSchedulerService {
       // For now, this is a placeholder
       this.logger.debug('Processing recurring jobs');
     } catch (error) {
-      this.logger.error(`Error in recurring job scheduler: ${error.message}`);
+      this.logger.error(`Error in recurring job scheduler: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }

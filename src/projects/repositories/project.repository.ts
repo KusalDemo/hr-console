@@ -4,7 +4,7 @@ import { Project, ProjectStatus, ProjectHealth } from '../entities/project.entit
 
 /**
  * Project Repository
- * 
+ *
  * Custom repository methods for project queries with optimized queries for project dashboards.
  */
 @Injectable()
@@ -17,8 +17,9 @@ export class ProjectRepository extends Repository<Project> {
    * Find project by key
    */
   async findByKey(projectKey: string, includeRelations = false): Promise<Project | null> {
-    const query = this.createQueryBuilder('project')
-      .where('project.projectKey = :projectKey', { projectKey });
+    const query = this.createQueryBuilder('project').where('project.projectKey = :projectKey', {
+      projectKey,
+    });
 
     if (includeRelations) {
       query
@@ -59,8 +60,10 @@ export class ProjectRepository extends Repository<Project> {
     includeArchived = false,
     includeRelations = false,
   ): Promise<Project[]> {
-    const query = this.createQueryBuilder('project')
-      .where('project.organizationId = :organizationId', { organizationId });
+    const query = this.createQueryBuilder('project').where(
+      'project.organizationId = :organizationId',
+      { organizationId },
+    );
 
     if (!includeArchived) {
       query.andWhere('project.isArchived = :isArchived', { isArchived: false });
@@ -158,8 +161,9 @@ export class ProjectRepository extends Repository<Project> {
    * Check if project key exists
    */
   async projectKeyExists(projectKey: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('project')
-      .where('project.projectKey = :projectKey', { projectKey });
+    const query = this.createQueryBuilder('project').where('project.projectKey = :projectKey', {
+      projectKey,
+    });
 
     if (excludeId) {
       query.andWhere('project.id != :excludeId', { excludeId });
@@ -187,30 +191,12 @@ export class ProjectRepository extends Repository<Project> {
   }> {
     const stats = await this.createQueryBuilder('project')
       .select('COUNT(*)', 'total')
-      .addSelect(
-        "COUNT(CASE WHEN project.status = 'ACTIVE' THEN 1 END)",
-        'active',
-      )
-      .addSelect(
-        "COUNT(CASE WHEN project.status = 'COMPLETED' THEN 1 END)",
-        'completed',
-      )
-      .addSelect(
-        "COUNT(CASE WHEN project.status = 'ON_HOLD' THEN 1 END)",
-        'onHold',
-      )
-      .addSelect(
-        "COUNT(CASE WHEN project.status = 'CANCELLED' THEN 1 END)",
-        'cancelled',
-      )
-      .addSelect(
-        "COUNT(CASE WHEN project.health = 'AT_RISK' THEN 1 END)",
-        'atRisk',
-      )
-      .addSelect(
-        "COUNT(CASE WHEN project.health = 'OVER_BUDGET' THEN 1 END)",
-        'overBudget',
-      )
+      .addSelect("COUNT(CASE WHEN project.status = 'ACTIVE' THEN 1 END)", 'active')
+      .addSelect("COUNT(CASE WHEN project.status = 'COMPLETED' THEN 1 END)", 'completed')
+      .addSelect("COUNT(CASE WHEN project.status = 'ON_HOLD' THEN 1 END)", 'onHold')
+      .addSelect("COUNT(CASE WHEN project.status = 'CANCELLED' THEN 1 END)", 'cancelled')
+      .addSelect("COUNT(CASE WHEN project.health = 'AT_RISK' THEN 1 END)", 'atRisk')
+      .addSelect("COUNT(CASE WHEN project.health = 'OVER_BUDGET' THEN 1 END)", 'overBudget')
       .addSelect('COALESCE(SUM(project.budgetedAmount), 0)', 'totalBudget')
       .addSelect('COALESCE(SUM(project.actualCostAmount), 0)', 'totalActualCost')
       .addSelect('COALESCE(SUM(project.budgetedHours), 0)', 'totalBudgetedHours')
@@ -252,5 +238,4 @@ export class ProjectRepository extends Repository<Project> {
       .getMany();
   }
 }
-
 

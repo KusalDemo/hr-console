@@ -37,7 +37,7 @@ import { TicketStatus, TicketPriority } from './entities/support-ticket.entity';
 
 /**
  * Support Controller
- * 
+ *
  * REST API endpoints for support ticket management:
  * - Ticket CRUD
  * - Ticket assignment and routing
@@ -76,9 +76,7 @@ export class SupportController {
    * GET /support/tickets/:id
    */
   @Get('tickets/:id')
-  async getTicket(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<SupportTicketResponseDto> {
+  async getTicket(@Param('id', ParseIntPipe) id: number): Promise<SupportTicketResponseDto> {
     return this.supportService.getTicketById(id);
   }
 
@@ -278,9 +276,7 @@ export class SupportController {
    * GET /support/categories/:id
    */
   @Get('categories/:id')
-  async getCategory(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<TicketCategoryResponseDto> {
+  async getCategory(@Param('id', ParseIntPipe) id: number): Promise<TicketCategoryResponseDto> {
     return this.supportService.getCategoryById(id);
   }
 

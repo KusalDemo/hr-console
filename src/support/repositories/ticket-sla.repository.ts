@@ -30,10 +30,9 @@ export class TicketSLARepository extends Repository<TicketSLA> {
       .andWhere('sla.isActive = :isActive', { isActive: true });
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(sla.organizationId = :organizationId OR sla.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(sla.organizationId = :organizationId OR sla.organizationId IS NULL)', {
+        organizationId,
+      });
     } else {
       query.andWhere('sla.organizationId IS NULL');
     }
@@ -50,10 +49,9 @@ export class TicketSLARepository extends Repository<TicketSLA> {
       .orderBy('sla.name', 'ASC');
 
     if (organizationId !== null) {
-      query.andWhere(
-        '(sla.organizationId = :organizationId OR sla.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(sla.organizationId = :organizationId OR sla.organizationId IS NULL)', {
+        organizationId,
+      });
     } else {
       query.andWhere('sla.organizationId IS NULL');
     }

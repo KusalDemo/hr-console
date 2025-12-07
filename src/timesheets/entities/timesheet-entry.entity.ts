@@ -8,18 +8,21 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
+import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 import { Timesheet } from './timesheet.entity';
 
 /**
  * Timesheet Entry Entity
- * 
+ *
  * Manual time entries within a timesheet.
  * Used for manual time entry or corrections.
  */
+@ObjectType()
 @Entity('timesheet_entries')
 @Index('idx_timesheet_entries_timesheet', ['timesheetId'])
 @Index('idx_timesheet_entries_date', ['entryDate'])
 export class TimesheetEntry {
+  @Field(() => Int)
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -33,18 +36,21 @@ export class TimesheetEntry {
   @JoinColumn({ name: 'timesheet_id' })
   timesheet: Timesheet;
 
+  @Field(() => Int)
   @Column({ name: 'timesheet_id', type: 'bigint', nullable: false })
   timesheetId: number;
 
   /**
    * Entry date
    */
+  @Field(() => Date)
   @Column({ name: 'entry_date', type: 'date', nullable: false })
   entryDate: Date;
 
   /**
    * Hours worked
    */
+  @Field(() => Float)
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   hours: number;
 
@@ -114,5 +120,3 @@ export class TimesheetEntry {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-
-

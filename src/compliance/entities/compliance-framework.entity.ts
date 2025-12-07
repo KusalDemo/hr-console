@@ -34,7 +34,7 @@ export enum ComplianceLevel {
 
 /**
  * Compliance Framework Entity
- * 
+ *
  * Different compliance standards (GDPR, HIPAA, SOC2, ISO27001, etc.)
  */
 @Entity('compliance_frameworks')
@@ -136,3 +136,4 @@ export class ComplianceFramework {
   })
   requirements: Promise<ComplianceRequirement[]> | ComplianceRequirement[];
 }
+

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import {
   NotificationTemplateRepository,
@@ -34,7 +29,7 @@ import {
 
 /**
  * Notification Service
- * 
+ *
  * Manages notification operations:
  * - Template management (CRUD)
  * - Preference management (CRUD)
@@ -68,9 +63,7 @@ export class NotificationService {
     // Check if template key already exists
     const existing = await this.templateRepository.findByKey(createDto.templateKey);
     if (existing) {
-      throw new BadRequestException(
-        `Template with key "${createDto.templateKey}" already exists`,
-      );
+      throw new BadRequestException(`Template with key "${createDto.templateKey}" already exists`);
     }
 
     const template = this.templateRepository.create({
@@ -154,7 +147,9 @@ export class NotificationService {
   /**
    * Get all active templates
    */
-  async getActiveTemplates(channel?: NotificationChannel): Promise<NotificationTemplateResponseDto[]> {
+  async getActiveTemplates(
+    channel?: NotificationChannel,
+  ): Promise<NotificationTemplateResponseDto[]> {
     const templates = channel
       ? await this.templateRepository.findByChannel(channel)
       : await this.templateRepository.findActive();
@@ -298,11 +293,7 @@ export class NotificationService {
       }
 
       // Resolve title and body
-      const { title, body } = this.resolveNotificationContent(
-        template,
-        sendDto,
-        channel,
-      );
+      const { title, body } = this.resolveNotificationContent(template, sendDto, channel);
 
       // Create notification
       const notification = this.notificationRepository.create({
@@ -314,7 +305,7 @@ export class NotificationService {
         title,
         body,
         category: sendDto.category || template?.category || null,
-        priority: sendDto.priority || template?.defaultPriority || NotificationPriority.NORMAL,
+        priority: (sendDto.priority as NotificationPriority) || template?.defaultPriority || NotificationPriority.NORMAL,
         status: NotificationStatus.PENDING,
         scheduledAt: sendDto.scheduledAt || null,
         recipientEmail: channel === NotificationChannel.EMAIL ? user.email : null,
@@ -329,10 +320,11 @@ export class NotificationService {
       });
 
       const saved = await this.notificationRepository.save(notification);
-      notifications.push(saved);
+      const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+      notifications.push(savedEntity);
 
       // Queue for delivery
-      await this.deliveryService.queueNotification(saved);
+      await this.deliveryService.queueNotification(savedEntity);
     }
 
     // Return the first notification
@@ -445,9 +437,8 @@ export class NotificationService {
         }
       }
 
-      const orgGlobalPref = await this.preferenceRepository.findGlobalByOrganization(
-        organizationId,
-      );
+      const orgGlobalPref =
+        await this.preferenceRepository.findGlobalByOrganization(organizationId);
       if (orgGlobalPref) {
         return orgGlobalPref;
       }

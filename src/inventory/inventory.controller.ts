@@ -28,7 +28,7 @@ import { ItemType } from './entities/inventory-item.entity';
 
 /**
  * Inventory Controller
- * 
+ *
  * REST API endpoints for inventory management:
  * - Inventory items (CRUD, search, low stock alerts)
  * - Inventory transactions (stock movements)
@@ -52,10 +52,7 @@ export class InventoryController {
   @Post('items')
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR')
-  async createItem(
-    @Body() createDto: CreateInventoryItemDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createItem(@Body() createDto: CreateInventoryItemDto, @CurrentUser() user: JwtPayload) {
     return this.inventoryService.createItem(createDto, user.userId);
   }
 
@@ -66,7 +63,8 @@ export class InventoryController {
   @Get('items/:id')
   async getItem(
     @Param('id', ParseIntPipe) id: number,
-    @Query('includeTransactions', new ParseBoolPipe({ optional: true })) includeTransactions = false,
+    @Query('includeTransactions', new ParseBoolPipe({ optional: true }))
+    includeTransactions = false,
   ) {
     return this.inventoryService.getItemById(id, includeTransactions);
   }

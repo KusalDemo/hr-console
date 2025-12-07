@@ -48,7 +48,7 @@ export enum StorageProvider {
 
 /**
  * Document Entity
- * 
+ *
  * Manages document metadata with:
  * - File storage paths and metadata
  * - Versioning support

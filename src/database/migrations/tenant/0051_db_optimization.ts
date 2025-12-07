@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Database Optimization & Indexing Migration
- * 
+ *
  * This migration adds strategic indexes for performance optimization:
  * - Composite indexes for common query patterns
  * - Covering indexes for frequently selected columns
  * - Partial indexes for filtered queries
  * - Indexes for foreign keys that are frequently queried
  * - Optimization for high-volume tables (time_entries, audit_logs)
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class DbOptimization0000000000051 implements MigrationInterface {
@@ -734,3 +734,4 @@ export class DbOptimization0000000000051 implements MigrationInterface {
     `);
   }
 }
+

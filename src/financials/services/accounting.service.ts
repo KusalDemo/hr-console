@@ -1,17 +1,7 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AccountRepository, FinancialTransactionRepository } from '../repositories';
-import {
-  Account,
-  AccountType,
-  AccountCategory,
-  NormalBalance,
-} from '../entities/account.entity';
+import { Account, AccountType, AccountCategory, NormalBalance } from '../entities/account.entity';
 import {
   FinancialTransaction,
   TransactionType,
@@ -21,7 +11,7 @@ import { TransactionLineItem } from '../entities/transaction-line-item.entity';
 
 /**
  * Accounting Service
- * 
+ *
  * Manages double-entry bookkeeping with:
  * - Journal entry creation and validation
  * - Transaction posting and balance updates
@@ -151,7 +141,7 @@ export class AccountingService {
     // Update transaction status
     transaction.status = TransactionStatus.POSTED;
     transaction.postedAt = new Date();
-    transaction.postedBy = postedBy;
+    transaction.postedBy = postedBy ?? null;
 
     const saved = await this.transactionRepository.save(transaction);
 
@@ -284,19 +274,21 @@ export class AccountingService {
     }
 
     // Get all posted transactions for this account up to the date
-    const transactions = await this.transactionRepository.findByAccount(accountId, undefined, asOfDate);
+    const transactions = await this.transactionRepository.findByAccount(
+      accountId,
+      undefined,
+      asOfDate,
+    );
 
     let balance = account.openingBalance;
 
     for (const transaction of transactions) {
-      const lineItems = await this.dataSource
-        .getRepository(TransactionLineItem)
-        .find({
-          where: {
-            transactionId: transaction.id,
-            accountId: account.id,
-          },
-        });
+      const lineItems = await this.dataSource.getRepository(TransactionLineItem).find({
+        where: {
+          transactionId: transaction.id,
+          accountId: account.id,
+        },
+      });
 
       for (const lineItem of lineItems) {
         if (account.normalBalance === NormalBalance.DEBIT) {

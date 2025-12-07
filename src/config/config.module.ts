@@ -20,4 +20,3 @@ import databaseConfig from './database.config';
   exports: [AppConfigService],
 })
 export class ConfigModule {}
-

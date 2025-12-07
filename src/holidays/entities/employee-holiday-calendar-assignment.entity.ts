@@ -13,7 +13,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Employee Holiday Calendar Assignment Entity
- * 
+ *
  * Links employees to holiday calendars with:
  * - Calendar assignment to employees
  * - Effective date ranges
@@ -23,7 +23,10 @@ import { Employee } from '../../employees/entities/employee.entity';
 @Index('idx_employee_holiday_calendar_assignments_employee', ['employeeId'])
 @Index('idx_employee_holiday_calendar_assignments_calendar', ['holidayCalendarId'])
 @Index('idx_employee_holiday_calendar_assignments_active', ['employeeId', 'isActive'])
-@Index('idx_employee_holiday_calendar_assignments_effective', ['effectiveStartDate', 'effectiveEndDate'])
+@Index('idx_employee_holiday_calendar_assignments_effective', [
+  'effectiveStartDate',
+  'effectiveEndDate',
+])
 export class EmployeeHolidayCalendarAssignment {
   @PrimaryGeneratedColumn('increment')
   id: number;

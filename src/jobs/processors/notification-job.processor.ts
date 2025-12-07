@@ -4,7 +4,7 @@ import { JobQueue } from '../entities/job-queue.entity';
 
 /**
  * Notification Job Processor
- * 
+ *
  * Processes notification sending jobs.
  */
 @Injectable()
@@ -13,10 +13,7 @@ export class NotificationJobProcessor extends BaseJobProcessor {
     super(NotificationJobProcessor.name);
   }
 
-  async process(
-    jobData: Record<string, any>,
-    job: JobQueue,
-  ): Promise<any> {
+  async process(jobData: Record<string, any>, job: JobQueue): Promise<any> {
     this.validateJobData(jobData, ['userId', 'notificationType']);
 
     this.logger.log(`Processing notification job: ${job.id}`);
@@ -32,3 +29,4 @@ export class NotificationJobProcessor extends BaseJobProcessor {
     };
   }
 }
+

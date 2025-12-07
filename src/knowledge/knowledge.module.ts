@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KnowledgeController } from './knowledge.controller';
 import { KnowledgeService, KnowledgeSearchService } from './services';
-import {
-  KnowledgeArticleRepository,
-  KnowledgeCategoryRepository,
-} from './repositories';
+import { KnowledgeArticleRepository, KnowledgeCategoryRepository } from './repositories';
 import {
   KnowledgeArticle,
   KnowledgeCategory,
@@ -18,7 +15,7 @@ import { OrganizationsModule } from '../organizations/organizations.module';
 
 /**
  * Knowledge Module
- * 
+ *
  * Provides knowledge base system:
  * - Article management with versioning
  * - Draft/published workflow with approval

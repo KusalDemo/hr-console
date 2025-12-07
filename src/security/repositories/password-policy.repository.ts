@@ -40,3 +40,4 @@ export class PasswordPolicyRepository extends Repository<PasswordPolicy> {
     });
   }
 }
+

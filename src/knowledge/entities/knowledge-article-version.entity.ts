@@ -11,7 +11,7 @@ import { KnowledgeArticle } from './knowledge-article.entity';
 
 /**
  * Knowledge Article Version Entity
- * 
+ *
  * Tracks version history of knowledge articles
  */
 @Entity('knowledge_article_versions')

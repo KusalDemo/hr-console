@@ -4,7 +4,7 @@ import { Currency, CurrencyStatus } from '../entities/currency.entity';
 
 /**
  * Currency Repository
- * 
+ *
  * Custom repository methods for currency queries with organization support.
  */
 @Injectable()
@@ -17,8 +17,9 @@ export class CurrencyRepository extends Repository<Currency> {
    * Find currency by code
    */
   async findByCode(code: string, includeRelations = false): Promise<Currency | null> {
-    const query = this.createQueryBuilder('currency')
-      .where('LOWER(currency.code) = LOWER(:code)', { code });
+    const query = this.createQueryBuilder('currency').where('LOWER(currency.code) = LOWER(:code)', {
+      code,
+    });
 
     if (includeRelations) {
       query.leftJoinAndSelect('currency.exchangeRatesFrom', 'ratesFrom');
@@ -67,10 +68,9 @@ export class CurrencyRepository extends Repository<Currency> {
    */
   async findByOrganization(organizationId: number | null): Promise<Currency[]> {
     const query = this.createQueryBuilder('currency')
-      .where(
-        '(currency.organizationId = :organizationId OR currency.organizationId IS NULL)',
-        { organizationId },
-      )
+      .where('(currency.organizationId = :organizationId OR currency.organizationId IS NULL)', {
+        organizationId,
+      })
       .orderBy('currency.isDefault', 'DESC')
       .addOrderBy('currency.code', 'ASC');
 

@@ -16,20 +16,12 @@ import {
   TaskType,
   RecurrencePattern,
 } from '../entities/task.entity';
-import {
-  TaskDependency,
-  DependencyType,
-} from '../entities/task-dependency.entity';
-import {
-  CreateTaskDto,
-  UpdateTaskDto,
-  TaskResponseDto,
-  TaskDependencyResponseDto,
-} from '../dto';
+import { TaskDependency, DependencyType } from '../entities/task-dependency.entity';
+import { CreateTaskDto, UpdateTaskDto, TaskResponseDto, TaskDependencyResponseDto } from '../dto';
 
 /**
  * Task Service
- * 
+ *
  * Manages tasks with:
  * - Hierarchical task management (parent-child)
  * - Task dependencies (FS, SS, FF, SF)
@@ -52,10 +44,7 @@ export class TaskService {
   /**
    * Create a new task
    */
-  async createTask(
-    createDto: CreateTaskDto,
-    createdBy?: number,
-  ): Promise<TaskResponseDto> {
+  async createTask(createDto: CreateTaskDto, createdBy?: number): Promise<TaskResponseDto> {
     // Check if task key already exists
     const exists = await this.taskRepository.taskKeyExists(createDto.taskKey);
 
@@ -77,9 +66,7 @@ export class TaskService {
       const parentTask = await this.taskRepository.findById(createDto.parentTaskId);
 
       if (!parentTask) {
-        throw new NotFoundException(
-          `Parent task with ID ${createDto.parentTaskId} not found`,
-        );
+        throw new NotFoundException(`Parent task with ID ${createDto.parentTaskId} not found`);
       }
 
       // Check for circular reference
@@ -142,9 +129,7 @@ export class TaskService {
       isRecurring: createDto.isRecurring || false,
       recurrencePattern: createDto.recurrencePattern || RecurrencePattern.NONE,
       recurrenceInterval: createDto.recurrenceInterval,
-      recurrenceEndDate: createDto.recurrenceEndDate
-        ? new Date(createDto.recurrenceEndDate)
-        : null,
+      recurrenceEndDate: createDto.recurrenceEndDate ? new Date(createDto.recurrenceEndDate) : null,
       tags: createDto.tags,
       taskMetadata: createDto.taskMetadata,
       createdBy,
@@ -183,6 +168,9 @@ export class TaskService {
     this.logger.log(`Created task: ${saved.id} (${saved.taskKey})`);
 
     const reloaded = await this.taskRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Task not found after save`);
+    }
     return TaskResponseDto.fromEntity(reloaded, true);
   }
 
@@ -210,9 +198,7 @@ export class TaskService {
         const parentTask = await this.taskRepository.findById(updateDto.parentTaskId);
 
         if (!parentTask) {
-          throw new NotFoundException(
-            `Parent task with ID ${updateDto.parentTaskId} not found`,
-          );
+          throw new NotFoundException(`Parent task with ID ${updateDto.parentTaskId} not found`);
         }
 
         // Check for circular reference
@@ -288,6 +274,9 @@ export class TaskService {
     this.logger.log(`Updated task: ${id}`);
 
     const reloaded = await this.taskRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Task not found after save`);
+    }
     return TaskResponseDto.fromEntity(reloaded, true);
   }
 
@@ -337,10 +326,7 @@ export class TaskService {
   /**
    * Get sub-tasks
    */
-  async getSubTasks(
-    parentTaskId: number,
-    includeRelations = false,
-  ): Promise<TaskResponseDto[]> {
+  async getSubTasks(parentTaskId: number, includeRelations = false): Promise<TaskResponseDto[]> {
     const subTasks = await this.taskRepository.findSubTasks(parentTaskId, includeRelations);
 
     return subTasks.map((task) => TaskResponseDto.fromEntity(task, includeRelations));
@@ -375,10 +361,7 @@ export class TaskService {
   /**
    * Get overdue tasks
    */
-  async getOverdueTasks(
-    projectId?: number,
-    includeRelations = false,
-  ): Promise<TaskResponseDto[]> {
+  async getOverdueTasks(projectId?: number, includeRelations = false): Promise<TaskResponseDto[]> {
     const tasks = await this.taskRepository.findOverdueTasks(projectId, includeRelations);
 
     return tasks.map((task) => TaskResponseDto.fromEntity(task, includeRelations));
@@ -447,9 +430,7 @@ export class TaskService {
     // Check if dependent task should be blocked
     await this.checkBlockingDependencies(dependentTaskId);
 
-    this.logger.log(
-      `Added dependency: task ${dependentTaskId} depends on task ${dependsOnTaskId}`,
-    );
+    this.logger.log(`Added dependency: task ${dependentTaskId} depends on task ${dependsOnTaskId}`);
 
     const reloaded = await this.taskDependencyRepository
       .createQueryBuilder('dependency')
@@ -527,9 +508,7 @@ export class TaskService {
     }
 
     // Generate new task key if not provided
-    const taskKey =
-      createDto.taskKey ||
-      `${template.taskKey}-COPY-${Date.now()}`;
+    const taskKey = createDto.taskKey || `${template.taskKey}-COPY-${Date.now()}`;
 
     // Check if task key already exists
     const exists = await this.taskRepository.taskKeyExists(taskKey);
@@ -566,6 +545,9 @@ export class TaskService {
     this.logger.log(`Created task from template: ${saved.id} (${saved.taskKey})`);
 
     const reloaded = await this.taskRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Task not found after save`);
+    }
     return TaskResponseDto.fromEntity(reloaded, true);
   }
 
@@ -578,7 +560,7 @@ export class TaskService {
     }
 
     const now = new Date();
-    let nextDate = new Date(task.startDate || task.createdAt);
+    const nextDate = new Date(task.startDate || task.createdAt);
 
     // Calculate next occurrence based on pattern
     switch (task.recurrencePattern) {
@@ -680,4 +662,3 @@ export class TaskService {
     this.logger.log(`Deleted task: ${id}`);
   }
 }
-

@@ -34,7 +34,7 @@ export enum ClientTier {
 
 /**
  * Client Entity
- * 
+ *
  * Advanced client relationship management with SLA tracking, contract management,
  * project history, and engagement tracking.
  */
@@ -214,7 +214,13 @@ export class Client {
   /**
    * Total contract value (sum of all active contracts)
    */
-  @Column({ name: 'total_contract_value', type: 'decimal', precision: 15, scale: 2, nullable: true })
+  @Column({
+    name: 'total_contract_value',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: true,
+  })
   totalContractValue: number | null;
 
   /**
@@ -275,11 +281,6 @@ export class Client {
    * Check if client is currently active
    */
   isCurrentlyActive(): boolean {
-    return (
-      this.isActive &&
-      !this.isArchived &&
-      this.clientStatus === ClientStatus.ACTIVE
-    );
+    return this.isActive && !this.isArchived && this.clientStatus === ClientStatus.ACTIVE;
   }
 }
-

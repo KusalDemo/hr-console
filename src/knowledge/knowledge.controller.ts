@@ -36,7 +36,7 @@ import { FeedbackType } from './entities/knowledge-article-feedback.entity';
 
 /**
  * Knowledge Controller
- * 
+ *
  * REST API endpoints for knowledge base:
  * - Article CRUD
  * - Article workflow (submit, approve, publish)
@@ -82,12 +82,7 @@ export class KnowledgeController {
 
     // Track view (async, don't wait)
     this.knowledgeService
-      .trackView(
-        id,
-        user?.userId,
-        req.ip,
-        req.get('user-agent'),
-      )
+      .trackView(id, user?.userId, req.ip, req.get('user-agent'))
       .catch((error) => {
         console.error('Failed to track view:', error);
       });
@@ -109,12 +104,7 @@ export class KnowledgeController {
 
     // Track view (async, don't wait)
     this.knowledgeService
-      .trackView(
-        article.id,
-        user?.userId,
-        req.ip,
-        req.get('user-agent'),
-      )
+      .trackView(article.id, user?.userId, req.ip, req.get('user-agent'))
       .catch((error) => {
         console.error('Failed to track view:', error);
       });
@@ -327,9 +317,7 @@ export class KnowledgeController {
    * GET /knowledge/categories/:id
    */
   @Get('categories/:id')
-  async getCategory(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<KnowledgeCategoryResponseDto> {
+  async getCategory(@Param('id', ParseIntPipe) id: number): Promise<KnowledgeCategoryResponseDto> {
     return this.knowledgeService.getCategoryById(id);
   }
 

@@ -1,16 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { LeavePolicy, AccrualMethod, AccrualFrequency, AccrualCalculationBasis } from '../entities/leave-policy.entity';
+import {
+  LeavePolicy,
+  AccrualMethod,
+  AccrualFrequency,
+  AccrualCalculationBasis,
+} from '../entities/leave-policy.entity';
 import { Employee } from '../../employees/entities/employee.entity';
 import { EmployeeLeavePolicyAssignment } from '../entities/employee-leave-policy-assignment.entity';
 
 /**
  * Leave Accrual Service
- * 
+ *
  * Handles leave accrual calculations for different methods:
  * - Front-loaded: Entire year's leave granted at start
  * - Pro-rated: Accrued proportionally over time
  * - Custom formula: Formula-based accrual
- * 
+ *
  * Supports different accrual frequencies (daily, weekly, monthly, yearly)
  * and calculation bases (calendar year, hire anniversary, fiscal year).
  */
@@ -74,7 +79,7 @@ export class LeaveAccrualService {
         break;
     }
 
-    return Math.round(accrualDays * 100) / 100; // Round to 2 decimal places
+    return Math.round(accruedDays * 100) / 100; // Round to 2 decimal places
   }
 
   /**
@@ -125,7 +130,10 @@ export class LeaveAccrualService {
     const accrualRate =
       accrualRatePerPeriod !== undefined
         ? accrualRatePerPeriod
-        : this.calculateDefaultAccrualRate(maxDaysPerYear, policy.accrualFrequency || AccrualFrequency.MONTHLY);
+        : this.calculateDefaultAccrualRate(
+            maxDaysPerYear,
+            policy.accrualFrequency || AccrualFrequency.MONTHLY,
+          );
 
     // Calculate periods elapsed
     const periods = this.calculatePeriodsElapsed(
@@ -172,14 +180,21 @@ export class LeaveAccrualService {
 
     // Validate and evaluate formula
     try {
-      const result = this.evaluateFormula(formula, employee, policy, assignment, maxDaysPerYear, asOfDate);
+      const result = this.evaluateFormula(
+        formula,
+        employee,
+        policy,
+        assignment,
+        maxDaysPerYear,
+        asOfDate,
+      );
       this.logger.debug(
         `Custom formula accrual for employee ${employee.id}, policy ${policy.id}: formula=${formula}, result=${result}`,
       );
       return result;
     } catch (error) {
       this.logger.error(
-        `Invalid formula syntax for employee ${employee.id}, policy ${policy.id}, formula: ${formula}. Error: ${error.message}`,
+        `Invalid formula syntax for employee ${employee.id}, policy ${policy.id}, formula: ${formula}. Error: ${error instanceof Error ? error.message : String(error)}`,
       );
       // Fall back to pro-rated calculation
       return this.calculateProRatedAccrual(
@@ -229,7 +244,7 @@ export class LeaveAccrualService {
       const result = eval(evaluatedFormula);
       return typeof result === 'number' ? result : 0;
     } catch (error) {
-      throw new Error(`Formula evaluation failed: ${error.message}`);
+      throw new Error(`Formula evaluation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -294,11 +309,19 @@ export class LeaveAccrualService {
         const fiscalYearStartMonth = (policy.policyMetadata?.fiscalYearStartMonth as number) || 3; // 0-indexed (3 = April)
         const fiscalYearStartDay = (policy.policyMetadata?.fiscalYearStartDay as number) || 1;
         const currentDate = new Date(accrualStartDate);
-        let fiscalYearStart = new Date(currentDate.getFullYear(), fiscalYearStartMonth, fiscalYearStartDay);
+        let fiscalYearStart = new Date(
+          currentDate.getFullYear(),
+          fiscalYearStartMonth,
+          fiscalYearStartDay,
+        );
 
         if (fiscalYearStart > accrualStartDate) {
           // Fiscal year hasn't started yet this calendar year, use previous year
-          fiscalYearStart = new Date(currentDate.getFullYear() - 1, fiscalYearStartMonth, fiscalYearStartDay);
+          fiscalYearStart = new Date(
+            currentDate.getFullYear() - 1,
+            fiscalYearStartMonth,
+            fiscalYearStartDay,
+          );
         }
 
         return fiscalYearStart;
@@ -378,7 +401,11 @@ export class LeaveAccrualService {
   /**
    * Calculate periods elapsed between two dates based on frequency
    */
-  private calculatePeriodsElapsed(frequency: AccrualFrequency, startDate: Date, endDate: Date): number {
+  private calculatePeriodsElapsed(
+    frequency: AccrualFrequency,
+    startDate: Date,
+    endDate: Date,
+  ): number {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
@@ -387,7 +414,10 @@ export class LeaveAccrualService {
         return Math.max(0, Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
 
       case AccrualFrequency.WEEKLY:
-        return Math.max(0, Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)));
+        return Math.max(
+          0,
+          Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)),
+        );
 
       case AccrualFrequency.MONTHLY:
         return Math.max(

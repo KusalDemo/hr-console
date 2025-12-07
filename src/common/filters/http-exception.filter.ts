@@ -33,7 +33,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const message =
           typeof exceptionResponse === 'string'
             ? exceptionResponse
-            : (exceptionResponse as { message?: string | string[] })?.message || 'An error occurred';
+            : (exceptionResponse as { message?: string | string[] })?.message ||
+              'An error occurred';
 
         errorResponse = {
           statusCode: status,
@@ -91,4 +92,3 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
   }
 }
-

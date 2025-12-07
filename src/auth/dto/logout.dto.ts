@@ -9,4 +9,3 @@ export class LogoutDto {
   @IsString({ message: 'Refresh token must be a string' })
   refreshToken?: string; // Optional refresh token to invalidate
 }
-

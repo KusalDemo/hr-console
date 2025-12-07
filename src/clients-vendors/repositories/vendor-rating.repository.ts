@@ -4,7 +4,7 @@ import { VendorRating, RatingCategory } from '../entities/vendor-rating.entity';
 
 /**
  * Vendor Rating Repository
- * 
+ *
  * Custom repository methods for vendor rating queries.
  */
 @Injectable()
@@ -16,10 +16,7 @@ export class VendorRatingRepository extends Repository<VendorRating> {
   /**
    * Find ratings by vendor
    */
-  async findByVendor(
-    vendorId: number,
-    category?: RatingCategory,
-  ): Promise<VendorRating[]> {
+  async findByVendor(vendorId: number, category?: RatingCategory): Promise<VendorRating[]> {
     const query = this.createQueryBuilder('rating')
       .where('rating.vendorId = :vendorId', { vendorId })
       .orderBy('rating.ratingDate', 'DESC');
@@ -34,10 +31,7 @@ export class VendorRatingRepository extends Repository<VendorRating> {
   /**
    * Calculate average rating for vendor
    */
-  async calculateAverageRating(
-    vendorId: number,
-    category?: RatingCategory,
-  ): Promise<number> {
+  async calculateAverageRating(vendorId: number, category?: RatingCategory): Promise<number> {
     const query = this.createQueryBuilder('rating')
       .select('AVG(rating.ratingValue)', 'avg')
       .where('rating.vendorId = :vendorId', { vendorId });
@@ -90,4 +84,3 @@ export class VendorRatingRepository extends Repository<VendorRating> {
     };
   }
 }
-

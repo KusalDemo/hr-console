@@ -12,7 +12,7 @@ import { User } from '../../users/entities/user.entity';
 
 /**
  * IP Whitelist Entity
- * 
+ *
  * IP filtering/whitelisting for access control.
  * Supports tenant-wide, organization-specific, and user-specific whitelisting.
  */
@@ -76,3 +76,4 @@ export class IpWhitelist {
   @Column({ name: 'created_by', type: 'bigint', nullable: true })
   createdById: number | null;
 }
+

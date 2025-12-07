@@ -43,27 +43,24 @@ export class RateLimitService implements OnModuleDestroy {
 
   constructor(private readonly configService: AppConfigService) {
     // Default rate limits (can be configured via environment variables)
-    this.loginAttemptsPerWindow = parseInt(
-      process.env.RATE_LIMIT_LOGIN_ATTEMPTS || '5',
-      10,
-    );
+    this.loginAttemptsPerWindow = parseInt(process.env.RATE_LIMIT_LOGIN_ATTEMPTS || '5', 10);
     this.loginWindowSeconds = parseInt(
       process.env.RATE_LIMIT_LOGIN_WINDOW || '900', // 15 minutes
       10,
     );
-    this.refreshAttemptsPerWindow = parseInt(
-      process.env.RATE_LIMIT_REFRESH_ATTEMPTS || '10',
-      10,
-    );
+    this.refreshAttemptsPerWindow = parseInt(process.env.RATE_LIMIT_REFRESH_ATTEMPTS || '10', 10);
     this.refreshWindowSeconds = parseInt(
       process.env.RATE_LIMIT_REFRESH_WINDOW || '60', // 1 minute
       10,
     );
 
     // Start cleanup interval (every 5 minutes)
-    this.cleanupInterval = setInterval(() => {
-      this.cleanupExpiredEntries();
-    }, 5 * 60 * 1000);
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanupExpiredEntries();
+      },
+      5 * 60 * 1000,
+    );
   }
 
   /**
@@ -73,11 +70,7 @@ export class RateLimitService implements OnModuleDestroy {
    * @param method - HTTP method
    * @returns Rate limit result
    */
-  checkRateLimit(
-    identifier: string,
-    path: string,
-    method: string,
-  ): RateLimitResult {
+  checkRateLimit(identifier: string, path: string, method: string): RateLimitResult {
     // Determine rate limit configuration based on endpoint
     const config = this.getRateLimitConfig(path);
 
@@ -201,11 +194,7 @@ export class RateLimitService implements OnModuleDestroy {
   /**
    * Get current rate limit status for an identifier
    */
-  getRateLimitStatus(
-    identifier: string,
-    path: string,
-    method: string,
-  ): RateLimitResult | null {
+  getRateLimitStatus(identifier: string, path: string, method: string): RateLimitResult | null {
     const key = `${identifier}:${path}:${method}`;
     const entry = this.rateLimitStore.get(key);
 
@@ -251,4 +240,3 @@ export class RateLimitService implements OnModuleDestroy {
     this.rateLimitStore.clear();
   }
 }
-

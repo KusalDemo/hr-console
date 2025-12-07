@@ -35,7 +35,7 @@ export enum ScheduleStatus {
 
 /**
  * Report Schedule Entity
- * 
+ *
  * Scheduled report generation with:
  * - Frequency configuration
  * - Email delivery

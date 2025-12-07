@@ -6,10 +6,7 @@ import { Subscription, SubscriptionStatus } from '../entities/subscription.entit
 import { BillingCycle } from '../entities/subscription-plan.entity';
 import { SubscriptionPlan } from '../entities/subscription-plan.entity';
 import { RenewSubscriptionDto } from '../dto';
-import {
-  BusinessException,
-  ErrorCode,
-} from '../../common/exceptions/business.exception';
+import { BusinessException, ErrorCode } from '../../common/exceptions/business.exception';
 
 /**
  * Payment Processing Service Interface
@@ -54,10 +51,7 @@ export interface InvoiceService {
     invoiceNumber: string;
     pdfUrl?: string;
   }>;
-  sendInvoice(
-    invoiceId: string,
-    recipientEmail: string,
-  ): Promise<void>;
+  sendInvoice(invoiceId: string, recipientEmail: string): Promise<void>;
 }
 
 /**
@@ -74,13 +68,13 @@ export interface RenewalResult {
 
 /**
  * Subscription Renewal Service
- * 
+ *
  * Handles subscription renewal operations:
  * - Automatic renewal logic
  * - Manual renewal processing
  * - Payment processing integration
  * - Invoice generation
- * 
+ *
  * This service provides comprehensive renewal functionality
  * beyond basic subscription updates.
  */
@@ -101,10 +95,10 @@ export class SubscriptionRenewalService {
 
   /**
    * Process automatic renewal for a subscription
-   * 
+   *
    * This method is called by scheduled jobs to automatically renew subscriptions
    * that are due for renewal.
-   * 
+   *
    * @param subscriptionId - Subscription ID to renew
    * @returns Renewal result
    */
@@ -163,10 +157,10 @@ export class SubscriptionRenewalService {
 
   /**
    * Process manual renewal for a subscription
-   * 
+   *
    * This method is called when a user manually renews a subscription,
    * optionally changing the plan or payment method.
-   * 
+   *
    * @param subscriptionId - Subscription ID to renew
    * @param renewDto - Renewal data (optional plan change, payment method, etc.)
    * @param updatedBy - User ID who initiated renewal (optional)
@@ -209,18 +203,12 @@ export class SubscriptionRenewalService {
     }
 
     // Process renewal with payment
-    return this.processRenewalWithPayment(
-      subscription,
-      plan,
-      false,
-      renewDto,
-      updatedBy,
-    );
+    return this.processRenewalWithPayment(subscription, plan, false, renewDto, updatedBy);
   }
 
   /**
    * Process renewal with payment processing
-   * 
+   *
    * @param subscription - Subscription to renew
    * @param plan - Plan to renew with
    * @param automatic - Whether this is an automatic renewal
@@ -241,8 +229,7 @@ export class SubscriptionRenewalService {
       const currency = plan.currency;
 
       // Get payment method
-      const paymentMethodId =
-        renewDto?.paymentMethodId || subscription.paymentMethodId;
+      const paymentMethodId = renewDto?.paymentMethodId || subscription.paymentMethodId;
 
       if (!paymentMethodId) {
         return {
@@ -346,9 +333,7 @@ export class SubscriptionRenewalService {
       );
 
       // Load updated subscription with relations
-      const subscriptionWithRelations = await this.subscriptionRepository.findById(
-        subscription.id,
-      );
+      const subscriptionWithRelations = await this.subscriptionRepository.findById(subscription.id);
 
       if (!subscriptionWithRelations) {
         throw new NotFoundException('Subscription', subscription.id.toString());
@@ -410,7 +395,7 @@ export class SubscriptionRenewalService {
 
   /**
    * Handle renewal payment failure
-   * 
+   *
    * @param subscription - Subscription that failed renewal
    * @param plan - Plan that was attempted
    * @param error - Error message
@@ -421,10 +406,7 @@ export class SubscriptionRenewalService {
     plan: SubscriptionPlan,
     error: string,
   ): Promise<RenewalResult> {
-    this.logger.warn(
-      `Renewal payment failed for subscription ID: ${subscription.id}`,
-      { error },
-    );
+    this.logger.warn(`Renewal payment failed for subscription ID: ${subscription.id}`, { error });
 
     // Update metadata with failure information
     const metadata = subscription.metadata || {};
@@ -436,10 +418,7 @@ export class SubscriptionRenewalService {
 
     // Update subscription status to past due if it was active
     if (subscription.status === SubscriptionStatus.ACTIVE) {
-      await this.subscriptionRepository.updateStatus(
-        subscription.id,
-        SubscriptionStatus.PAST_DUE,
-      );
+      await this.subscriptionRepository.updateStatus(subscription.id, SubscriptionStatus.PAST_DUE);
 
       // Set grace period
       const gracePeriodEnd = new Date();
@@ -457,7 +436,7 @@ export class SubscriptionRenewalService {
 
   /**
    * Check if subscription is due for renewal
-   * 
+   *
    * @param subscription - Subscription to check
    * @returns True if renewal is due
    */
@@ -471,7 +450,7 @@ export class SubscriptionRenewalService {
 
   /**
    * Calculate billing period dates
-   * 
+   *
    * @param startDate - Period start date
    * @param billingCycle - Billing cycle
    * @param interval - Billing interval
@@ -505,7 +484,7 @@ export class SubscriptionRenewalService {
 
   /**
    * Get subscriptions due for renewal
-   * 
+   *
    * @param daysAhead - Days ahead to check (default: 1)
    * @returns List of subscriptions due for renewal
    */
@@ -515,7 +494,7 @@ export class SubscriptionRenewalService {
 
   /**
    * Retry failed renewal
-   * 
+   *
    * @param subscriptionId - Subscription ID to retry
    * @returns Renewal result
    */
@@ -544,4 +523,3 @@ export class SubscriptionRenewalService {
     return this.processAutomaticRenewal(subscriptionId);
   }
 }
-

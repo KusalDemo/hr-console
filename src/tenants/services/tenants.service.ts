@@ -21,13 +21,13 @@ import { ErrorCode } from '../../common/exceptions/business.exception';
 
 /**
  * Tenant Service
- * 
+ *
  * Provides business logic for tenant operations:
  * - Tenant creation (orchestrates provisioning and initialization)
  * - Tenant validation
  * - Tenant status management
  * - Tenant querying and updates
- * 
+ *
  * This service acts as a facade for tenant-related operations,
  * coordinating between provisioning, initialization, and repository services.
  */
@@ -44,21 +44,17 @@ export class TenantsService {
 
   /**
    * Create a new tenant
-   * 
+   *
    * This method orchestrates the complete tenant creation process:
    * 1. Validates tenant creation request
    * 2. Provisions tenant (schema, migrations, tenant record)
    * 3. Initializes tenant (roles, admin user, default organization)
-   * 
+   *
    * @param createTenantDto - Tenant creation data
    * @returns Created tenant information
    */
-  async createTenant(
-    createTenantDto: CreateTenantDto,
-  ): Promise<TenantCreationResponseDto> {
-    this.logger.log(
-      `Creating tenant: ${createTenantDto.tenantKey} (${createTenantDto.name})`,
-    );
+  async createTenant(createTenantDto: CreateTenantDto): Promise<TenantCreationResponseDto> {
+    this.logger.log(`Creating tenant: ${createTenantDto.tenantKey} (${createTenantDto.name})`);
 
     // Validate tenant key uniqueness
     await this.validateTenantKeyUnique(createTenantDto.tenantKey);
@@ -78,9 +74,7 @@ export class TenantsService {
         createTenantDto.tenantAdminFullName,
       );
 
-      this.logger.log(
-        `Successfully created tenant: ${tenant.tenantKey} (ID: ${tenant.id})`,
-      );
+      this.logger.log(`Successfully created tenant: ${tenant.tenantKey} (ID: ${tenant.id})`);
 
       // Step 3: Send welcome email to tenant admin (non-blocking)
       let emailSent = false;
@@ -95,9 +89,7 @@ export class TenantsService {
           organizationName: tenant.name, // Default organization uses tenant name
         });
         emailSent = true;
-        this.logger.log(
-          `Welcome email sent successfully to ${createTenantDto.tenantAdminEmail}`,
-        );
+        this.logger.log(`Welcome email sent successfully to ${createTenantDto.tenantAdminEmail}`);
       } catch (error) {
         emailError = error instanceof Error ? error.message : 'Unknown error';
         this.logger.error(
@@ -121,10 +113,7 @@ export class TenantsService {
       );
 
       // Re-throw known exceptions
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ConflictException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ConflictException) {
         throw error;
       }
 
@@ -137,7 +126,7 @@ export class TenantsService {
 
   /**
    * Get all tenants with pagination and filtering
-   * 
+   *
    * @param page - Page number (default: 1)
    * @param limit - Items per page (default: 10)
    * @param includeInactive - Include inactive tenants (default: false)
@@ -174,19 +163,13 @@ export class TenantsService {
       total = tenants.length;
     } else {
       // Get paginated tenants
-      const result = await this.tenantRepository.findWithPagination(
-        page,
-        limit,
-        includeInactive,
-      );
+      const result = await this.tenantRepository.findWithPagination(page, limit, includeInactive);
       tenants = result.tenants;
       total = result.total;
     }
 
     // Convert to response DTOs
-    const tenantResponses = tenants.map((tenant) =>
-      this.toTenantResponse(tenant),
-    );
+    const tenantResponses = tenants.map((tenant) => this.toTenantResponse(tenant));
 
     const totalPages = Math.ceil(total / limit);
 
@@ -201,16 +184,13 @@ export class TenantsService {
 
   /**
    * Get tenant by ID
-   * 
+   *
    * @param id - Tenant ID
    * @param includeInactive - Include inactive tenants (default: false)
    * @returns Tenant details
    * @throws NotFoundException if tenant not found
    */
-  async findOne(
-    id: number,
-    includeInactive: boolean = false,
-  ): Promise<TenantDetailResponseDto> {
+  async findOne(id: number, includeInactive: boolean = false): Promise<TenantDetailResponseDto> {
     const tenant = includeInactive
       ? await this.tenantRepository.findByIdIncludeInactive(id)
       : await this.tenantRepository.findById(id);
@@ -224,7 +204,7 @@ export class TenantsService {
 
   /**
    * Get tenant by tenant key
-   * 
+   *
    * @param tenantKey - Tenant key
    * @param includeInactive - Include inactive tenants (default: false)
    * @returns Tenant details
@@ -234,10 +214,7 @@ export class TenantsService {
     tenantKey: string,
     includeInactive: boolean = false,
   ): Promise<TenantDetailResponseDto> {
-    const tenant = await this.tenantRepository.findByTenantKey(
-      tenantKey,
-      includeInactive,
-    );
+    const tenant = await this.tenantRepository.findByTenantKey(tenantKey, includeInactive);
 
     if (!tenant) {
       throw new NotFoundException(`Tenant with key '${tenantKey}' not found`);
@@ -248,16 +225,13 @@ export class TenantsService {
 
   /**
    * Update tenant
-   * 
+   *
    * @param id - Tenant ID
    * @param updateTenantDto - Tenant update data
    * @returns Updated tenant
    * @throws NotFoundException if tenant not found
    */
-  async update(
-    id: number,
-    updateTenantDto: UpdateTenantDto,
-  ): Promise<TenantResponseDto> {
+  async update(id: number, updateTenantDto: UpdateTenantDto): Promise<TenantResponseDto> {
     const tenant = await this.tenantRepository.findByIdIncludeInactive(id);
 
     if (!tenant) {
@@ -273,9 +247,8 @@ export class TenantsService {
     }
 
     // Support both 'active' and 'isActive' property names
-    const isActiveValue = updateTenantDto.isActive !== undefined 
-      ? updateTenantDto.isActive 
-      : updateTenantDto.active;
+    const isActiveValue =
+      updateTenantDto.isActive !== undefined ? updateTenantDto.isActive : updateTenantDto.active;
 
     if (isActiveValue !== undefined) {
       // Validate status change
@@ -293,7 +266,7 @@ export class TenantsService {
 
   /**
    * Activate tenant
-   * 
+   *
    * @param id - Tenant ID
    * @returns Activated tenant
    * @throws NotFoundException if tenant not found
@@ -324,7 +297,7 @@ export class TenantsService {
 
   /**
    * Deactivate tenant
-   * 
+   *
    * @param id - Tenant ID
    * @returns Deactivated tenant
    * @throws NotFoundException if tenant not found
@@ -355,7 +328,7 @@ export class TenantsService {
 
   /**
    * Validate tenant key is unique
-   * 
+   *
    * @param tenantKey - Tenant key to validate
    * @throws ConflictException if tenant key already exists
    */
@@ -364,15 +337,13 @@ export class TenantsService {
     const exists = await this.tenantRepository.tenantKeyExists(normalizedKey);
 
     if (exists) {
-      throw new ConflictException(
-        `Tenant with key '${normalizedKey}' already exists`,
-      );
+      throw new ConflictException(`Tenant with key '${normalizedKey}' already exists`);
     }
   }
 
   /**
    * Validate tenant update operation
-   * 
+   *
    * @param tenant - Current tenant entity
    * @param updateDto - Update data
    */
@@ -391,7 +362,7 @@ export class TenantsService {
 
   /**
    * Validate tenant status change
-   * 
+   *
    * @param tenant - Current tenant entity
    * @param newStatus - New active status
    */
@@ -401,17 +372,13 @@ export class TenantsService {
     // This will be implemented in Phase 5 when subscription system is ready
 
     if (!newStatus && tenant.isActive) {
-      this.logger.warn(
-        `Deactivating tenant: ${tenant.tenantKey} (ID: ${tenant.id})`,
-      );
+      this.logger.warn(`Deactivating tenant: ${tenant.tenantKey} (ID: ${tenant.id})`);
       // TODO: Check subscription status in Phase 5
       // TODO: Notify tenant admin about deactivation
     }
 
     if (newStatus && !tenant.isActive) {
-      this.logger.log(
-        `Reactivating tenant: ${tenant.tenantKey} (ID: ${tenant.id})`,
-      );
+      this.logger.log(`Reactivating tenant: ${tenant.tenantKey} (ID: ${tenant.id})`);
       // TODO: Validate subscription is active in Phase 5
     }
   }
@@ -462,4 +429,3 @@ export class TenantsService {
     };
   }
 }
-

@@ -1,7 +1,4 @@
-import {
-  DashboardType,
-  DashboardLayoutType,
-} from '../entities/dashboard.entity';
+import { DashboardType, DashboardLayoutType } from '../entities/dashboard.entity';
 
 /**
  * Dashboard Response DTO

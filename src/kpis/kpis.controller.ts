@@ -15,10 +15,7 @@ import {
 } from '@nestjs/common';
 import { KPIService } from './services/kpi.service';
 import { KPICalculationService } from './services/kpi-calculation.service';
-import {
-  CreateKPIDefinitionDto,
-  UpdateKPIDefinitionDto,
-} from './dto';
+import { CreateKPIDefinitionDto, UpdateKPIDefinitionDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -28,7 +25,7 @@ import { KPICalculationType } from './entities/kpi-definition.entity';
 
 /**
  * KPIs Controller
- * 
+ *
  * REST API endpoints for KPI and metrics management:
  * - KPI definitions (CRUD, search, categorization)
  * - KPI calculations
@@ -67,7 +64,8 @@ export class KPIsController {
   @Get(':id')
   async getKPIDefinition(
     @Param('id', ParseIntPipe) id: number,
-    @Query('includeMeasurements', new ParseBoolPipe({ optional: true })) includeMeasurements = false,
+    @Query('includeMeasurements', new ParseBoolPipe({ optional: true }))
+    includeMeasurements = false,
   ) {
     return this.kpiService.getKPIDefinitionById(id, includeMeasurements);
   }
@@ -239,11 +237,7 @@ export class KPIsController {
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
   ) {
-    return this.kpiService.getMeasurementStatistics(
-      id,
-      new Date(startDate),
-      new Date(endDate),
-    );
+    return this.kpiService.getMeasurementStatistics(id, new Date(startDate), new Date(endDate));
   }
 
   /**

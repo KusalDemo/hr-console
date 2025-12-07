@@ -17,4 +17,3 @@ export class TimesheetPeriodResponseDto {
   updatedAt: Date;
 }
 
-

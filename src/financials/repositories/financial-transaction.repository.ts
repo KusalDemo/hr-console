@@ -8,7 +8,7 @@ import {
 
 /**
  * Financial Transaction Repository
- * 
+ *
  * Custom repository methods for financial transaction queries.
  */
 @Injectable()
@@ -21,8 +21,7 @@ export class FinancialTransactionRepository extends Repository<FinancialTransact
    * Find transaction by ID
    */
   async findById(id: number, includeRelations = false): Promise<FinancialTransaction | null> {
-    const query = this.createQueryBuilder('transaction')
-      .where('transaction.id = :id', { id });
+    const query = this.createQueryBuilder('transaction').where('transaction.id = :id', { id });
 
     if (includeRelations) {
       query.leftJoinAndSelect('transaction.lineItems', 'lineItems');
@@ -40,8 +39,10 @@ export class FinancialTransactionRepository extends Repository<FinancialTransact
     transactionNumber: string,
     includeRelations = false,
   ): Promise<FinancialTransaction | null> {
-    const query = this.createQueryBuilder('transaction')
-      .where('transaction.transactionNumber = :transactionNumber', { transactionNumber });
+    const query = this.createQueryBuilder('transaction').where(
+      'transaction.transactionNumber = :transactionNumber',
+      { transactionNumber },
+    );
 
     if (includeRelations) {
       query.leftJoinAndSelect('transaction.lineItems', 'lineItems');
@@ -128,10 +129,7 @@ export class FinancialTransactionRepository extends Repository<FinancialTransact
   /**
    * Find transactions by entity
    */
-  async findByEntity(
-    entityType: string,
-    entityId: number,
-  ): Promise<FinancialTransaction[]> {
+  async findByEntity(entityType: string, entityId: number): Promise<FinancialTransaction[]> {
     return this.createQueryBuilder('transaction')
       .where('transaction.entityType = :entityType', { entityType })
       .andWhere('transaction.entityId = :entityId', { entityId })

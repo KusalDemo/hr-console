@@ -4,7 +4,7 @@ import { PurchaseOrder, PurchaseOrderStatus } from '../entities/purchase-order.e
 
 /**
  * Purchase Order Repository
- * 
+ *
  * Custom repository methods for purchase order queries.
  */
 @Injectable()
@@ -61,10 +61,7 @@ export class PurchaseOrderRepository extends Repository<PurchaseOrder> {
   /**
    * Find POs by vendor
    */
-  async findByVendor(
-    vendorId: number,
-    organizationId?: number,
-  ): Promise<PurchaseOrder[]> {
+  async findByVendor(vendorId: number, organizationId?: number): Promise<PurchaseOrder[]> {
     const query = this.createQueryBuilder('po')
       .leftJoinAndSelect('po.vendor', 'vendor')
       .where('po.vendorId = :vendorId', { vendorId })
@@ -81,8 +78,7 @@ export class PurchaseOrderRepository extends Repository<PurchaseOrder> {
    * Check if PO number exists
    */
   async poNumberExists(poNumber: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('po')
-      .where('po.poNumber = :poNumber', { poNumber });
+    const query = this.createQueryBuilder('po').where('po.poNumber = :poNumber', { poNumber });
 
     if (excludeId) {
       query.andWhere('po.id != :excludeId', { excludeId });
@@ -92,4 +88,3 @@ export class PurchaseOrderRepository extends Repository<PurchaseOrder> {
     return count > 0;
   }
 }
-

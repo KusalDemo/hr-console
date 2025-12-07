@@ -24,7 +24,7 @@ export enum RatingCategory {
 
 /**
  * Vendor Rating Entity
- * 
+ *
  * Performance tracking and ratings for vendors with multiple rating categories.
  */
 @Entity('vendor_ratings')
@@ -114,4 +114,3 @@ export class VendorRating {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-

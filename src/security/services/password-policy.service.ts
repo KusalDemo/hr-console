@@ -6,7 +6,7 @@ import { PasswordService } from '../../auth/services/password.service';
 
 /**
  * Password Policy Service
- * 
+ *
  * Manages configurable password rules for security compliance.
  * Validates passwords against policies and enforces password history.
  */
@@ -39,9 +39,7 @@ export class PasswordPolicyService {
    * Get password policy for organization
    * Falls back to default policy if no organization-specific policy exists
    */
-  async getPolicyForOrganization(
-    organizationId: number | null,
-  ): Promise<PasswordPolicy> {
+  async getPolicyForOrganization(organizationId: number | null): Promise<PasswordPolicy> {
     if (organizationId) {
       const policy = await this.passwordPolicyRepository.findOne({
         where: { organizationId, isActive: true },
@@ -69,15 +67,11 @@ export class PasswordPolicyService {
 
     // Length checks
     if (password.length < policy.minLength) {
-      errors.push(
-        `Password must be at least ${policy.minLength} characters long`,
-      );
+      errors.push(`Password must be at least ${policy.minLength} characters long`);
     }
 
     if (policy.maxLength && password.length > policy.maxLength) {
-      errors.push(
-        `Password must be no more than ${policy.maxLength} characters long`,
-      );
+      errors.push(`Password must be no more than ${policy.maxLength} characters long`);
     }
 
     // Character requirements
@@ -95,14 +89,20 @@ export class PasswordPolicyService {
 
     if (policy.requireSpecialChars) {
       const specialChars = policy.specialCharsAllowed || '!@#$%^&*()_+-=[]{}|;:,.<>?';
-      const specialCharsRegex = new RegExp(`[${specialChars.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`);
+      const specialCharsRegex = new RegExp(
+        `[${specialChars.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}]`,
+      );
       if (!specialCharsRegex.test(password)) {
         errors.push('Password must contain at least one special character');
       }
     }
 
     // Disallow username/email
-    if (policy.disallowUsername && username && password.toLowerCase().includes(username.toLowerCase())) {
+    if (
+      policy.disallowUsername &&
+      username &&
+      password.toLowerCase().includes(username.toLowerCase())
+    ) {
       errors.push('Password cannot contain your username');
     }
 
@@ -125,7 +125,10 @@ export class PasswordPolicyService {
     }
 
     // Common passwords
-    if (policy.disallowCommonPasswords && this.isCommonPassword(password, policy.commonPasswordsList)) {
+    if (
+      policy.disallowCommonPasswords &&
+      this.isCommonPassword(password, policy.commonPasswordsList)
+    ) {
       errors.push('Password is too common. Please choose a more unique password');
     }
 
@@ -160,10 +163,7 @@ export class PasswordPolicyService {
   /**
    * Get days until password expires
    */
-  getDaysUntilExpiration(
-    policy: PasswordPolicy,
-    passwordChangedAt: Date | null,
-  ): number | null {
+  getDaysUntilExpiration(policy: PasswordPolicy, passwordChangedAt: Date | null): number | null {
     if (!policy.expirationDays || !passwordChangedAt) {
       return null;
     }
@@ -181,10 +181,7 @@ export class PasswordPolicyService {
   /**
    * Check if password expiration warning should be shown
    */
-  shouldShowExpirationWarning(
-    policy: PasswordPolicy,
-    passwordChangedAt: Date | null,
-  ): boolean {
+  shouldShowExpirationWarning(policy: PasswordPolicy, passwordChangedAt: Date | null): boolean {
     const daysUntil = this.getDaysUntilExpiration(policy, passwordChangedAt);
     if (daysUntil === null) {
       return false;
@@ -196,10 +193,7 @@ export class PasswordPolicyService {
   /**
    * Calculate lockout duration with escalation
    */
-  calculateLockoutDuration(
-    policy: PasswordPolicy,
-    failedAttempts: number,
-  ): number {
+  calculateLockoutDuration(policy: PasswordPolicy, failedAttempts: number): number {
     if (!policy.lockoutEscalationEnabled) {
       return policy.lockoutDurationMinutes;
     }
@@ -243,22 +237,14 @@ export class PasswordPolicyService {
     return false;
   }
 
-  private isCommonPassword(
-    password: string,
-    commonPasswordsList: string[] | null,
-  ): boolean {
+  private isCommonPassword(password: string, commonPasswordsList: string[] | null): boolean {
     if (!commonPasswordsList || commonPasswordsList.length === 0) {
       // Default common passwords
-      const defaultCommon = [
-        'password',
-        '12345678',
-        'password123',
-        'admin123',
-        'welcome123',
-      ];
+      const defaultCommon = ['password', '12345678', 'password123', 'admin123', 'welcome123'];
       return defaultCommon.includes(password.toLowerCase());
     }
 
     return commonPasswordsList.includes(password.toLowerCase());
   }
 }
+

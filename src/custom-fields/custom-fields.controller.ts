@@ -29,7 +29,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Custom Fields Controller
- * 
+ *
  * REST API endpoints for custom field management:
  * - Field definitions (CRUD)
  * - Field values (CRUD)
@@ -186,4 +186,3 @@ export class CustomFieldsController {
     return this.customFieldService.deleteFieldValue(id);
   }
 }
-

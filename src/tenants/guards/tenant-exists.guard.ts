@@ -11,15 +11,15 @@ import { TenantRepository } from '../../admin/repositories/tenant.repository';
 
 /**
  * Tenant Existence Guard
- * 
+ *
  * Validates that:
  * - Tenant exists in database
  * - Tenant is active
  * - Subscription is valid (if applicable)
- * 
+ *
  * This guard should be used on routes that require a valid tenant context.
  * Super admin requests are automatically allowed (they don't have a tenant).
- * 
+ *
  * Usage:
  * @UseGuards(JwtAuthGuard, TenantExistsGuard)
  * @Get('some-route')
@@ -108,11 +108,11 @@ export class TenantExistsGuard implements CanActivate {
 
   /**
    * Validate tenant subscription
-   * 
+   *
    * Note: Subscription validation is now handled by SubscriptionActiveGuard
    * This method is kept for backward compatibility but always returns true.
    * Use SubscriptionActiveGuard in addition to TenantExistsGuard for subscription validation.
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns True if subscription is valid, false otherwise
    */
@@ -123,4 +123,3 @@ export class TenantExistsGuard implements CanActivate {
     return true;
   }
 }
-

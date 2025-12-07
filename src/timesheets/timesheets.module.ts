@@ -14,7 +14,7 @@ import { WorkflowsModule } from '../workflows/workflows.module';
 
 /**
  * Timesheets Module
- * 
+ *
  * Provides period-based timesheets with approval workflow integration.
  */
 @Module({
@@ -38,5 +38,4 @@ import { WorkflowsModule } from '../workflows/workflows.module';
   ],
 })
 export class TimesheetsModule {}
-
 

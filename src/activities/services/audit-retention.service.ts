@@ -4,7 +4,7 @@ import { AuditLogRepository } from '../repositories';
 
 /**
  * Audit Retention Service
- * 
+ *
  * Manages audit log retention policies:
  * - Automatic archival of old logs
  * - Deletion of logs past retention period
@@ -26,14 +26,9 @@ export class AuditRetentionService {
 
     try {
       // Default retention: 90 days before archival
-      const retentionDays = parseInt(
-        process.env.AUDIT_LOG_RETENTION_DAYS || '90',
-        10,
-      );
+      const retentionDays = parseInt(process.env.AUDIT_LOG_RETENTION_DAYS || '90', 10);
 
-      const logsToArchive = await this.auditLogRepository.findEligibleForArchival(
-        retentionDays,
-      );
+      const logsToArchive = await this.auditLogRepository.findEligibleForArchival(retentionDays);
 
       if (logsToArchive.length === 0) {
         this.logger.log('No audit logs eligible for archival');
@@ -45,7 +40,7 @@ export class AuditRetentionService {
 
       this.logger.log(`Archived ${logsToArchive.length} audit logs`);
     } catch (error) {
-      this.logger.error(`Failed to archive audit logs: ${error.message}`, error);
+      this.logger.error(`Failed to archive audit logs: ${error instanceof Error ? error.message : String(error)}`, error);
     }
   }
 
@@ -70,17 +65,14 @@ export class AuditRetentionService {
 
       this.logger.log(`Deleted ${logsToDelete.length} archived audit logs`);
     } catch (error) {
-      this.logger.error(`Failed to delete audit logs: ${error.message}`, error);
+      this.logger.error(`Failed to delete audit logs: ${error instanceof Error ? error.message : String(error)}`, error);
     }
   }
 
   /**
    * Manually archive logs
    */
-  async archiveLogsManually(
-    logIds: number[],
-    archivedBy: number,
-  ): Promise<void> {
+  async archiveLogsManually(logIds: number[], archivedBy: number): Promise<void> {
     await this.auditLogRepository.archiveLogs(logIds, archivedBy);
     this.logger.log(`Manually archived ${logIds.length} audit logs`);
   }
@@ -88,15 +80,10 @@ export class AuditRetentionService {
   /**
    * Set retention period for specific logs
    */
-  async setRetentionPeriod(
-    logIds: number[],
-    retentionUntil: Date,
-  ): Promise<void> {
+  async setRetentionPeriod(logIds: number[], retentionUntil: Date): Promise<void> {
     // This would require a custom update query
     // For now, we'll log the requirement
-    this.logger.log(
-      `Setting retention period for ${logIds.length} logs until ${retentionUntil}`,
-    );
+    this.logger.log(`Setting retention period for ${logIds.length} logs until ${retentionUntil}`);
     // TODO: Implement retention period update
   }
 
@@ -109,10 +96,7 @@ export class AuditRetentionService {
     eligibleForArchival: number;
     eligibleForDeletion: number;
   }> {
-    const retentionDays = parseInt(
-      process.env.AUDIT_LOG_RETENTION_DAYS || '90',
-      10,
-    );
+    const retentionDays = parseInt(process.env.AUDIT_LOG_RETENTION_DAYS || '90', 10);
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
 

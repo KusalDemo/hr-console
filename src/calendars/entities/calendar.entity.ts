@@ -32,7 +32,7 @@ export enum CalendarVisibility {
 
 /**
  * Calendar Entity
- * 
+ *
  * Multi-calendar support for users, teams, organizations with visibility rules.
  */
 @Entity('calendars')
@@ -149,4 +149,3 @@ export class Calendar {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-

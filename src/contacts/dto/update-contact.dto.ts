@@ -1,17 +1,6 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsDateString,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsDateString, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  ContactCategory,
-  ContactStatus,
-  CompanySize,
-} from '../entities/contact.entity';
+import { ContactCategory, ContactStatus, CompanySize } from '../entities/contact.entity';
 
 /**
  * Update Contact DTO
@@ -133,5 +122,4 @@ export class UpdateContactDto {
   @IsObject()
   contactMetadata?: Record<string, any>;
 }
-
 

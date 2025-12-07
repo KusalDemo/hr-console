@@ -16,8 +16,7 @@ export class ExportJobRepository extends Repository<ExportJob> {
    * Find export job by ID
    */
   async findById(id: number, includeRelations = false): Promise<ExportJob | null> {
-    const query = this.createQueryBuilder('job')
-      .where('job.id = :id', { id });
+    const query = this.createQueryBuilder('job').where('job.id = :id', { id });
 
     if (includeRelations) {
       query
@@ -41,10 +40,7 @@ export class ExportJobRepository extends Repository<ExportJob> {
   /**
    * Find export jobs by entity type
    */
-  async findByEntityType(
-    entityType: string,
-    organizationId?: number,
-  ): Promise<ExportJob[]> {
+  async findByEntityType(entityType: string, organizationId?: number): Promise<ExportJob[]> {
     const query = this.createQueryBuilder('job')
       .where('job.entityType = :entityType', { entityType })
       .orderBy('job.createdAt', 'DESC');
@@ -143,8 +139,7 @@ export class ExportJobRepository extends Repository<ExportJob> {
    * Count export jobs by status
    */
   async countByStatus(status: ExportJobStatus, organizationId?: number): Promise<number> {
-    const query = this.createQueryBuilder('job')
-      .where('job.status = :status', { status });
+    const query = this.createQueryBuilder('job').where('job.status = :status', { status });
 
     if (organizationId !== undefined) {
       query.andWhere('job.organizationId = :organizationId', { organizationId });

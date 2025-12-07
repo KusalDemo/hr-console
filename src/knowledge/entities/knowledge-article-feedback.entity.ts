@@ -20,7 +20,7 @@ export enum FeedbackType {
 
 /**
  * Knowledge Article Feedback Entity
- * 
+ *
  * Tracks user feedback on articles (helpful votes, comments)
  */
 @Entity('knowledge_article_feedback')

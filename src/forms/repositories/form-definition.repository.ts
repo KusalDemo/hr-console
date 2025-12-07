@@ -4,7 +4,7 @@ import { FormDefinition, FormStatus, FormAccessType } from '../entities/form-def
 
 /**
  * Form Definition Repository
- * 
+ *
  * Custom repository methods for form definition queries.
  */
 @Injectable()
@@ -17,8 +17,7 @@ export class FormDefinitionRepository extends Repository<FormDefinition> {
    * Find form definition by ID
    */
   async findById(id: number, includeResponses = false): Promise<FormDefinition | null> {
-    const query = this.createQueryBuilder('form')
-      .where('form.id = :id', { id });
+    const query = this.createQueryBuilder('form').where('form.id = :id', { id });
 
     if (includeResponses) {
       query.leftJoinAndSelect('form.responses', 'responses');
@@ -48,10 +47,7 @@ export class FormDefinitionRepository extends Repository<FormDefinition> {
   /**
    * Find forms by status
    */
-  async findByStatus(
-    status: FormStatus,
-    organizationId?: number,
-  ): Promise<FormDefinition[]> {
+  async findByStatus(status: FormStatus, organizationId?: number): Promise<FormDefinition[]> {
     const query = this.createQueryBuilder('form')
       .where('form.status = :status', { status })
       .andWhere('form.isActive = :isActive', { isActive: true })
@@ -67,9 +63,7 @@ export class FormDefinitionRepository extends Repository<FormDefinition> {
   /**
    * Find published forms
    */
-  async findPublished(
-    organizationId?: number,
-  ): Promise<FormDefinition[]> {
+  async findPublished(organizationId?: number): Promise<FormDefinition[]> {
     const query = this.createQueryBuilder('form')
       .where('form.status = :status', { status: FormStatus.PUBLISHED })
       .andWhere('form.isActive = :isActive', { isActive: true })
@@ -85,9 +79,7 @@ export class FormDefinitionRepository extends Repository<FormDefinition> {
   /**
    * Find form templates
    */
-  async findTemplates(
-    organizationId?: number,
-  ): Promise<FormDefinition[]> {
+  async findTemplates(organizationId?: number): Promise<FormDefinition[]> {
     const query = this.createQueryBuilder('form')
       .where('form.isTemplate = :isTemplate', { isTemplate: true })
       .andWhere('form.isActive = :isActive', { isActive: true })
@@ -103,10 +95,7 @@ export class FormDefinitionRepository extends Repository<FormDefinition> {
   /**
    * Find forms by category
    */
-  async findByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<FormDefinition[]> {
+  async findByCategory(category: string, organizationId?: number): Promise<FormDefinition[]> {
     const query = this.createQueryBuilder('form')
       .where('form.category = :category', { category })
       .andWhere('form.isActive = :isActive', { isActive: true })
@@ -152,9 +141,7 @@ export class FormDefinitionRepository extends Repository<FormDefinition> {
   /**
    * Find form versions
    */
-  async findVersions(
-    parentFormId: number,
-  ): Promise<FormDefinition[]> {
+  async findVersions(parentFormId: number): Promise<FormDefinition[]> {
     return this.createQueryBuilder('form')
       .where('form.parentFormId = :parentFormId', { parentFormId })
       .orWhere('form.id = :parentFormId', { parentFormId })
@@ -173,8 +160,7 @@ export class FormDefinitionRepository extends Repository<FormDefinition> {
     organizationId?: number,
     includeInactive = false,
   ): Promise<FormDefinition[]> {
-    const query = this.createQueryBuilder('form')
-      .orderBy('form.formName', 'ASC');
+    const query = this.createQueryBuilder('form').orderBy('form.formName', 'ASC');
 
     if (searchTerm) {
       query.andWhere(

@@ -10,11 +10,7 @@ import {
   Max,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  LeadStatus,
-  LeadSource,
-  LeadPriority,
-} from '../entities/lead.entity';
+import { LeadStatus, LeadSource, LeadPriority } from '../entities/lead.entity';
 
 /**
  * Create Lead DTO
@@ -165,5 +161,3 @@ export class CreateLeadDto {
   @IsObject()
   leadMetadata?: Record<string, any>;
 }
-
-

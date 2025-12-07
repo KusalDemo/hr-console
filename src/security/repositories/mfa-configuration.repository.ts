@@ -14,10 +14,7 @@ export class MfaConfigurationRepository extends Repository<MfaConfiguration> {
   /**
    * Find active MFA configuration for user
    */
-  async findByUserAndType(
-    userId: number,
-    mfaType: MfaType,
-  ): Promise<MfaConfiguration | null> {
+  async findByUserAndType(userId: number, mfaType: MfaType): Promise<MfaConfiguration | null> {
     return this.findOne({
       where: { userId, mfaType, isActive: true },
     });
@@ -41,3 +38,4 @@ export class MfaConfigurationRepository extends Repository<MfaConfiguration> {
     });
   }
 }
+

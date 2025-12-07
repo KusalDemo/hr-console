@@ -11,35 +11,35 @@ import {
  * Accrual Method Enum
  */
 export enum AccrualMethod {
-  FRONT_LOADED = 'FRONT_LOADED',        // Entire year's leave granted at start
-  PRO_RATED = 'PRO_RATED',              // Accrued proportionally over time
-  CUSTOM_FORMULA = 'CUSTOM_FORMULA',    // Custom formula-based accrual
+  FRONT_LOADED = 'FRONT_LOADED', // Entire year's leave granted at start
+  PRO_RATED = 'PRO_RATED', // Accrued proportionally over time
+  CUSTOM_FORMULA = 'CUSTOM_FORMULA', // Custom formula-based accrual
 }
 
 /**
  * Accrual Frequency Enum
  */
 export enum AccrualFrequency {
-  DAILY = 'DAILY',                      // Accrued daily
-  WEEKLY = 'WEEKLY',                    // Accrued weekly
-  MONTHLY = 'MONTHLY',                  // Accrued monthly
-  YEARLY = 'YEARLY',                    // Accrued yearly
+  DAILY = 'DAILY', // Accrued daily
+  WEEKLY = 'WEEKLY', // Accrued weekly
+  MONTHLY = 'MONTHLY', // Accrued monthly
+  YEARLY = 'YEARLY', // Accrued yearly
 }
 
 /**
  * Accrual Calculation Basis Enum
  */
 export enum AccrualCalculationBasis {
-  CALENDAR_YEAR = 'CALENDAR_YEAR',      // Based on calendar year (Jan 1 - Dec 31)
+  CALENDAR_YEAR = 'CALENDAR_YEAR', // Based on calendar year (Jan 1 - Dec 31)
   HIRE_ANNIVERSARY = 'HIRE_ANNIVERSARY', // Based on hire date anniversary
-  FISCAL_YEAR = 'FISCAL_YEAR',          // Based on fiscal year
+  FISCAL_YEAR = 'FISCAL_YEAR', // Based on fiscal year
 }
 
 /**
  * Waiting Period Type Enum
  */
 export enum WaitingPeriodType {
-  AFTER_HIRE = 'AFTER_HIRE',            // After hire date
+  AFTER_HIRE = 'AFTER_HIRE', // After hire date
   AFTER_ACCOUNT_ACTIVATION = 'AFTER_ACCOUNT_ACTIVATION', // After account activation
 }
 
@@ -47,14 +47,14 @@ export enum WaitingPeriodType {
  * Proration Method Enum
  */
 export enum ProrationMethod {
-  BY_DAYS = 'BY_DAYS',                  // Prorate by calendar days
-  BY_MONTHS = 'BY_MONTHS',              // Prorate by months
-  BY_WORKING_DAYS = 'BY_WORKING_DAYS',  // Prorate by working days only
+  BY_DAYS = 'BY_DAYS', // Prorate by calendar days
+  BY_MONTHS = 'BY_MONTHS', // Prorate by months
+  BY_WORKING_DAYS = 'BY_WORKING_DAYS', // Prorate by working days only
 }
 
 /**
  * Leave Policy Entity - Represents a leave policy for a tenant
- * 
+ *
  * Leave policies support:
  * - Multiple policies per tenant (with effective date ranges)
  * - Policy templates for reuse
@@ -63,7 +63,7 @@ export enum ProrationMethod {
  * - Waiting periods and probationary periods
  * - Proration rules for mid-year hires/terminations
  * - Negative balance handling
- * 
+ *
  * This is the foundation entity for leave policy management.
  * Future enhancements will include:
  * - Leave type relationships (one-to-many)
@@ -214,7 +214,13 @@ export class LeavePolicy {
   /**
    * Percentage of unused leave that can be carried over
    */
-  @Column({ name: 'carry_over_percentage', type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({
+    name: 'carry_over_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+  })
   carryOverPercentage: number | null;
 
   /**
@@ -299,7 +305,7 @@ export class LeavePolicy {
 
     const now = new Date();
     const startDate = new Date(this.effectiveStartDate);
-    
+
     if (now < startDate) {
       return false;
     }
@@ -386,4 +392,3 @@ export class LeavePolicy {
     return Math.max(0, maxCarryOver);
   }
 }
-

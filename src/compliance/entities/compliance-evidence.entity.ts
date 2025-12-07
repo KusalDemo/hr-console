@@ -29,7 +29,7 @@ export enum EvidenceType {
 
 /**
  * Compliance Evidence Entity
- * 
+ *
  * Evidence collected for compliance requirements.
  */
 @Entity('compliance_evidence')
@@ -165,3 +165,4 @@ export class ComplianceEvidence {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: false })
   updatedAt: Date;
 }
+

@@ -57,10 +57,9 @@ export class CustomFieldValueRepository extends Repository<CustomFieldValue> {
       .andWhere('value.entityId = :entityId', { entityId });
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(value.organizationId = :organizationId OR value.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(value.organizationId = :organizationId OR value.organizationId IS NULL)', {
+        organizationId,
+      });
     }
 
     return query
@@ -81,10 +80,9 @@ export class CustomFieldValueRepository extends Repository<CustomFieldValue> {
       .where('value.fieldDefinitionId = :fieldDefinitionId', { fieldDefinitionId });
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(value.organizationId = :organizationId OR value.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(value.organizationId = :organizationId OR value.organizationId IS NULL)', {
+        organizationId,
+      });
     }
 
     return query.getMany();
@@ -108,10 +106,9 @@ export class CustomFieldValueRepository extends Repository<CustomFieldValue> {
       .andWhere('value.entityId IN (:...entityIds)', { entityIds });
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(value.organizationId = :organizationId OR value.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(value.organizationId = :organizationId OR value.organizationId IS NULL)', {
+        organizationId,
+      });
     }
 
     return query
@@ -136,10 +133,9 @@ export class CustomFieldValueRepository extends Repository<CustomFieldValue> {
       .where('value.fieldDefinitionId IN (:...fieldDefinitionIds)', { fieldDefinitionIds });
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(value.organizationId = :organizationId OR value.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(value.organizationId = :organizationId OR value.organizationId IS NULL)', {
+        organizationId,
+      });
     }
 
     return query.getMany();
@@ -218,5 +214,4 @@ export class CustomFieldValueRepository extends Repository<CustomFieldValue> {
     await this.query(query, params);
   }
 }
-
 

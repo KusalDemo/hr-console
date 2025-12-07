@@ -4,7 +4,7 @@ import { Equipment, EquipmentStatus } from '../entities/equipment.entity';
 
 /**
  * Equipment Repository
- * 
+ *
  * Custom repository methods for equipment queries.
  */
 @Injectable()
@@ -46,10 +46,7 @@ export class EquipmentRepository extends Repository<Equipment> {
   /**
    * Find equipment by status
    */
-  async findByStatus(
-    status: EquipmentStatus,
-    organizationId?: number,
-  ): Promise<Equipment[]> {
+  async findByStatus(status: EquipmentStatus, organizationId?: number): Promise<Equipment[]> {
     const query = this.createQueryBuilder('equipment')
       .where('equipment.equipmentStatus = :status', { status })
       .andWhere('equipment.isActive = :isActive', { isActive: true })
@@ -65,10 +62,7 @@ export class EquipmentRepository extends Repository<Equipment> {
   /**
    * Find equipment by category
    */
-  async findByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<Equipment[]> {
+  async findByCategory(category: string, organizationId?: number): Promise<Equipment[]> {
     const query = this.createQueryBuilder('equipment')
       .where('equipment.category = :category', { category })
       .andWhere('equipment.isActive = :isActive', { isActive: true })
@@ -84,10 +78,7 @@ export class EquipmentRepository extends Repository<Equipment> {
   /**
    * Find equipment needing maintenance
    */
-  async findNeedingMaintenance(
-    organizationId?: number,
-    beforeDate?: Date,
-  ): Promise<Equipment[]> {
+  async findNeedingMaintenance(organizationId?: number, beforeDate?: Date): Promise<Equipment[]> {
     const maintenanceDate = beforeDate || new Date();
     const query = this.createQueryBuilder('equipment')
       .where('equipment.isActive = :isActive', { isActive: true })
@@ -108,9 +99,7 @@ export class EquipmentRepository extends Repository<Equipment> {
   /**
    * Find equipment with expired warranty
    */
-  async findWithExpiredWarranty(
-    organizationId?: number,
-  ): Promise<Equipment[]> {
+  async findWithExpiredWarranty(organizationId?: number): Promise<Equipment[]> {
     const query = this.createQueryBuilder('equipment')
       .where('equipment.isActive = :isActive', { isActive: true })
       .andWhere('equipment.warrantyEndDate IS NOT NULL')

@@ -13,22 +13,22 @@ import { JwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 
 /**
  * Organization Access Guard
- * 
+ *
  * Validates that:
  * - Organization context is set
  * - Organization exists in database
  * - Organization is active
  * - User has access to the organization (tenant admin or member)
- * 
+ *
  * This guard should be used on routes that require a valid organization context.
  * Super admin requests are automatically allowed (they don't have an organization).
  * Tenant admin requests are automatically allowed (they can access all organizations).
- * 
+ *
  * Usage:
  * @UseGuards(JwtAuthGuard, TenantExistsGuard, OrganizationAccessGuard)
  * @Get('some-route')
  * someHandler() { ... }
- * 
+ *
  * Or with a specific organization ID from route parameter:
  * @UseGuards(JwtAuthGuard, TenantExistsGuard, OrganizationAccessGuard)
  * @Get('organizations/:id/employees')
@@ -61,7 +61,9 @@ export class OrganizationAccessGuard implements CanActivate {
     // If no context is set, organization context middleware may not have run
     // This could happen if the route is public or if middleware wasn't applied
     if (!orgContext) {
-      this.logger.warn('Organization context not set. Ensure OrganizationSelectionMiddleware is applied.');
+      this.logger.warn(
+        'Organization context not set. Ensure OrganizationSelectionMiddleware is applied.',
+      );
       throw new ForbiddenException('Organization context is required');
     }
 
@@ -70,7 +72,7 @@ export class OrganizationAccessGuard implements CanActivate {
     if (!orgContext.organizationId) {
       // Check if route parameter has organization ID
       const orgIdFromParam = this.getOrganizationIdFromRequest(request);
-      
+
       if (orgIdFromParam) {
         // Validate access to the organization from parameter
         return this.validateOrganizationAccess(orgIdFromParam, user, orgContext);
@@ -86,16 +88,12 @@ export class OrganizationAccessGuard implements CanActivate {
     }
 
     // Validate access to the organization in context
-    return this.validateOrganizationAccess(
-      orgContext.organizationId,
-      user,
-      orgContext,
-    );
+    return this.validateOrganizationAccess(orgContext.organizationId, user, orgContext);
   }
 
   /**
    * Validate user has access to a specific organization
-   * 
+   *
    * @param organizationId - Organization ID to validate
    * @param user - JWT payload
    * @param orgContext - Organization context
@@ -152,9 +150,7 @@ export class OrganizationAccessGuard implements CanActivate {
           userOrganizationIds: orgContext.organizationIds,
         },
       );
-      throw new ForbiddenException(
-        `You do not have access to organization: ${organization.name}`,
-      );
+      throw new ForbiddenException(`You do not have access to organization: ${organization.name}`);
     }
 
     return true;
@@ -162,7 +158,7 @@ export class OrganizationAccessGuard implements CanActivate {
 
   /**
    * Extract organization ID from request (route parameters or query)
-   * 
+   *
    * @param request - HTTP request
    * @returns Organization ID or null
    */
@@ -194,6 +190,4 @@ export class OrganizationAccessGuard implements CanActivate {
     return null;
   }
 }
-
-
 

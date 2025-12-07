@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  ForbiddenException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { OrganizationContextService } from './organization-context.service';
 import { TenantContextService } from '../../tenants/services/tenant-context.service';
@@ -12,13 +7,13 @@ import { JwtPayload } from '../../auth/interfaces/jwt-payload.interface';
 
 /**
  * Tenant Admin Organization Access Service
- * 
+ *
  * Provides specialized functionality for tenant administrators:
  * - Access validation for all organizations in tenant
  * - Organization creation permissions
  * - Organization management permissions
  * - Bulk operations across all organizations
- * 
+ *
  * Tenant admins have full access to all organizations within their tenant,
  * regardless of membership. This service provides helper methods and
  * validation specifically for tenant admin operations.
@@ -35,7 +30,7 @@ export class TenantAdminOrgService {
 
   /**
    * Check if user is a tenant admin
-   * 
+   *
    * @param user - JWT payload
    * @returns True if user is tenant admin
    */
@@ -46,7 +41,7 @@ export class TenantAdminOrgService {
   /**
    * Require tenant admin role
    * Throws ForbiddenException if user is not a tenant admin
-   * 
+   *
    * @param user - JWT payload
    * @throws ForbiddenException if user is not tenant admin
    */
@@ -59,7 +54,7 @@ export class TenantAdminOrgService {
   /**
    * Check if tenant admin can access organization
    * Tenant admins can access all organizations in their tenant
-   * 
+   *
    * @param organizationId - Organization ID to check
    * @param user - JWT payload
    * @returns True if tenant admin can access the organization
@@ -90,7 +85,7 @@ export class TenantAdminOrgService {
   /**
    * Validate tenant admin can access organization
    * Throws exception if access is denied
-   * 
+   *
    * @param organizationId - Organization ID to validate
    * @param user - JWT payload
    * @throws ForbiddenException if access is denied
@@ -109,7 +104,7 @@ export class TenantAdminOrgService {
   /**
    * Check if tenant admin can create organizations
    * Tenant admins can create organizations in their tenant
-   * 
+   *
    * @param user - JWT payload
    * @returns True if tenant admin can create organizations
    */
@@ -120,22 +115,20 @@ export class TenantAdminOrgService {
   /**
    * Validate tenant admin can create organizations
    * Throws exception if permission is denied
-   * 
+   *
    * @param user - JWT payload
    * @throws ForbiddenException if permission is denied
    */
   validateCanCreateOrganization(user: JwtPayload): void {
     if (!this.canCreateOrganization(user)) {
-      throw new ForbiddenException(
-        'Only tenant admins can create organizations',
-      );
+      throw new ForbiddenException('Only tenant admins can create organizations');
     }
   }
 
   /**
    * Check if tenant admin can manage organization
    * Tenant admins can manage all organizations in their tenant
-   * 
+   *
    * @param organizationId - Organization ID
    * @param user - JWT payload
    * @returns True if tenant admin can manage the organization
@@ -147,22 +140,19 @@ export class TenantAdminOrgService {
   /**
    * Validate tenant admin can manage organization
    * Throws exception if permission is denied
-   * 
+   *
    * @param organizationId - Organization ID
    * @param user - JWT payload
    * @throws ForbiddenException if permission is denied
    */
-  async validateCanManageOrganization(
-    organizationId: number,
-    user: JwtPayload,
-  ): Promise<void> {
+  async validateCanManageOrganization(organizationId: number, user: JwtPayload): Promise<void> {
     await this.validateOrganizationAccess(organizationId, user);
   }
 
   /**
    * Get all organizations accessible to tenant admin
    * Returns all organizations in the tenant
-   * 
+   *
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Array of organizations
    */
@@ -182,7 +172,7 @@ export class TenantAdminOrgService {
   /**
    * Get organization count for tenant admin
    * Returns total number of organizations in the tenant
-   * 
+   *
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Organization count
    */
@@ -194,7 +184,7 @@ export class TenantAdminOrgService {
   /**
    * Get active organization count for tenant admin
    * Returns number of active organizations in the tenant
-   * 
+   *
    * @returns Active organization count
    */
   async getActiveOrganizationCount(): Promise<number> {
@@ -204,7 +194,7 @@ export class TenantAdminOrgService {
   /**
    * Get inactive organization count for tenant admin
    * Returns number of inactive organizations in the tenant
-   * 
+   *
    * @returns Inactive organization count
    */
   async getInactiveOrganizationCount(): Promise<number> {
@@ -216,7 +206,7 @@ export class TenantAdminOrgService {
   /**
    * Check if tenant admin can delete organization
    * Tenant admins can delete organizations (soft delete) in their tenant
-   * 
+   *
    * @param organizationId - Organization ID
    * @param user - JWT payload
    * @returns True if tenant admin can delete the organization
@@ -228,15 +218,12 @@ export class TenantAdminOrgService {
   /**
    * Validate tenant admin can delete organization
    * Throws exception if permission is denied
-   * 
+   *
    * @param organizationId - Organization ID
    * @param user - JWT payload
    * @throws ForbiddenException if permission is denied
    */
-  async validateCanDeleteOrganization(
-    organizationId: number,
-    user: JwtPayload,
-  ): Promise<void> {
+  async validateCanDeleteOrganization(organizationId: number, user: JwtPayload): Promise<void> {
     await this.validateOrganizationAccess(organizationId, user);
 
     // Additional validation: cannot delete if organization has children
@@ -256,7 +243,7 @@ export class TenantAdminOrgService {
   /**
    * Check if tenant admin can update organization
    * Tenant admins can update all organizations in their tenant
-   * 
+   *
    * @param organizationId - Organization ID
    * @param user - JWT payload
    * @returns True if tenant admin can update the organization
@@ -268,22 +255,19 @@ export class TenantAdminOrgService {
   /**
    * Validate tenant admin can update organization
    * Throws exception if permission is denied
-   * 
+   *
    * @param organizationId - Organization ID
    * @param user - JWT payload
    * @throws ForbiddenException if permission is denied
    */
-  async validateCanUpdateOrganization(
-    organizationId: number,
-    user: JwtPayload,
-  ): Promise<void> {
+  async validateCanUpdateOrganization(organizationId: number, user: JwtPayload): Promise<void> {
     await this.validateOrganizationAccess(organizationId, user);
   }
 
   /**
    * Get organization statistics for tenant admin
    * Returns aggregated statistics for all organizations in the tenant
-   * 
+   *
    * @returns Organization statistics
    */
   async getOrganizationStatistics(): Promise<{
@@ -327,6 +311,4 @@ export class TenantAdminOrgService {
     return stats;
   }
 }
-
-
 

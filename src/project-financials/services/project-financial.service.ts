@@ -1,26 +1,10 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
-import {
-  ProjectBudgetRepository,
-  ProjectCostRepository,
-} from '../repositories';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ProjectBudgetRepository, ProjectCostRepository } from '../repositories';
 import { ProjectRepository } from '../../projects/repositories/project.repository';
 import { EmployeeRepository } from '../../employees/repositories/employee.repository';
 import { TaskRepository } from '../../tasks/repositories/task.repository';
-import {
-  ProjectBudget,
-  BudgetCategory,
-  BudgetStatus,
-} from '../entities/project-budget.entity';
-import {
-  ProjectCost,
-  CostType,
-  CostStatus,
-} from '../entities/project-cost.entity';
+import { ProjectBudget, BudgetCategory, BudgetStatus } from '../entities/project-budget.entity';
+import { ProjectCost, CostType, CostStatus } from '../entities/project-cost.entity';
 import {
   CreateProjectBudgetDto,
   UpdateProjectBudgetDto,
@@ -32,7 +16,7 @@ import {
 
 /**
  * Project Financial Service
- * 
+ *
  * Manages project financials with:
  * - Budget management (budget lines, categories, versions)
  * - Cost tracking (labor, materials, expenses)
@@ -78,9 +62,7 @@ export class ProjectFinancialService {
       ...createDto,
       version,
       status: createDto.status || BudgetStatus.DRAFT,
-      periodStartDate: createDto.periodStartDate
-        ? new Date(createDto.periodStartDate)
-        : null,
+      periodStartDate: createDto.periodStartDate ? new Date(createDto.periodStartDate) : null,
       periodEndDate: createDto.periodEndDate ? new Date(createDto.periodEndDate) : null,
       committedAmount: createDto.committedAmount || 0,
       createdBy,
@@ -280,6 +262,9 @@ export class ProjectFinancialService {
     this.logger.log(`Created cost entry: ${saved.id} for project ${createDto.projectId}`);
 
     const reloaded = await this.projectCostRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project cost not found after save`);
+    }
     return ProjectCostResponseDto.fromEntity(reloaded, true);
   }
 
@@ -352,6 +337,9 @@ export class ProjectFinancialService {
     this.logger.log(`Updated cost entry: ${id}`);
 
     const reloaded = await this.projectCostRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project cost not found after save`);
+    }
     return ProjectCostResponseDto.fromEntity(reloaded, true);
   }
 
@@ -499,4 +487,3 @@ export class ProjectFinancialService {
     await this.projectBudgetRepository.save(budget);
   }
 }
-

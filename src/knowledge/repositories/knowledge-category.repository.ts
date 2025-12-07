@@ -100,7 +100,11 @@ export class KnowledgeCategoryRepository extends Repository<KnowledgeCategory> {
   /**
    * Check if slug exists
    */
-  async slugExists(slug: string, organizationId: number | null, excludeId?: number): Promise<boolean> {
+  async slugExists(
+    slug: string,
+    organizationId: number | null,
+    excludeId?: number,
+  ): Promise<boolean> {
     const query = this.createQueryBuilder('category')
       .where('category.slug = :slug', { slug })
       .andWhere('category.organizationId = :organizationId', { organizationId });

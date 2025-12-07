@@ -21,7 +21,7 @@ export enum CommentType {
 
 /**
  * Ticket Comment Entity
- * 
+ *
  * Comments on support tickets
  */
 @Entity('ticket_comments')

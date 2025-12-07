@@ -31,7 +31,7 @@ import { BookingStatus } from './entities/resource-booking.entity';
 
 /**
  * Resources Controller
- * 
+ *
  * REST API endpoints for resource and booking management:
  * - Resources (CRUD, availability checking, search)
  * - Resource bookings (CRUD, approval, cancellation)
@@ -55,10 +55,7 @@ export class ResourcesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR')
-  async createResource(
-    @Body() createDto: CreateResourceDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createResource(@Body() createDto: CreateResourceDto, @CurrentUser() user: JwtPayload) {
     return this.resourceService.createResource(createDto, user.userId);
   }
 
@@ -95,10 +92,7 @@ export class ResourcesController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles('ADMIN', 'HR')
-  async deleteResource(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async deleteResource(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     await this.resourceService.deleteResource(id, user.userId);
   }
 
@@ -252,8 +246,8 @@ export class ResourcesController {
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
   async cancelBooking(
     @Param('id', ParseIntPipe) id: number,
-    @Body('cancellationReason') cancellationReason?: string,
     @CurrentUser() user: JwtPayload,
+    @Body('cancellationReason') cancellationReason?: string,
   ) {
     return this.resourceBookingService.cancelBooking(id, cancellationReason, user.userId);
   }
@@ -266,8 +260,8 @@ export class ResourcesController {
   @Roles('ADMIN', 'HR')
   async approveBooking(
     @Param('id', ParseIntPipe) id: number,
-    @Body('approvalReason') approvalReason?: string,
     @CurrentUser() user: JwtPayload,
+    @Body('approvalReason') approvalReason?: string,
   ) {
     return this.resourceBookingService.approveBooking(id, user.userId, approvalReason);
   }

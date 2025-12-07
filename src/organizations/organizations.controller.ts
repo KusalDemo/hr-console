@@ -32,7 +32,7 @@ import { OrganizationType, OrganizationStatus } from './entities/organization.en
 
 /**
  * Organization Management Controller
- * 
+ *
  * Handles organization management operations within a tenant:
  * - POST /organizations - Create organization
  * - GET /organizations - List organizations
@@ -40,7 +40,7 @@ import { OrganizationType, OrganizationStatus } from './entities/organization.en
  * - PATCH /organizations/:id - Update organization
  * - DELETE /organizations/:id - Delete organization
  * - POST /organizations/:id/set-default - Set default organization
- * 
+ *
  * All endpoints require JWT authentication and operate within the tenant context.
  */
 @Controller('organizations')
@@ -51,10 +51,10 @@ export class OrganizationsController {
 
   /**
    * Create a new organization
-   * 
+   *
    * Creates a new organization within the current tenant context.
    * The organization key must be unique within the tenant.
-   * 
+   *
    * @param createDto - Organization creation data
    * @param user - Current user (from JWT token)
    * @returns Created organization information
@@ -70,10 +70,10 @@ export class OrganizationsController {
 
   /**
    * List all organizations
-   * 
+   *
    * Returns a paginated list of organizations for the current tenant.
    * Supports filtering by parent organization, type, status, and search term.
-   * 
+   *
    * @param page - Page number (default: 1)
    * @param limit - Items per page (default: 10, max: 100)
    * @param includeInactive - Include inactive organizations (default: false)
@@ -140,10 +140,10 @@ export class OrganizationsController {
 
   /**
    * Get organization by ID
-   * 
+   *
    * Returns detailed information about a specific organization,
    * including parent organization details and child/member counts.
-   * 
+   *
    * @param id - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Organization details
@@ -159,10 +159,10 @@ export class OrganizationsController {
 
   /**
    * Update organization
-   * 
+   *
    * Updates organization information. Only provided fields will be updated.
    * Validates parent organization relationships and prevents circular references.
-   * 
+   *
    * @param id - Organization ID
    * @param updateDto - Organization update data
    * @param user - Current user (from JWT token)
@@ -180,10 +180,10 @@ export class OrganizationsController {
 
   /**
    * Delete organization (soft delete)
-   * 
+   *
    * Soft deletes an organization by setting its status to ARCHIVED.
    * Cannot delete organizations that have child organizations.
-   * 
+   *
    * @param id - Organization ID
    * @param user - Current user (from JWT token)
    * @returns Deleted organization
@@ -199,10 +199,10 @@ export class OrganizationsController {
 
   /**
    * Set default organization
-   * 
+   *
    * Sets the specified organization as the default organization for the tenant.
    * Automatically unsets any other default organization.
-   * 
+   *
    * @param id - Organization ID
    * @param user - Current user (from JWT token)
    * @returns Updated organization
@@ -216,6 +216,4 @@ export class OrganizationsController {
     return this.organizationsService.setDefault(id, user.userId);
   }
 }
-
-
 

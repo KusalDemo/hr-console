@@ -23,7 +23,7 @@ export enum PhaseStatus {
 
 /**
  * Project Phase Entity
- * 
+ *
  * Represents phases within a project.
  * Supports sequential or parallel phases.
  */
@@ -189,5 +189,4 @@ export class ProjectPhase {
     return Math.min(100, (this.actualHours / this.budgetedHours) * 100);
   }
 }
-
 

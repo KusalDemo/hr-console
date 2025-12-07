@@ -5,18 +5,9 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import {
-  ProjectRepository,
-  ProjectPhaseRepository,
-  ProjectTeamRepository,
-} from '../repositories';
+import { ProjectRepository, ProjectPhaseRepository, ProjectTeamRepository } from '../repositories';
 import { EmployeeRepository } from '../../employees/repositories/employee.repository';
-import {
-  Project,
-  ProjectStatus,
-  ProjectPriority,
-  ProjectHealth,
-} from '../entities/project.entity';
+import { Project, ProjectStatus, ProjectPriority, ProjectHealth } from '../entities/project.entity';
 import { ProjectPhase, PhaseStatus } from '../entities/project-phase.entity';
 import { ProjectTeam, ProjectTeamRole } from '../entities/project-team.entity';
 import {
@@ -33,7 +24,7 @@ import {
 
 /**
  * Project Service
- * 
+ *
  * Manages projects with:
  * - Templates and cloning
  * - Archiving
@@ -78,9 +69,7 @@ export class ProjectService {
       }
 
       if (parentProject.organizationId !== createDto.organizationId) {
-        throw new BadRequestException(
-          'Parent project must belong to the same organization',
-        );
+        throw new BadRequestException('Parent project must belong to the same organization');
       }
     }
 
@@ -139,6 +128,9 @@ export class ProjectService {
     this.logger.log(`Created project: ${saved.id} (${saved.projectKey})`);
 
     const reloaded = await this.projectRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project with ID ${saved.id} not found after save`);
+    }
     return ProjectResponseDto.fromEntity(reloaded, true);
   }
 
@@ -161,7 +153,10 @@ export class ProjectService {
     }
 
     // Validate parent project if changed
-    if (updateDto.parentProjectId !== undefined && updateDto.parentProjectId !== project.parentProjectId) {
+    if (
+      updateDto.parentProjectId !== undefined &&
+      updateDto.parentProjectId !== project.parentProjectId
+    ) {
       if (updateDto.parentProjectId === project.id) {
         throw new BadRequestException('Project cannot be its own parent');
       }
@@ -176,16 +171,11 @@ export class ProjectService {
         }
 
         if (parentProject.organizationId !== project.organizationId) {
-          throw new BadRequestException(
-            'Parent project must belong to the same organization',
-          );
+          throw new BadRequestException('Parent project must belong to the same organization');
         }
 
         // Check for circular references
-        const isCircular = await this.checkCircularReference(
-          updateDto.parentProjectId,
-          project.id,
-        );
+        const isCircular = await this.checkCircularReference(updateDto.parentProjectId, project.id);
 
         if (isCircular) {
           throw new BadRequestException('Circular reference detected in project hierarchy');
@@ -194,7 +184,10 @@ export class ProjectService {
     }
 
     // Validate project manager if changed
-    if (updateDto.projectManagerId !== undefined && updateDto.projectManagerId !== project.projectManagerId) {
+    if (
+      updateDto.projectManagerId !== undefined &&
+      updateDto.projectManagerId !== project.projectManagerId
+    ) {
       if (updateDto.projectManagerId !== null) {
         const manager = await this.employeeRepository.findById(updateDto.projectManagerId);
 
@@ -225,6 +218,9 @@ export class ProjectService {
     this.logger.log(`Updated project: ${id}`);
 
     const reloaded = await this.projectRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project with ID ${saved.id} not found after save`);
+    }
     return ProjectResponseDto.fromEntity(reloaded, true);
   }
 
@@ -346,9 +342,7 @@ export class ProjectService {
     }
 
     // Generate new project key if not provided
-    const projectKey =
-      createDto.projectKey ||
-      `${template.projectKey}-COPY-${Date.now()}`;
+    const projectKey = createDto.projectKey || `${template.projectKey}-COPY-${Date.now()}`;
 
     // Check if project key already exists
     const exists = await this.projectRepository.projectKeyExists(projectKey);
@@ -390,12 +384,12 @@ export class ProjectService {
         saved.id,
         {
           name: templatePhase.name,
-          description: templatePhase.description,
+          description: templatePhase.description ?? undefined,
           sequence: templatePhase.sequence,
           status: PhaseStatus.NOT_STARTED,
           budgetedAmount: templatePhase.budgetedAmount,
           budgetedHours: templatePhase.budgetedHours,
-          phaseMetadata: templatePhase.phaseMetadata,
+          phaseMetadata: templatePhase.phaseMetadata ?? undefined,
         },
         createdBy,
       );
@@ -411,6 +405,9 @@ export class ProjectService {
     this.logger.log(`Created project from template: ${saved.id} (${saved.projectKey})`);
 
     const reloaded = await this.projectRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project with ID ${saved.id} not found after save`);
+    }
     return ProjectResponseDto.fromEntity(reloaded, true);
   }
 
@@ -429,9 +426,7 @@ export class ProjectService {
     }
 
     // Generate new project key if not provided
-    const projectKey =
-      createDto.projectKey ||
-      `${sourceProject.projectKey}-CLONE-${Date.now()}`;
+    const projectKey = createDto.projectKey || `${sourceProject.projectKey}-CLONE-${Date.now()}`;
 
     // Check if project key already exists
     const exists = await this.projectRepository.projectKeyExists(projectKey);
@@ -472,12 +467,12 @@ export class ProjectService {
         saved.id,
         {
           name: sourcePhase.name,
-          description: sourcePhase.description,
+          description: sourcePhase.description ?? undefined,
           sequence: sourcePhase.sequence,
           status: PhaseStatus.NOT_STARTED,
           budgetedAmount: sourcePhase.budgetedAmount,
           budgetedHours: sourcePhase.budgetedHours,
-          phaseMetadata: sourcePhase.phaseMetadata,
+          phaseMetadata: sourcePhase.phaseMetadata ?? undefined,
         },
         createdBy,
       );
@@ -493,6 +488,9 @@ export class ProjectService {
     this.logger.log(`Cloned project: ${saved.id} (${saved.projectKey}) from ${id}`);
 
     const reloaded = await this.projectRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project with ID ${saved.id} not found after save`);
+    }
     return ProjectResponseDto.fromEntity(reloaded, true);
   }
 
@@ -512,7 +510,7 @@ export class ProjectService {
 
     project.isArchived = true;
     project.archivedAt = new Date();
-    project.archivedBy = archivedBy;
+    project.archivedBy = archivedBy ?? null;
     project.status = ProjectStatus.ARCHIVED;
 
     const saved = await this.projectRepository.save(project);
@@ -520,6 +518,9 @@ export class ProjectService {
     this.logger.log(`Archived project: ${id}`);
 
     const reloaded = await this.projectRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project with ID ${saved.id} not found after save`);
+    }
     return ProjectResponseDto.fromEntity(reloaded, true);
   }
 
@@ -547,6 +548,9 @@ export class ProjectService {
     this.logger.log(`Unarchived project: ${id}`);
 
     const reloaded = await this.projectRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project with ID ${saved.id} not found after save`);
+    }
     return ProjectResponseDto.fromEntity(reloaded, true);
   }
 
@@ -574,7 +578,8 @@ export class ProjectService {
     }
 
     // Get next sequence if not provided
-    const sequence = createDto.sequence || (await this.projectPhaseRepository.getNextSequence(projectId));
+    const sequence =
+      createDto.sequence || (await this.projectPhaseRepository.getNextSequence(projectId));
 
     const phase = this.projectPhaseRepository.create({
       projectId,
@@ -699,6 +704,9 @@ export class ProjectService {
     this.logger.log(`Added team member: ${saved.id} to project ${projectId}`);
 
     const reloaded = await this.projectTeamRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project team not found after save`);
+    }
     return ProjectTeamResponseDto.fromEntity(reloaded, true);
   }
 
@@ -728,6 +736,9 @@ export class ProjectService {
     this.logger.log(`Updated team member: ${id}`);
 
     const reloaded = await this.projectTeamRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Project team not found after save`);
+    }
     return ProjectTeamResponseDto.fromEntity(reloaded, true);
   }
 
@@ -804,19 +815,14 @@ export class ProjectService {
       project.health = health;
       await this.projectRepository.save(project);
 
-      this.logger.log(
-        `Updated project health: ${projectId} -> ${health} (${issues.join(', ')})`,
-      );
+      this.logger.log(`Updated project health: ${projectId} -> ${health} (${issues.join(', ')})`);
     }
   }
 
   /**
    * Check for circular reference in project hierarchy
    */
-  private async checkCircularReference(
-    parentId: number,
-    childId: number,
-  ): Promise<boolean> {
+  private async checkCircularReference(parentId: number, childId: number): Promise<boolean> {
     let currentId: number | null = parentId;
     const visited = new Set<number>();
 
@@ -843,5 +849,3 @@ export class ProjectService {
     return false;
   }
 }
-
-

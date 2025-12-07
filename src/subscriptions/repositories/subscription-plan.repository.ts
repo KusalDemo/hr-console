@@ -281,10 +281,7 @@ export class SubscriptionPlanRepository extends Repository<SubscriptionPlan> {
   /**
    * Search plans by name or key
    */
-  async search(
-    searchTerm: string,
-    includeInactive = false,
-  ): Promise<SubscriptionPlan[]> {
+  async search(searchTerm: string, includeInactive = false): Promise<SubscriptionPlan[]> {
     const queryBuilder = this.createQueryBuilder('plan')
       .where(
         '(LOWER(plan.planName) LIKE LOWER(:searchTerm) OR LOWER(plan.planKey) LIKE LOWER(:searchTerm))',
@@ -303,10 +300,7 @@ export class SubscriptionPlanRepository extends Repository<SubscriptionPlan> {
   /**
    * Find plans that support a specific feature
    */
-  async findByFeature(
-    featureKey: string,
-    includeInactive = false,
-  ): Promise<SubscriptionPlan[]> {
+  async findByFeature(featureKey: string, includeInactive = false): Promise<SubscriptionPlan[]> {
     const queryBuilder = this.createQueryBuilder('plan')
       .where(`plan.features->>'${featureKey}' = 'true'`)
       .orderBy('plan.sortOrder', 'ASC')
@@ -322,10 +316,7 @@ export class SubscriptionPlanRepository extends Repository<SubscriptionPlan> {
   /**
    * Find plans with minimum user limit
    */
-  async findByMinUsers(
-    minUsers: number,
-    includeInactive = false,
-  ): Promise<SubscriptionPlan[]> {
+  async findByMinUsers(minUsers: number, includeInactive = false): Promise<SubscriptionPlan[]> {
     const queryBuilder = this.createQueryBuilder('plan')
       .where('(plan.maxUsers IS NULL OR plan.maxUsers >= :minUsers)', { minUsers })
       .orderBy('plan.sortOrder', 'ASC')
@@ -346,10 +337,9 @@ export class SubscriptionPlanRepository extends Repository<SubscriptionPlan> {
     includeInactive = false,
   ): Promise<SubscriptionPlan[]> {
     const queryBuilder = this.createQueryBuilder('plan')
-      .where(
-        '(plan.maxOrganizations IS NULL OR plan.maxOrganizations >= :minOrganizations)',
-        { minOrganizations },
-      )
+      .where('(plan.maxOrganizations IS NULL OR plan.maxOrganizations >= :minOrganizations)', {
+        minOrganizations,
+      })
       .orderBy('plan.sortOrder', 'ASC')
       .addOrderBy('plan.planName', 'ASC');
 
@@ -360,5 +350,3 @@ export class SubscriptionPlanRepository extends Repository<SubscriptionPlan> {
     return queryBuilder.getMany();
   }
 }
-
-

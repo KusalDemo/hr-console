@@ -3,10 +3,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobsController } from './jobs.controller';
 import { JobService, JobProcessorService, JobSchedulerService } from './services';
-import {
-  JobQueueRepository,
-  JobExecutionRepository,
-} from './repositories';
+import { JobQueueRepository, JobExecutionRepository } from './repositories';
 import { JobQueue, JobExecution } from './entities';
 import {
   EmailJobProcessor,
@@ -21,7 +18,7 @@ import {
 
 /**
  * Jobs Module
- * 
+ *
  * Provides background job processing with:
  * - Job queue management
  * - Job scheduling (one-time and recurring)
@@ -54,11 +51,7 @@ import {
     CalculationJobProcessor,
     CleanupJobProcessor,
   ],
-  exports: [
-    JobService,
-    JobProcessorService,
-    JobQueueRepository,
-    JobExecutionRepository,
-  ],
+  exports: [JobService, JobProcessorService, JobQueueRepository, JobExecutionRepository],
 })
 export class JobsModule {}
+

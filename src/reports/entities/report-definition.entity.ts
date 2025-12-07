@@ -45,7 +45,7 @@ export enum ReportStatus {
 
 /**
  * Report Definition Entity
- * 
+ *
  * Custom report generation with:
  * - Query builders
  * - Field selections

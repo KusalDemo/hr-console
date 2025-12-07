@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Performance Reviews Migration
- * 
+ *
  * This migration creates:
  * - performance_review_cycles table (review periods, templates)
  * - performance_reviews table (individual reviews with forms, ratings, feedback)
  * - performance_review_forms table (review forms with questions and responses)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class PerformanceReviews0000000000026 implements MigrationInterface {

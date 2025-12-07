@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Background Job Processing Migration
- * 
+ *
  * This migration creates:
  * - job_queues table for job definitions and status tracking
  * - job_executions table for job execution history
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class JobQueue0000000000050 implements MigrationInterface {
@@ -191,3 +191,4 @@ export class JobQueue0000000000050 implements MigrationInterface {
     `);
   }
 }
+

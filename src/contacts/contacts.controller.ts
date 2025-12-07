@@ -31,7 +31,7 @@ import { ContactCategory, ContactStatus } from './entities/contact.entity';
 
 /**
  * Contacts Controller
- * 
+ *
  * REST API endpoints for contact management:
  * - Contacts (CRUD, search, segmentation)
  * - Contact relationships
@@ -246,5 +246,4 @@ export class ContactsController {
     return this.contactService.getContactInteractions(contactId, limit);
   }
 }
-
 

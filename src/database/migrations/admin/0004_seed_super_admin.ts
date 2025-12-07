@@ -4,7 +4,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Seed default super admin user
  * Default credentials: superadmin@system.com / SuperAdmin123!
  * ⚠️  CHANGE THESE CREDENTIALS IN PRODUCTION!
- * 
+ *
  * BCrypt hash for "SuperAdmin123!" (12 rounds)
  * This hash should be regenerated for production use
  */
@@ -16,7 +16,8 @@ export class SeedSuperAdmin0000000000004 implements MigrationInterface {
     // Generated using: bcrypt.hash('SuperAdmin123!', 12)
     const passwordHash = '$2b$12$nYYdeUnllAlNgx8rsB4NMeBoX7slxlXYjKxop7Nnl4suk6rBKAJnO';
 
-    await queryRunner.query(`
+    await queryRunner.query(
+      `
       INSERT INTO admin.super_admin (
         email,
         password_hash,
@@ -40,7 +41,9 @@ export class SeedSuperAdmin0000000000004 implements MigrationInterface {
         true,
         false
       ) ON CONFLICT (email) DO NOTHING
-    `, [passwordHash]);
+    `,
+      [passwordHash],
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -51,4 +54,3 @@ export class SeedSuperAdmin0000000000004 implements MigrationInterface {
     `);
   }
 }
-

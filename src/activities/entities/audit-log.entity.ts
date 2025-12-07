@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  Index,
-} from 'typeorm';
-import { Organization } from '../../organizations/entities/organization.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
 
 /**
  * Audit Level Enum
@@ -41,7 +34,7 @@ export enum ActorType {
 
 /**
  * Audit Log Entity
- * 
+ *
  * Comprehensive audit logging with:
  * - Before/after values for change tracking
  * - Field-level changes
@@ -49,7 +42,7 @@ export enum ActorType {
  * - Audit level and compliance tags
  * - Retention policies and archival
  * - Configurable audit levels per entity type
- * 
+ *
  * This entity tracks all system activities, entity lifecycle events,
  * and user actions for compliance and audit purposes.
  */

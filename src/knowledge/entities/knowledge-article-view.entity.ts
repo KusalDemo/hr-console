@@ -11,7 +11,7 @@ import { KnowledgeArticle } from './knowledge-article.entity';
 
 /**
  * Knowledge Article View Entity
- * 
+ *
  * Tracks article views for analytics
  */
 @Entity('knowledge_article_views')

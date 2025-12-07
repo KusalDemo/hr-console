@@ -25,7 +25,7 @@ import { Organization } from '../organizations/entities/organization.entity';
 
 /**
  * Compliance Module
- * 
+ *
  * Provides compliance tracking and reporting:
  * - Compliance frameworks (GDPR, HIPAA, SOC2, ISO27001, etc.)
  * - Compliance checklists and requirements tracking
@@ -72,3 +72,4 @@ import { Organization } from '../organizations/entities/organization.entity';
   ],
 })
 export class ComplianceModule {}
+

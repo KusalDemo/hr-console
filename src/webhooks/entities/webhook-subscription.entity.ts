@@ -20,27 +20,27 @@ export enum WebhookEventType {
   EMPLOYEE_CREATED = 'employee.created',
   EMPLOYEE_UPDATED = 'employee.updated',
   EMPLOYEE_DELETED = 'employee.deleted',
-  
+
   // Project events
   PROJECT_CREATED = 'project.created',
   PROJECT_UPDATED = 'project.updated',
   PROJECT_DELETED = 'project.deleted',
-  
+
   // Timesheet events
   TIMESHEET_SUBMITTED = 'timesheet.submitted',
   TIMESHEET_APPROVED = 'timesheet.approved',
   TIMESHEET_REJECTED = 'timesheet.rejected',
-  
+
   // Leave events
   LEAVE_REQUEST_CREATED = 'leave_request.created',
   LEAVE_REQUEST_APPROVED = 'leave_request.approved',
   LEAVE_REQUEST_REJECTED = 'leave_request.rejected',
-  
+
   // Task events
   TASK_CREATED = 'task.created',
   TASK_UPDATED = 'task.updated',
   TASK_COMPLETED = 'task.completed',
-  
+
   // Custom events
   CUSTOM = 'custom',
 }
@@ -57,7 +57,7 @@ export enum WebhookSubscriptionStatus {
 
 /**
  * Webhook Subscription Entity
- * 
+ *
  * Represents a webhook subscription configuration for a tenant/organization.
  * Supports:
  * - Event type filtering

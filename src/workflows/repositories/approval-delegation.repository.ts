@@ -4,7 +4,7 @@ import { ApprovalDelegation } from '../entities/approval-delegation.entity';
 
 /**
  * Approval Delegation Repository
- * 
+ *
  * Custom repository methods for approval delegation queries.
  */
 @Injectable()
@@ -38,24 +38,21 @@ export class ApprovalDelegationRepository extends Repository<ApprovalDelegation>
       .where('delegation.delegatorId = :delegatorId', { delegatorId })
       .andWhere('delegation.isActive = :isActive', { isActive: true })
       .andWhere('delegation.effectiveStartDate <= :now', { now })
-      .andWhere(
-        '(delegation.effectiveEndDate IS NULL OR delegation.effectiveEndDate >= :now)',
-        { now },
-      )
+      .andWhere('(delegation.effectiveEndDate IS NULL OR delegation.effectiveEndDate >= :now)', {
+        now,
+      })
       .orderBy('delegation.effectiveStartDate', 'DESC');
 
     if (workflowKey) {
-      query.andWhere(
-        '(delegation.workflowKey IS NULL OR delegation.workflowKey = :workflowKey)',
-        { workflowKey },
-      );
+      query.andWhere('(delegation.workflowKey IS NULL OR delegation.workflowKey = :workflowKey)', {
+        workflowKey,
+      });
     }
 
     if (entityType) {
-      query.andWhere(
-        '(delegation.entityType IS NULL OR delegation.entityType = :entityType)',
-        { entityType },
-      );
+      query.andWhere('(delegation.entityType IS NULL OR delegation.entityType = :entityType)', {
+        entityType,
+      });
     }
 
     return query.getMany();
@@ -71,10 +68,9 @@ export class ApprovalDelegationRepository extends Repository<ApprovalDelegation>
       .where('delegation.delegateId = :delegateId', { delegateId })
       .andWhere('delegation.isActive = :isActive', { isActive: true })
       .andWhere('delegation.effectiveStartDate <= :now', { now })
-      .andWhere(
-        '(delegation.effectiveEndDate IS NULL OR delegation.effectiveEndDate >= :now)',
-        { now },
-      )
+      .andWhere('(delegation.effectiveEndDate IS NULL OR delegation.effectiveEndDate >= :now)', {
+        now,
+      })
       .orderBy('delegation.effectiveStartDate', 'DESC')
       .getMany();
   }
@@ -90,10 +86,9 @@ export class ApprovalDelegationRepository extends Repository<ApprovalDelegation>
       .andWhere('delegation.isAutomatic = :isAutomatic', { isAutomatic: true })
       .andWhere('delegation.isActive = :isActive', { isActive: true })
       .andWhere('delegation.effectiveStartDate <= :now', { now })
-      .andWhere(
-        '(delegation.effectiveEndDate IS NULL OR delegation.effectiveEndDate >= :now)',
-        { now },
-      )
+      .andWhere('(delegation.effectiveEndDate IS NULL OR delegation.effectiveEndDate >= :now)', {
+        now,
+      })
       .getMany();
   }
 }

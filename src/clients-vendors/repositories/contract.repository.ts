@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import {
-  Contract,
-  ContractType,
-  ContractStatus,
-  RenewalStatus,
-} from '../entities/contract.entity';
+import { Contract, ContractType, ContractStatus, RenewalStatus } from '../entities/contract.entity';
 
 /**
  * Contract Repository
- * 
+ *
  * Custom repository methods for contract queries.
  */
 @Injectable()
@@ -49,10 +44,7 @@ export class ContractRepository extends Repository<Contract> {
   /**
    * Find contracts by client
    */
-  async findByClient(
-    clientId: number,
-    organizationId?: number,
-  ): Promise<Contract[]> {
+  async findByClient(clientId: number, organizationId?: number): Promise<Contract[]> {
     const query = this.createQueryBuilder('contract')
       .where('contract.clientId = :clientId', { clientId })
       .orderBy('contract.startDate', 'DESC');
@@ -67,10 +59,7 @@ export class ContractRepository extends Repository<Contract> {
   /**
    * Find contracts by vendor
    */
-  async findByVendor(
-    vendorId: number,
-    organizationId?: number,
-  ): Promise<Contract[]> {
+  async findByVendor(vendorId: number, organizationId?: number): Promise<Contract[]> {
     const query = this.createQueryBuilder('contract')
       .where('contract.vendorId = :vendorId', { vendorId })
       .orderBy('contract.startDate', 'DESC');
@@ -85,10 +74,7 @@ export class ContractRepository extends Repository<Contract> {
   /**
    * Find contracts by status
    */
-  async findByStatus(
-    status: ContractStatus,
-    organizationId?: number,
-  ): Promise<Contract[]> {
+  async findByStatus(status: ContractStatus, organizationId?: number): Promise<Contract[]> {
     const query = this.createQueryBuilder('contract')
       .where('contract.contractStatus = :status', { status })
       .orderBy('contract.startDate', 'DESC');
@@ -103,10 +89,7 @@ export class ContractRepository extends Repository<Contract> {
   /**
    * Find contracts needing renewal
    */
-  async findNeedingRenewal(
-    daysAhead: number,
-    organizationId?: number,
-  ): Promise<Contract[]> {
+  async findNeedingRenewal(daysAhead: number, organizationId?: number): Promise<Contract[]> {
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() + daysAhead);
 
@@ -127,10 +110,7 @@ export class ContractRepository extends Repository<Contract> {
   /**
    * Find expiring contracts
    */
-  async findExpiring(
-    daysAhead: number,
-    organizationId?: number,
-  ): Promise<Contract[]> {
+  async findExpiring(daysAhead: number, organizationId?: number): Promise<Contract[]> {
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() + daysAhead);
 
@@ -151,8 +131,10 @@ export class ContractRepository extends Repository<Contract> {
    * Check if contract number exists
    */
   async contractNumberExists(contractNumber: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('contract')
-      .where('contract.contractNumber = :contractNumber', { contractNumber });
+    const query = this.createQueryBuilder('contract').where(
+      'contract.contractNumber = :contractNumber',
+      { contractNumber },
+    );
 
     if (excludeId) {
       query.andWhere('contract.id != :excludeId', { excludeId });
@@ -162,4 +144,3 @@ export class ContractRepository extends Repository<Contract> {
     return count > 0;
   }
 }
-

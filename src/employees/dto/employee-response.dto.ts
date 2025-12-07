@@ -54,4 +54,3 @@ export interface EmployeeResponseDto {
   isOnLeave: boolean;
   yearsOfService: number | null;
 }
-

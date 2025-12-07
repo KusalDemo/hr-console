@@ -79,12 +79,7 @@ export class AuthController {
     const userAgent = headers['user-agent'] || headers['User-Agent'] || 'unknown';
 
     try {
-      const result = await this.authService.login(
-        tenantKey,
-        loginDto,
-        ipAddress,
-        userAgent,
-      );
+      const result = await this.authService.login(tenantKey, loginDto, ipAddress, userAgent);
 
       return result;
     } catch (error) {
@@ -103,9 +98,7 @@ export class AuthController {
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(
-    @Body() refreshTokenDto: RefreshTokenDto,
-  ): Promise<{ token: TokenResponseDto }> {
+  async refresh(@Body() refreshTokenDto: RefreshTokenDto): Promise<{ token: TokenResponseDto }> {
     // Verify refresh token
     const payload = this.tokenService.verifyRefreshToken(refreshTokenDto.refreshToken);
 
@@ -174,7 +167,7 @@ export class AuthController {
   /**
    * Change password endpoint
    * Updates password in both tenant schema and admin.tenant_admin table (for tenant admins)
-   * 
+   *
    * @param changePasswordDto - Password change request
    * @param user - Current user from JWT
    * @param headers - Request headers (for X-Tenant)
@@ -244,4 +237,3 @@ export class AuthController {
     }
   }
 }
-

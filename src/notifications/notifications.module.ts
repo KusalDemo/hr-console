@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EmployeesModule } from '../employees/employees.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationsController } from './notifications.controller';
@@ -8,18 +9,15 @@ import {
   NotificationPreferenceRepository,
   NotificationRepository,
 } from './repositories';
-import {
-  NotificationTemplate,
-  NotificationPreference,
-  Notification,
-} from './entities';
+import { NotificationTemplate, NotificationPreference, Notification } from './entities';
 import { Employee } from '../employees/entities/employee.entity';
 import { Organization } from '../organizations/entities/organization.entity';
 import { EmailModule } from '../email/email.module';
+import { OrganizationsModule } from '../organizations/organizations.module';
 
 /**
  * Notifications Module
- * 
+ *
  * Provides multi-channel notification delivery:
  * - Template management (email, SMS, push, in-app, webhook)
  * - User/tenant notification preferences
@@ -39,6 +37,8 @@ import { EmailModule } from '../email/email.module';
     ]),
     ScheduleModule.forRoot(), // For scheduled notification processing
     EmailModule,
+    EmployeesModule,
+    OrganizationsModule,
   ],
   controllers: [NotificationsController],
   providers: [

@@ -34,7 +34,7 @@ export enum KeyResultType {
 
 /**
  * Key Result Entity
- * 
+ *
  * Key results for OKR goals with:
  * - Progress tracking
  * - Target and current values
@@ -113,13 +113,27 @@ export class KeyResult {
   /**
    * Current value
    */
-  @Column({ name: 'current_value', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'current_value',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   currentValue: number;
 
   /**
    * Starting value (baseline)
    */
-  @Column({ name: 'starting_value', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'starting_value',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   startingValue: number;
 
   /**
@@ -131,7 +145,14 @@ export class KeyResult {
   /**
    * Progress percentage (calculated: (current - starting) / (target - starting) * 100)
    */
-  @Column({ name: 'progress_percentage', type: 'decimal', precision: 5, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'progress_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   progressPercentage: number;
 
   /**

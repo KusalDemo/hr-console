@@ -50,7 +50,7 @@ export enum PaymentStatus {
 
 /**
  * Payment Entity
- * 
+ *
  * Payment tracking and reconciliation for invoices and transactions.
  */
 @Entity('payments')

@@ -35,14 +35,14 @@ export enum DepartmentStatus {
 
 /**
  * Department Entity - Represents departments within an organization
- * 
+ *
  * Departments support:
  * - Hierarchical structure (parent-child relationships)
  * - Organization relationship
  * - Manager assignment (employee)
  * - Budget and headcount management
  * - Multiple department types (standard, cost center, profit center, etc.)
- * 
+ *
  * Departments can have child departments and teams.
  */
 @Entity('departments')
@@ -263,4 +263,3 @@ export class Department {
     return path.map((dept) => dept.name).join(' > ');
   }
 }
-

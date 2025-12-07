@@ -28,4 +28,3 @@ export class CustomFieldDefinitionResponseDto {
   updatedBy: number | null;
 }
 
-

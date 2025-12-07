@@ -14,12 +14,7 @@ import {
   ParseBoolPipe,
 } from '@nestjs/common';
 import { TaskService } from './services/task.service';
-import {
-  CreateTaskDto,
-  UpdateTaskDto,
-  TaskResponseDto,
-  TaskDependencyResponseDto,
-} from './dto';
+import { CreateTaskDto, UpdateTaskDto, TaskResponseDto, TaskDependencyResponseDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -30,7 +25,7 @@ import { DependencyType } from './entities/task-dependency.entity';
 
 /**
  * Tasks Controller
- * 
+ *
  * REST API endpoints for task management:
  * - Tasks (CRUD, templates, recurring tasks)
  * - Task dependencies
@@ -217,5 +212,4 @@ export class TasksController {
     return this.taskService.removeDependency(id);
   }
 }
-
 

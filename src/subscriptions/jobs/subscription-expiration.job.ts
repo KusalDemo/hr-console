@@ -7,13 +7,13 @@ import { SubscriptionNotificationsService } from '../services/subscription-notif
 
 /**
  * Subscription Expiration Job
- * 
+ *
  * Scheduled job that:
  * - Checks for expiring subscriptions
  * - Sends expiration warnings
  * - Deactivates expired subscriptions
  * - Handles grace period expiration
- * 
+ *
  * Runs daily at 2 AM to check subscription statuses
  */
 @Injectable()
@@ -110,9 +110,7 @@ export class SubscriptionExpirationJob {
             SubscriptionStatus.EXPIRED,
           );
 
-          this.logger.log(
-            `Subscription ID ${subscription.id} marked as expired`,
-          );
+          this.logger.log(`Subscription ID ${subscription.id} marked as expired`);
         }
       } catch (error) {
         this.logger.error(
@@ -230,18 +228,14 @@ export class SubscriptionExpirationJob {
     // Send notification via notification service
     await this.notificationService.sendExpirationWarning(subscription, daysRemaining);
 
-    this.logger.log(
-      `Expiration warning sent for subscription ID: ${subscription.id}`,
-    );
+    this.logger.log(`Expiration warning sent for subscription ID: ${subscription.id}`);
   }
 
   /**
    * Send expiration notice notification
    */
   private async sendExpirationNotice(subscription: Subscription): Promise<void> {
-    this.logger.log(
-      `Sending expiration notice for subscription ID: ${subscription.id}`,
-    );
+    this.logger.log(`Sending expiration notice for subscription ID: ${subscription.id}`);
 
     // Update metadata to track notification
     const metadata = subscription.metadata || {};
@@ -290,18 +284,14 @@ export class SubscriptionExpirationJob {
     // Send notification via notification service
     await this.notificationService.sendGracePeriodWarning(subscription, daysRemaining);
 
-    this.logger.log(
-      `Grace period warning sent for subscription ID: ${subscription.id}`,
-    );
+    this.logger.log(`Grace period warning sent for subscription ID: ${subscription.id}`);
   }
 
   /**
    * Send grace period expired notification
    */
   private async sendGracePeriodExpired(subscription: Subscription): Promise<void> {
-    this.logger.log(
-      `Sending grace period expired notice for subscription ID: ${subscription.id}`,
-    );
+    this.logger.log(`Sending grace period expired notice for subscription ID: ${subscription.id}`);
 
     // Update metadata to track notification
     const metadata = subscription.metadata || {};
@@ -313,9 +303,7 @@ export class SubscriptionExpirationJob {
     // Send notification via notification service
     await this.notificationService.sendGracePeriodExpired(subscription);
 
-    this.logger.log(
-      `Grace period expired notice sent for subscription ID: ${subscription.id}`,
-    );
+    this.logger.log(`Grace period expired notice sent for subscription ID: ${subscription.id}`);
   }
 
   /**
@@ -367,4 +355,3 @@ export class SubscriptionExpirationJob {
     return stats;
   }
 }
-

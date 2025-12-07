@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Goals & OKR Migration
- * 
+ *
  * This migration creates:
  * - goals table (objectives and key results with alignment, progress tracking, check-ins, milestones)
  * - key_results table (key results for OKR goals with progress tracking)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class GoalsOkr0000000000024 implements MigrationInterface {

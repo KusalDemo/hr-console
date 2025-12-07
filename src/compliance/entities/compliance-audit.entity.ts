@@ -35,7 +35,7 @@ export enum AuditStatus {
 
 /**
  * Compliance Audit Entity
- * 
+ *
  * Compliance audit records.
  */
 @Entity('compliance_audits')
@@ -92,13 +92,25 @@ export class ComplianceAudit {
   @Column({ name: 'audit_end_date', type: 'date', nullable: true })
   auditEndDate: Date | null;
 
-  @Column({ name: 'audit_status', type: 'varchar', length: 32, nullable: false, default: AuditStatus.PLANNED })
+  @Column({
+    name: 'audit_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: AuditStatus.PLANNED,
+  })
   auditStatus: AuditStatus;
 
   @Column({ name: 'overall_score', type: 'decimal', precision: 5, scale: 2, nullable: true })
   overallScore: number | null;
 
-  @Column({ name: 'compliance_percentage', type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({
+    name: 'compliance_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+  })
   compliancePercentage: number | null;
 
   @Column({ name: 'total_requirements', type: 'integer', nullable: false, default: 0 })
@@ -200,3 +212,4 @@ export class ComplianceAudit {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedById: number | null;
 }
+

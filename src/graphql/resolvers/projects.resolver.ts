@@ -8,7 +8,7 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, NotFoundException } from '@nestjs/common';
 import { ProjectService } from '../../projects/services/project.service';
 import { ProjectRepository } from '../../projects/repositories/project.repository';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -22,11 +22,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 import { ProjectDataLoader } from '../dataloaders/project.dataloader';
 import { OrganizationDataLoader } from '../dataloaders/organization.dataloader';
 import { EmployeeDataLoader } from '../dataloaders/employee.dataloader';
-import {
-  CreateProjectDto,
-  UpdateProjectDto,
-  ProjectResponseDto,
-} from '../../projects/dto';
+import { CreateProjectDto, UpdateProjectDto, ProjectResponseDto } from '../../projects/dto';
 
 /**
  * Project GraphQL Object Type
@@ -76,13 +72,19 @@ export class ProjectsResolver {
     @Args('organizationId', { type: () => Int, nullable: true })
     organizationId?: number,
   ): Promise<Project[]> {
-    const projects = await this.projectRepository.findAll({
-      skip,
-      take: Math.min(take, 100), // Limit to 100 max
-      status: status as any,
-      organizationId,
-    });
-    return projects;
+    let projects: Project[];
+    if (status) {
+      projects = await this.projectRepository.findByStatus(status as any, organizationId);
+    } else if (organizationId) {
+      projects = await this.projectRepository.findByOrganization(organizationId);
+    } else {
+      projects = await this.projectRepository.find({
+        take: Math.min(take, 100),
+        skip,
+        order: { createdAt: 'DESC' },
+      });
+    }
+    return projects.slice(skip, skip + Math.min(take, 100));
   }
 
   /**
@@ -94,12 +96,13 @@ export class ProjectsResolver {
     @Args('input') input: CreateProjectDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<Project> {
-    const projectResponse = await this.projectService.createProject(
-      input,
-      user.userId,
-    );
+    const projectResponse = await this.projectService.createProject(input, user.userId);
     // Fetch full entity for GraphQL response
-    return this.projectRepository.findById(projectResponse.id);
+    const project = await this.projectRepository.findById(projectResponse.id);
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${projectResponse.id} not found`);
+    }
+    return project;
   }
 
   /**
@@ -113,7 +116,11 @@ export class ProjectsResolver {
     @CurrentUser() user: JwtPayload,
   ): Promise<Project> {
     await this.projectService.updateProject(id, input, user.userId);
-    return this.projectRepository.findById(id);
+    const project = await this.projectRepository.findById(id);
+    if (!project) {
+      throw new NotFoundException(`Project with ID ${id} not found`);
+    }
+    return project;
   }
 
   /**
@@ -125,7 +132,7 @@ export class ProjectsResolver {
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: JwtPayload,
   ): Promise<boolean> {
-    await this.projectService.deleteProject(id, user.userId);
+    await this.projectService.archiveProject(id, user.userId);
     return true;
   }
 

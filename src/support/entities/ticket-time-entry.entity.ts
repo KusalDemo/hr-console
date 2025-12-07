@@ -12,7 +12,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Ticket Time Entry Entity
- * 
+ *
  * Time tracking for support tickets
  */
 @Entity('ticket_time_entries')

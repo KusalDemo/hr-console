@@ -30,7 +30,7 @@ export enum ArticleStatus {
 
 /**
  * Knowledge Article Entity
- * 
+ *
  * Manages knowledge base articles with:
  * - Categories and tags
  * - Versioning support

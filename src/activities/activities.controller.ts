@@ -13,11 +13,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuditLogService, AuditRetentionService } from './services';
-import {
-  CreateAuditLogDto,
-  AuditLogSearchDto,
-  AuditLogResponseDto,
-} from './dto';
+import { CreateAuditLogDto, AuditLogSearchDto, AuditLogResponseDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -26,7 +22,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Activities Controller
- * 
+ *
  * REST API endpoints for audit logging:
  * - Create audit logs
  * - Search and filter audit logs
@@ -49,9 +45,7 @@ export class ActivitiesController {
   @Post('audit-logs')
   @Roles('ADMIN', 'HR', 'SYSTEM')
   @HttpCode(HttpStatus.CREATED)
-  async createAuditLog(
-    @Body() createDto: CreateAuditLogDto,
-  ): Promise<AuditLogResponseDto> {
+  async createAuditLog(@Body() createDto: CreateAuditLogDto): Promise<AuditLogResponseDto> {
     return this.auditLogService.createAuditLog(createDto);
   }
 
@@ -61,9 +55,7 @@ export class ActivitiesController {
    */
   @Get('audit-logs/:id')
   @Roles('ADMIN', 'HR')
-  async getAuditLog(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<AuditLogResponseDto> {
+  async getAuditLog(@Param('id', ParseIntPipe) id: number): Promise<AuditLogResponseDto> {
     return this.auditLogService.getAuditLogById(id);
   }
 
@@ -153,9 +145,9 @@ export class ActivitiesController {
   @Get('audit-logs/export')
   @Roles('ADMIN')
   async exportAuditLogs(
+    @Res() res: Response,
     @Query() filters?: AuditLogSearchDto,
     @Query('format') format: 'json' | 'csv' = 'json',
-    @Res() res: Response,
   ): Promise<void> {
     const exportData = await this.auditLogService.exportAuditLogs(filters, format);
 

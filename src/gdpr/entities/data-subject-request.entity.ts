@@ -74,7 +74,7 @@ export enum VerificationStatus {
 
 /**
  * Data Subject Request Entity
- * 
+ *
  * GDPR data subject requests (access, deletion, portability, etc.)
  */
 @Entity('data_subject_requests')
@@ -95,7 +95,13 @@ export class DataSubjectRequest {
   @Column({ name: 'request_type', type: 'varchar', length: 64, nullable: false })
   requestType: RequestType;
 
-  @Column({ name: 'request_status', type: 'varchar', length: 32, nullable: false, default: RequestStatus.PENDING })
+  @Column({
+    name: 'request_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: RequestStatus.PENDING,
+  })
   requestStatus: RequestStatus;
 
   @Column({ type: 'varchar', length: 32, nullable: false, default: Priority.NORMAL })
@@ -121,7 +127,13 @@ export class DataSubjectRequest {
   @Column({ name: 'verification_method', type: 'varchar', length: 64, nullable: true })
   verificationMethod: VerificationMethod | null;
 
-  @Column({ name: 'verification_status', type: 'varchar', length: 32, nullable: false, default: VerificationStatus.PENDING })
+  @Column({
+    name: 'verification_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: VerificationStatus.PENDING,
+  })
   verificationStatus: VerificationStatus;
 
   @Column({ name: 'verification_data', type: 'jsonb', nullable: true })
@@ -230,3 +242,4 @@ export class DataSubjectRequest {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any> | null;
 }
+

@@ -4,7 +4,7 @@ import { KPIMeasurement } from '../entities/kpi-measurement.entity';
 
 /**
  * KPI Measurement Repository
- * 
+ *
  * Custom repository methods for KPI measurement queries with optimized time-series queries.
  */
 @Injectable()

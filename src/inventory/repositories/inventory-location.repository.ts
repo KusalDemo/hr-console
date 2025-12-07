@@ -4,7 +4,7 @@ import { InventoryLocation } from '../entities/inventory-location.entity';
 
 /**
  * Inventory Location Repository
- * 
+ *
  * Custom repository methods for inventory location queries.
  */
 @Injectable()

@@ -4,7 +4,7 @@ import { JobQueue } from '../entities/job-queue.entity';
 
 /**
  * Webhook Job Processor
- * 
+ *
  * Processes webhook delivery jobs.
  */
 @Injectable()
@@ -13,10 +13,7 @@ export class WebhookJobProcessor extends BaseJobProcessor {
     super(WebhookJobProcessor.name);
   }
 
-  async process(
-    jobData: Record<string, any>,
-    job: JobQueue,
-  ): Promise<any> {
+  async process(jobData: Record<string, any>, job: JobQueue): Promise<any> {
     this.validateJobData(jobData, ['url', 'payload']);
 
     this.logger.log(`Processing webhook job: ${job.id}`);
@@ -32,3 +29,4 @@ export class WebhookJobProcessor extends BaseJobProcessor {
     };
   }
 }
+

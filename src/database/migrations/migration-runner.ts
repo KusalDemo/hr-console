@@ -66,7 +66,9 @@ export class MigrationRunner {
       }
 
       const migrations = await dataSource.showMigrations();
-      this.logger.log(`Migrations status: ${migrations ? 'Pending migrations exist' : 'No pending migrations'}`);
+      this.logger.log(
+        `Migrations status: ${migrations ? 'Pending migrations exist' : 'No pending migrations'}`,
+      );
     } catch (error) {
       this.logger.error('Error checking migration status', error);
       throw error;
@@ -92,7 +94,9 @@ export class MigrationRunner {
 
       this.logger.log(`Running migrations for schema: ${schemaName}`);
       const migrations = await dataSource.runMigrations();
-      this.logger.log(`Successfully ran ${migrations.length} migration(s) for schema: ${schemaName}`);
+      this.logger.log(
+        `Successfully ran ${migrations.length} migration(s) for schema: ${schemaName}`,
+      );
     } catch (error) {
       this.logger.error(`Error running migrations for schema: ${schemaName}`, error);
       throw error;
@@ -107,4 +111,3 @@ export class MigrationRunner {
     return `"${identifier.replace(/"/g, '""')}"`;
   }
 }
-

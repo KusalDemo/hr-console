@@ -1,23 +1,14 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Body,
-  Param,
-  Query,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ComplianceService } from './services/compliance.service';
 import { CreateChecklistDto, CreateAuditDto, AddFindingDto } from './dto';
-import { ChecklistStatus, ItemStatus } from './entities/compliance-checklist.entity';
+import { ChecklistStatus } from './entities/compliance-checklist.entity';
+import { ItemStatus } from './entities/compliance-checklist-item.entity';
 import { EvidenceType } from './entities/compliance-evidence.entity';
 
 /**
  * Compliance Controller
- * 
+ *
  * Provides endpoints for compliance management:
  * - Framework management
  * - Checklist creation and tracking
@@ -38,9 +29,9 @@ export class ComplianceController {
   @Get('frameworks')
   async getFrameworks(@Query('enabled') enabled?: boolean) {
     if (enabled) {
-      return this.complianceService['frameworkRepository'].findEnabled();
+      return this.complianceService.frameworkRepository.findEnabled();
     }
-    return this.complianceService['frameworkRepository'].find({
+    return this.complianceService.frameworkRepository.find({
       where: { isActive: true },
       order: { frameworkName: 'ASC' },
     });
@@ -51,7 +42,7 @@ export class ComplianceController {
    */
   @Get('frameworks/:code')
   async getFrameworkByCode(@Param('code') code: string) {
-    return this.complianceService['frameworkRepository'].findByCode(code);
+    return this.complianceService.frameworkRepository.findByCode(code);
   }
 
   /**
@@ -69,10 +60,7 @@ export class ComplianceController {
    * Create compliance checklist
    */
   @Post('checklists')
-  async createChecklist(
-    @Request() req: any,
-    @Body() dto: CreateChecklistDto,
-  ) {
+  async createChecklist(@Request() req: any, @Body() dto: CreateChecklistDto) {
     const checklist = await this.complianceService.createChecklist(
       dto.frameworkId,
       dto.checklistName,
@@ -99,14 +87,14 @@ export class ComplianceController {
     @Query('status') status?: ChecklistStatus,
   ) {
     if (frameworkId) {
-      return this.complianceService['checklistRepository'].findByFramework(
+      return this.complianceService.checklistRepository.findByFramework(
         parseInt(frameworkId.toString(), 10),
       );
     }
     if (status) {
-      return this.complianceService['checklistRepository'].findByStatus(status);
+      return this.complianceService.checklistRepository.findByStatus(status);
     }
-    return this.complianceService['checklistRepository'].findActive();
+    return this.complianceService.checklistRepository.findActive();
   }
 
   /**
@@ -114,7 +102,7 @@ export class ComplianceController {
    */
   @Get('checklists/:id')
   async getChecklist(@Param('id') id: number) {
-    return this.complianceService['checklistRepository'].findOne({
+    return this.complianceService.checklistRepository.findOne({
       where: { id },
       relations: ['framework'],
     });
@@ -165,21 +153,16 @@ export class ComplianceController {
    * Get audits
    */
   @Get('audits')
-  async getAudits(
-    @Query('frameworkId') frameworkId?: number,
-    @Query('status') status?: string,
-  ) {
+  async getAudits(@Query('frameworkId') frameworkId?: number, @Query('status') status?: string) {
     if (frameworkId) {
-      return this.complianceService['auditRepository'].findByFramework(
+      return this.complianceService.auditRepository.findByFramework(
         parseInt(frameworkId.toString(), 10),
       );
     }
     if (status) {
-      return this.complianceService['auditRepository'].findByStatus(
-        status as any,
-      );
+      return this.complianceService.auditRepository.findByStatus(status as any);
     }
-    return this.complianceService['auditRepository'].find({
+    return this.complianceService.auditRepository.find({
       order: { auditStartDate: 'DESC' },
     });
   }
@@ -188,10 +171,7 @@ export class ComplianceController {
    * Add audit finding
    */
   @Post('audits/:auditId/findings')
-  async addFinding(
-    @Param('auditId') auditId: number,
-    @Body() dto: AddFindingDto,
-  ) {
+  async addFinding(@Param('auditId') auditId: number, @Body() dto: AddFindingDto) {
     const finding = await this.complianceService.addAuditFinding(
       auditId,
       dto.findingType,
@@ -261,16 +241,16 @@ export class ComplianceController {
     @Query('checklistItemId') checklistItemId?: number,
   ) {
     if (requirementId) {
-      return this.complianceService['evidenceRepository'].findByRequirement(
+      return this.complianceService.evidenceRepository.findByRequirement(
         parseInt(requirementId.toString(), 10),
       );
     }
     if (checklistItemId) {
-      return this.complianceService['evidenceRepository'].findByChecklistItem(
+      return this.complianceService.evidenceRepository.findByChecklistItem(
         parseInt(checklistItemId.toString(), 10),
       );
     }
-    return this.complianceService['evidenceRepository'].find({
+    return this.complianceService.evidenceRepository.find({
       where: { isActive: true },
       order: { collectedAt: 'DESC' },
     });

@@ -10,4 +10,3 @@ import { MultiTenantService } from '../database/multi-tenant.service';
   exports: [MultiTenantService],
 })
 export class HealthModule {}
-

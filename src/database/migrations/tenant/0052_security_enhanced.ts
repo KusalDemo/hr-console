@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Enhanced Security Features Migration
- * 
+ *
  * This migration creates:
  * - password_policies table (configurable password rules)
  * - mfa_configurations table (MFA secrets and configuration)
@@ -11,7 +11,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - ip_whitelist table (IP filtering/whitelisting)
  * - security_audit_logs table (security-specific audit logging)
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class SecurityEnhanced0000000000052 implements MigrationInterface {
@@ -391,3 +391,4 @@ export class SecurityEnhanced0000000000052 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX IF EXISTS idx_users_locked`);
   }
 }
+

@@ -22,7 +22,7 @@ export enum PeriodType {
 
 /**
  * Timesheet Period Entity
- * 
+ *
  * Defines recurring periods (weekly, bi-weekly, monthly, custom).
  * Used to group time entries into timesheets.
  */
@@ -107,9 +107,7 @@ export class TimesheetPeriod {
   getPeriodStartDate(date: Date): Date {
     const start = new Date(this.startDate);
     const target = new Date(date);
-    const daysBetween = Math.floor(
-      (target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    const daysBetween = Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     const periodsPassed = Math.floor(daysBetween / this.daysInPeriod);
     const periodStart = new Date(start);
     periodStart.setDate(periodStart.getDate() + periodsPassed * this.daysInPeriod);
@@ -132,11 +130,8 @@ export class TimesheetPeriod {
   getPeriodNumber(date: Date): number {
     const start = new Date(this.startDate);
     const target = new Date(date);
-    const daysBetween = Math.floor(
-      (target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    const daysBetween = Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     return Math.floor(daysBetween / this.daysInPeriod) + 1;
   }
 }
-
 

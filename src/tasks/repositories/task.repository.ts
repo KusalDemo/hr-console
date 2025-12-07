@@ -4,7 +4,7 @@ import { Task, TaskStatus, TaskPriority, TaskType } from '../entities/task.entit
 
 /**
  * Task Repository
- * 
+ *
  * Custom repository methods for task queries with recursive queries for task hierarchies.
  */
 @Injectable()
@@ -17,8 +17,7 @@ export class TaskRepository extends Repository<Task> {
    * Find task by key
    */
   async findByKey(taskKey: string, includeRelations = false): Promise<Task | null> {
-    const query = this.createQueryBuilder('task')
-      .where('task.taskKey = :taskKey', { taskKey });
+    const query = this.createQueryBuilder('task').where('task.taskKey = :taskKey', { taskKey });
 
     if (includeRelations) {
       query
@@ -248,10 +247,7 @@ export class TaskRepository extends Repository<Task> {
   /**
    * Find overdue tasks
    */
-  async findOverdueTasks(
-    projectId?: number,
-    includeRelations = false,
-  ): Promise<Task[]> {
+  async findOverdueTasks(projectId?: number, includeRelations = false): Promise<Task[]> {
     const query = this.createQueryBuilder('task')
       .where('task.dueDate < :now', { now: new Date() })
       .andWhere('task.status != :status', { status: TaskStatus.COMPLETED })
@@ -296,10 +292,7 @@ export class TaskRepository extends Repository<Task> {
       .where('task.isRecurring = :isRecurring', { isRecurring: true })
       .andWhere('task.recurrencePattern != :none', { none: 'NONE' })
       .andWhere('task.nextOccurrenceDate <= :now', { now })
-      .andWhere(
-        '(task.recurrenceEndDate IS NULL OR task.recurrenceEndDate >= :now)',
-        { now },
-      )
+      .andWhere('(task.recurrenceEndDate IS NULL OR task.recurrenceEndDate >= :now)', { now })
       .getMany();
   }
 
@@ -307,8 +300,7 @@ export class TaskRepository extends Repository<Task> {
    * Check if task key exists
    */
   async taskKeyExists(taskKey: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('task')
-      .where('task.taskKey = :taskKey', { taskKey });
+    const query = this.createQueryBuilder('task').where('task.taskKey = :taskKey', { taskKey });
 
     if (excludeId) {
       query.andWhere('task.id != :excludeId', { excludeId });
@@ -321,10 +313,7 @@ export class TaskRepository extends Repository<Task> {
   /**
    * Check for circular dependency in task hierarchy
    */
-  async checkCircularReference(
-    taskId: number,
-    parentTaskId: number,
-  ): Promise<boolean> {
+  async checkCircularReference(taskId: number, parentTaskId: number): Promise<boolean> {
     // Use recursive query to check if parentTaskId is a descendant of taskId
     const result = await this.dataSource.query(
       `
@@ -375,4 +364,3 @@ export class TaskRepository extends Repository<Task> {
     return parseInt(result[0]?.max_depth || '0');
   }
 }
-

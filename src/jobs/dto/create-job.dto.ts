@@ -9,10 +9,7 @@ import {
   IsDateString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  JobType,
-  JobPriority,
-} from '../entities/job-queue.entity';
+import { JobType, JobPriority } from '../entities/job-queue.entity';
 
 /**
  * Create Job DTO
@@ -77,3 +74,4 @@ export class CreateJobDto {
   @IsObject()
   jobMetadata?: Record<string, any>;
 }
+

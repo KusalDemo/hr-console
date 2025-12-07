@@ -13,7 +13,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Leave Policy Service
- * 
+ *
  * Manages leave policies with:
  * - Policy CRUD operations
  * - Policy templates and cloning
@@ -51,10 +51,11 @@ export class LeavePolicyService {
     });
 
     const saved = await this.policyRepository.save(policy);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created leave policy: ${saved.id} (${saved.policyName})`);
+    this.logger.log(`Created leave policy: ${savedEntity.id} (${savedEntity.policyName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -86,11 +87,7 @@ export class LeavePolicyService {
   /**
    * Update policy
    */
-  async updatePolicy(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<LeavePolicy> {
+  async updatePolicy(id: number, updateDto: any, updatedBy?: number): Promise<LeavePolicy> {
     const policy = await this.policyRepository.findById(id);
 
     if (!policy) {
@@ -260,10 +257,7 @@ export class LeavePolicyService {
     // Determine priority if not provided
     let priority = assignmentData.priority;
     if (priority === undefined) {
-      const maxPriority = existingAssignments.reduce(
-        (max, a) => Math.max(max, a.priority),
-        0,
-      );
+      const maxPriority = existingAssignments.reduce((max, a) => Math.max(max, a.priority), 0);
       priority = maxPriority + 1;
     }
 
@@ -280,7 +274,9 @@ export class LeavePolicyService {
 
     const saved = await this.assignmentRepository.save(assignment);
 
-    this.logger.log(`Assigned policy ${policyId} to employee ${employeeId} with priority ${priority}`);
+    this.logger.log(
+      `Assigned policy ${policyId} to employee ${employeeId} with priority ${priority}`,
+    );
 
     return saved;
   }
@@ -330,7 +326,7 @@ export class LeavePolicyService {
     }
 
     assignment.priority = newPriority;
-    assignment.updatedBy = updatedBy;
+    assignment.updatedBy = updatedBy ?? null;
 
     return this.assignmentRepository.save(assignment);
   }
@@ -346,7 +342,7 @@ export class LeavePolicyService {
     }
 
     assignment.isActive = false;
-    assignment.updatedBy = updatedBy;
+    assignment.updatedBy = updatedBy ?? null;
 
     await this.assignmentRepository.save(assignment);
 
@@ -358,12 +354,7 @@ export class LeavePolicyService {
   /**
    * Check if two date ranges overlap
    */
-  private datesOverlap(
-    start1: Date,
-    end1: Date | null,
-    start2: Date,
-    end2: Date | null,
-  ): boolean {
+  private datesOverlap(start1: Date, end1: Date | null, start2: Date, end2: Date | null): boolean {
     // If end dates are null, treat as infinite
     const end1Date = end1 || new Date('9999-12-31');
     const end2Date = end2 || new Date('9999-12-31');

@@ -1,10 +1,4 @@
-import {
-  IsNumber,
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsDateString,
-} from 'class-validator';
+import { IsNumber, IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   RelationshipType,
@@ -43,5 +37,4 @@ export class CreateContactRelationshipDto {
   @IsDateString()
   endDate?: string;
 }
-
 

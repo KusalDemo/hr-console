@@ -14,12 +14,12 @@ import { HolidayCalendar } from './holiday-calendar.entity';
  * Holiday Type Enum
  */
 export enum HolidayType {
-  PUBLIC = 'PUBLIC',         // Public holiday
-  FEDERAL = 'FEDERAL',       // Federal holiday
-  RELIGIOUS = 'RELIGIOUS',   // Religious holiday
-  REGIONAL = 'REGIONAL',     // Regional holiday
-  COMPANY = 'COMPANY',       // Company-specific holiday
-  FLOATING = 'FLOATING',     // Floating holiday (employee chooses date)
+  PUBLIC = 'PUBLIC', // Public holiday
+  FEDERAL = 'FEDERAL', // Federal holiday
+  RELIGIOUS = 'RELIGIOUS', // Religious holiday
+  REGIONAL = 'REGIONAL', // Regional holiday
+  COMPANY = 'COMPANY', // Company-specific holiday
+  FLOATING = 'FLOATING', // Floating holiday (employee chooses date)
 }
 
 /**
@@ -37,7 +37,7 @@ export enum Weekday {
 
 /**
  * Holiday Entity
- * 
+ *
  * Individual holidays with dates, types, recurrence, and observance rules.
  * Supports fixed dates, recurring holidays, floating holidays, and observance adjustments.
  */

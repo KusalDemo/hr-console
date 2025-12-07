@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { OrganizationMembershipRepository } from '../repositories/organization-membership.repository';
 import { OrganizationHierarchyService } from './organization-hierarchy.service';
@@ -73,14 +69,14 @@ export interface OrganizationUsageStatistics {
 
 /**
  * Organization Statistics Service
- * 
+ *
  * Provides comprehensive statistics for organizations:
  * - User count per organization
  * - Employee count
  * - Activity metrics
  * - Usage statistics
  * - Growth and retention metrics
- * 
+ *
  * This service aggregates data from multiple sources to provide
  * insights into organization usage and activity.
  */
@@ -97,7 +93,7 @@ export class OrganizationStatsService {
 
   /**
    * Get comprehensive statistics for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Complete organization statistics
    */
@@ -120,7 +116,7 @@ export class OrganizationStatsService {
     const activeMemberCount = activeMemberships.length;
 
     // Get child organization count
-    const childCount = await this.organizationRepository.hasChildren(organizationId)
+    const childCount = (await this.organizationRepository.hasChildren(organizationId))
       ? (await this.hierarchyService.getDirectChildren(organizationId, false)).length
       : 0;
 
@@ -135,13 +131,9 @@ export class OrganizationStatsService {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const recentJoins = activeMemberships.filter(
-      (m) => m.joinedAt >= thirtyDaysAgo,
-    ).length;
+    const recentJoins = activeMemberships.filter((m) => m.joinedAt >= thirtyDaysAgo).length;
 
-    const recentLeaves = memberships.filter(
-      (m) => m.leftAt && m.leftAt >= thirtyDaysAgo,
-    ).length;
+    const recentLeaves = memberships.filter((m) => m.leftAt && m.leftAt >= thirtyDaysAgo).length;
 
     // Calculate average membership duration
     let totalDuration = 0;
@@ -173,8 +165,7 @@ export class OrganizationStatsService {
       .sort((a, b) => a.getTime() - b.getTime());
 
     const oldestMemberJoinedAt = joinDates.length > 0 ? joinDates[0] : null;
-    const newestMemberJoinedAt =
-      joinDates.length > 0 ? joinDates[joinDates.length - 1] : null;
+    const newestMemberJoinedAt = joinDates.length > 0 ? joinDates[joinDates.length - 1] : null;
 
     return {
       memberCount,
@@ -200,7 +191,7 @@ export class OrganizationStatsService {
 
   /**
    * Get activity metrics for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Activity metrics
    */
@@ -227,9 +218,7 @@ export class OrganizationStatsService {
 
     // Recent joins and leaves
     const recentJoins = activeMemberships.filter((m) => m.joinedAt >= thirtyDaysAgo).length;
-    const recentLeaves = memberships.filter(
-      (m) => m.leftAt && m.leftAt >= thirtyDaysAgo,
-    ).length;
+    const recentLeaves = memberships.filter((m) => m.leftAt && m.leftAt >= thirtyDaysAgo).length;
 
     // Calculate average membership duration
     let totalDuration = 0;
@@ -278,7 +267,7 @@ export class OrganizationStatsService {
 
   /**
    * Get usage statistics for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Usage statistics
    */
@@ -332,7 +321,7 @@ export class OrganizationStatsService {
 
   /**
    * Get user count for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive members (default: false)
    * @returns User count
@@ -345,7 +334,7 @@ export class OrganizationStatsService {
    * Get employee count for an organization
    * Currently returns active member count
    * Can be extended to filter by employee role
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Employee count
    */
@@ -359,7 +348,7 @@ export class OrganizationStatsService {
 
   /**
    * Get member count by role for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param role - Role name
    * @returns Count of members with the role
@@ -376,7 +365,7 @@ export class OrganizationStatsService {
   /**
    * Get organization growth trend
    * Returns member count over time periods
-   * 
+   *
    * @param organizationId - Organization ID
    * @param periods - Number of periods to analyze (default: 12 months)
    * @returns Growth trend data
@@ -419,6 +408,4 @@ export class OrganizationStatsService {
     return trend;
   }
 }
-
-
 

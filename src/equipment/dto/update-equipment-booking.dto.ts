@@ -1,8 +1,4 @@
-import {
-  IsOptional,
-  IsDateString,
-  IsString,
-} from 'class-validator';
+import { IsOptional, IsDateString, IsString } from 'class-validator';
 
 /**
  * Update Equipment Booking DTO

@@ -4,7 +4,7 @@ import { Dashboard, DashboardType } from '../entities/dashboard.entity';
 
 /**
  * Dashboard Repository
- * 
+ *
  * Custom repository methods for dashboard queries.
  */
 @Injectable()
@@ -17,13 +17,10 @@ export class DashboardRepository extends Repository<Dashboard> {
    * Find dashboard by ID
    */
   async findById(id: number, includeWidgets = false): Promise<Dashboard | null> {
-    const query = this.createQueryBuilder('dashboard')
-      .where('dashboard.id = :id', { id });
+    const query = this.createQueryBuilder('dashboard').where('dashboard.id = :id', { id });
 
     if (includeWidgets) {
-      query
-        .leftJoinAndSelect('dashboard.widgets', 'widgets')
-        .orderBy('widgets.widgetOrder', 'ASC');
+      query.leftJoinAndSelect('dashboard.widgets', 'widgets').orderBy('widgets.widgetOrder', 'ASC');
     }
 
     return query.getOne();
@@ -32,10 +29,7 @@ export class DashboardRepository extends Repository<Dashboard> {
   /**
    * Find dashboards by organization
    */
-  async findByOrganization(
-    organizationId: number,
-    includeInactive = false,
-  ): Promise<Dashboard[]> {
+  async findByOrganization(organizationId: number, includeInactive = false): Promise<Dashboard[]> {
     const query = this.createQueryBuilder('dashboard')
       .where('dashboard.organizationId = :organizationId', { organizationId })
       .orderBy('dashboard.dashboardName', 'ASC');
@@ -74,14 +68,13 @@ export class DashboardRepository extends Repository<Dashboard> {
   /**
    * Find personal dashboards for user
    */
-  async findPersonalDashboards(
-    ownerId: number,
-    organizationId: number,
-  ): Promise<Dashboard[]> {
+  async findPersonalDashboards(ownerId: number, organizationId: number): Promise<Dashboard[]> {
     return this.createQueryBuilder('dashboard')
       .where('dashboard.ownerId = :ownerId', { ownerId })
       .andWhere('dashboard.organizationId = :organizationId', { organizationId })
-      .andWhere('dashboard.dashboardType = :dashboardType', { dashboardType: DashboardType.PERSONAL })
+      .andWhere('dashboard.dashboardType = :dashboardType', {
+        dashboardType: DashboardType.PERSONAL,
+      })
       .andWhere('dashboard.isActive = :isActive', { isActive: true })
       .orderBy('dashboard.dashboardName', 'ASC')
       .getMany();
@@ -109,9 +102,7 @@ export class DashboardRepository extends Repository<Dashboard> {
   /**
    * Find dashboard templates
    */
-  async findTemplates(
-    organizationId?: number,
-  ): Promise<Dashboard[]> {
+  async findTemplates(organizationId?: number): Promise<Dashboard[]> {
     const query = this.createQueryBuilder('dashboard')
       .where('dashboard.isTemplate = :isTemplate', { isTemplate: true })
       .andWhere('dashboard.isActive = :isActive', { isActive: true })
@@ -127,10 +118,7 @@ export class DashboardRepository extends Repository<Dashboard> {
   /**
    * Find dashboards by category
    */
-  async findByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<Dashboard[]> {
+  async findByCategory(category: string, organizationId?: number): Promise<Dashboard[]> {
     const query = this.createQueryBuilder('dashboard')
       .where('dashboard.category = :category', { category })
       .andWhere('dashboard.isActive = :isActive', { isActive: true })
@@ -153,8 +141,7 @@ export class DashboardRepository extends Repository<Dashboard> {
     organizationId?: number,
     includeInactive = false,
   ): Promise<Dashboard[]> {
-    const query = this.createQueryBuilder('dashboard')
-      .orderBy('dashboard.dashboardName', 'ASC');
+    const query = this.createQueryBuilder('dashboard').orderBy('dashboard.dashboardName', 'ASC');
 
     if (searchTerm) {
       query.andWhere(

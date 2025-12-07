@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsDateString,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsDateString, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 import { VendorType, VendorStatus } from '../entities/vendor.entity';
 
@@ -95,4 +88,3 @@ export class CreateVendorDto {
   @IsObject()
   vendorMetadata?: Record<string, any>;
 }
-

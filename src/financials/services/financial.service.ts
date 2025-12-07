@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CurrencyRepository, ExchangeRateRepository } from '../repositories';
 import { CurrencyConversionService } from './currency-conversion.service';
 import {
@@ -20,7 +15,7 @@ import { ExchangeRate, ExchangeRateSource } from '../entities/exchange-rate.enti
 
 /**
  * Financial Service
- * 
+ *
  * Manages currencies and exchange rates with:
  * - Currency CRUD operations
  * - Exchange rate management
@@ -148,9 +143,7 @@ export class FinancialService {
   /**
    * Get currencies by organization
    */
-  async getCurrenciesByOrganization(
-    organizationId: number | null,
-  ): Promise<CurrencyResponseDto[]> {
+  async getCurrenciesByOrganization(organizationId: number | null): Promise<CurrencyResponseDto[]> {
     const currencies = await this.currencyRepository.findByOrganization(organizationId);
 
     return currencies.map((currency) => CurrencyResponseDto.fromEntity(currency));
@@ -204,9 +197,7 @@ export class FinancialService {
     // Validate currencies exist
     const fromCurrency = await this.currencyRepository.findById(createDto.fromCurrencyId);
     if (!fromCurrency) {
-      throw new NotFoundException(
-        `Currency with ID ${createDto.fromCurrencyId} not found`,
-      );
+      throw new NotFoundException(`Currency with ID ${createDto.fromCurrencyId} not found`);
     }
 
     const toCurrency = await this.currencyRepository.findById(createDto.toCurrencyId);
@@ -245,6 +236,9 @@ export class FinancialService {
     );
 
     const reloaded = await this.exchangeRateRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Exchange rate not found after save`);
+    }
     return ExchangeRateResponseDto.fromEntity(reloaded, true);
   }
 
@@ -276,9 +270,7 @@ export class FinancialService {
       effectiveDate: updateDto.effectiveDate
         ? new Date(updateDto.effectiveDate)
         : rate.effectiveDate,
-      expiryDate: updateDto.expiryDate
-        ? new Date(updateDto.expiryDate)
-        : rate.expiryDate,
+      expiryDate: updateDto.expiryDate ? new Date(updateDto.expiryDate) : rate.expiryDate,
       updatedBy,
     });
 
@@ -290,6 +282,9 @@ export class FinancialService {
     this.logger.log(`Updated exchange rate: ${id}`);
 
     const reloaded = await this.exchangeRateRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Exchange rate not found after save`);
+    }
     return ExchangeRateResponseDto.fromEntity(reloaded, true);
   }
 
@@ -326,6 +321,9 @@ export class FinancialService {
     }
 
     const reloaded = await this.exchangeRateRepository.findById(rate.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Exchange rate with ID ${rate.id} not found after update`);
+    }
     return ExchangeRateResponseDto.fromEntity(reloaded, true);
   }
 

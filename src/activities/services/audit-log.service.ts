@@ -1,25 +1,11 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { AuditLogRepository } from '../repositories';
-import {
-  AuditLog,
-  AuditLevel,
-  ActivityCategory,
-  ActorType,
-} from '../entities/audit-log.entity';
-import {
-  CreateAuditLogDto,
-  AuditLogResponseDto,
-  AuditLogSearchDto,
-} from '../dto';
+import { AuditLog, AuditLevel, ActivityCategory, ActorType } from '../entities/audit-log.entity';
+import { CreateAuditLogDto, AuditLogResponseDto, AuditLogSearchDto } from '../dto';
 
 /**
  * Audit Log Service
- * 
+ *
  * Manages audit logging operations:
  * - Create audit logs
  * - Search and filter audit logs
@@ -35,9 +21,7 @@ export class AuditLogService {
   /**
    * Create audit log
    */
-  async createAuditLog(
-    createDto: CreateAuditLogDto,
-  ): Promise<AuditLogResponseDto> {
+  async createAuditLog(createDto: CreateAuditLogDto): Promise<AuditLogResponseDto> {
     try {
       // Calculate field changes if before/after values are provided
       let fieldChanges: Record<string, { before: any; after: any }> | null = null;
@@ -80,7 +64,7 @@ export class AuditLogService {
       const saved = await this.auditLogRepository.save(auditLog);
       return AuditLogResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create audit log: ${error.message}`, error);
+      this.logger.error(`Failed to create audit log: ${error instanceof Error ? error.message : String(error)}`, error);
       throw error;
     }
   }
@@ -104,11 +88,14 @@ export class AuditLogService {
     limit: number = 20,
     filters?: AuditLogSearchDto,
   ): Promise<{ logs: AuditLogResponseDto[]; total: number }> {
-    const result = await this.auditLogRepository.findWithPagination(
-      page,
-      limit,
-      filters,
-    );
+    const convertedFilters = filters
+      ? {
+          ...filters,
+          startDate: filters.startDate ? new Date(filters.startDate) : undefined,
+          endDate: filters.endDate ? new Date(filters.endDate) : undefined,
+        }
+      : undefined;
+    const result = await this.auditLogRepository.findWithPagination(page, limit, convertedFilters);
     return {
       logs: result.logs.map((log) => AuditLogResponseDto.fromEntity(log)),
       total: result.total,
@@ -123,11 +110,7 @@ export class AuditLogService {
     page: number = 1,
     limit: number = 20,
   ): Promise<{ logs: AuditLogResponseDto[]; total: number }> {
-    const result = await this.auditLogRepository.searchAuditLogs(
-      searchTerm,
-      page,
-      limit,
-    );
+    const result = await this.auditLogRepository.searchAuditLogs(searchTerm, page, limit);
     return {
       logs: result.logs.map((log) => AuditLogResponseDto.fromEntity(log)),
       total: result.total,
@@ -171,11 +154,7 @@ export class AuditLogService {
     byCategory: Record<string, number>;
     byActivityType: Record<string, number>;
   }> {
-    return this.auditLogRepository.getAuditStatistics(
-      organizationId,
-      startDate,
-      endDate,
-    );
+    return this.auditLogRepository.getAuditStatistics(organizationId, startDate, endDate);
   }
 
   /**
@@ -186,10 +165,17 @@ export class AuditLogService {
     format: 'json' | 'csv' = 'json',
   ): Promise<string> {
     // Get all matching logs (no pagination for export)
+    const convertedFilters = filters
+      ? {
+          ...filters,
+          startDate: filters.startDate ? new Date(filters.startDate) : undefined,
+          endDate: filters.endDate ? new Date(filters.endDate) : undefined,
+        }
+      : undefined;
     const result = await this.auditLogRepository.findWithPagination(
       1,
       100000, // Large limit for export
-      filters,
+      convertedFilters,
     );
 
     if (format === 'json') {

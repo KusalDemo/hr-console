@@ -12,7 +12,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Approval Delegation Entity
- * 
+ *
  * Tracks delegation of approval authority with:
  * - Delegation rules (who can delegate to whom)
  * - Effective date ranges

@@ -55,7 +55,11 @@ import { LoggerService } from './logger.service';
             customSuccessMessage: (req: { method: string }, res: { statusCode: number }) => {
               return `${req.method} ${res.statusCode}`;
             },
-            customErrorMessage: (req: { method: string }, res: { statusCode: number }, err: Error) => {
+            customErrorMessage: (
+              req: { method: string },
+              res: { statusCode: number },
+              err: Error,
+            ) => {
               return `${req.method} ${res.statusCode} - ${err.message}`;
             },
             customAttributeKeys: {
@@ -74,4 +78,3 @@ import { LoggerService } from './logger.service';
   exports: [LoggerService],
 })
 export class LoggerModule {}
-

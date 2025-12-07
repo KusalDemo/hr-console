@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectFinancialsController } from './project-financials.controller';
 import { ProjectFinancialService } from './services';
-import {
-  ProjectBudgetRepository,
-  ProjectCostRepository,
-} from './repositories';
+import { ProjectBudgetRepository, ProjectCostRepository } from './repositories';
 import { ProjectBudget, ProjectCost } from './entities';
 import { Project } from '../projects/entities/project.entity';
 import { ProjectRepository } from '../projects/repositories/project.repository';
@@ -16,7 +13,7 @@ import { TaskRepository } from '../tasks/repositories/task.repository';
 
 /**
  * Project Financials Module
- * 
+ *
  * Provides project profitability and financial tracking:
  * - Budget management (budget lines, categories, versions)
  * - Cost tracking (labor, materials, expenses)
@@ -25,15 +22,7 @@ import { TaskRepository } from '../tasks/repositories/task.repository';
  * - Integration with time tracking for labor costs
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      ProjectBudget,
-      ProjectCost,
-      Project,
-      Employee,
-      Task,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([ProjectBudget, ProjectCost, Project, Employee, Task])],
   controllers: [ProjectFinancialsController],
   providers: [
     ProjectFinancialService,
@@ -43,12 +32,7 @@ import { TaskRepository } from '../tasks/repositories/task.repository';
     EmployeeRepository,
     TaskRepository,
   ],
-  exports: [
-    ProjectFinancialService,
-    ProjectBudgetRepository,
-    ProjectCostRepository,
-  ],
+  exports: [ProjectFinancialService, ProjectBudgetRepository, ProjectCostRepository],
 })
 export class ProjectFinancialsModule {}
-
 

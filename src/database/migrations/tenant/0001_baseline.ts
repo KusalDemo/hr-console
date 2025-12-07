@@ -8,7 +8,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - user_roles: User-role assignments
  * - organizations: Organizations within the tenant
  * - organization_memberships: User-organization relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  * The schema should already exist before running this migration
  */
@@ -241,4 +241,3 @@ export class TenantBaseline0000000000001 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS users CASCADE`);
   }
 }
-

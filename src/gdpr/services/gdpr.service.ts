@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -17,7 +17,7 @@ import * as crypto from 'crypto';
 
 /**
  * GDPR Service
- * 
+ *
  * Handles GDPR compliance operations:
  * - Data subject requests (access, deletion, portability, rectification, restriction)
  * - Request verification and processing
@@ -132,8 +132,12 @@ export class GdprService {
 
     try {
       // Export user data
+      const identifier = request.dataSubjectIdentifier || request.dataSubjectEmail;
+      if (!identifier) {
+        throw new BadRequestException('Data subject identifier or email is required');
+      }
       const exportPath = await this.dataExportService.exportUserData(
-        request.dataSubjectIdentifier || request.dataSubjectEmail,
+        identifier,
         request.dataSubjectType || DataSubjectType.USER,
       );
 
@@ -179,8 +183,12 @@ export class GdprService {
 
     try {
       // Delete user data
+      const identifier = request.dataSubjectIdentifier || request.dataSubjectEmail;
+      if (!identifier) {
+        throw new BadRequestException('Data subject identifier or email is required');
+      }
       const deletedCount = await this.deleteUserData(
-        request.dataSubjectIdentifier || request.dataSubjectEmail,
+        identifier,
         request.dataSubjectType || DataSubjectType.USER,
       );
 
@@ -220,8 +228,12 @@ export class GdprService {
 
     try {
       // Anonymize user data
+      const identifier = request.dataSubjectIdentifier || request.dataSubjectEmail;
+      if (!identifier) {
+        throw new BadRequestException('Data subject identifier or email is required');
+      }
       const anonymizedCount = await this.anonymizeUserData(
-        request.dataSubjectIdentifier || request.dataSubjectEmail,
+        identifier,
         request.dataSubjectType || DataSubjectType.USER,
       );
 
@@ -261,7 +273,7 @@ export class GdprService {
       consentKey,
       dataSubjectEmail,
       dataSubjectId: dataSubjectId || null,
-      dataSubjectType: dataSubjectType || DataSubjectType.USER,
+      dataSubjectType: (dataSubjectType || DataSubjectType.USER) as any,
       consentType,
       consentCategory,
       consentPurpose: consentPurpose || null,
@@ -273,7 +285,7 @@ export class GdprService {
       consentRecordHash: this.hashConsentRecord(consentKey, dataSubjectEmail, consentType),
     });
 
-    return this.consentRepository.save(consent);
+    return this.consentRepository.save(consent) as Promise<Consent>;
   }
 
   /**
@@ -331,10 +343,7 @@ export class GdprService {
   /**
    * Get user consents
    */
-  async getUserConsents(
-    dataSubjectEmail: string,
-    dataSubjectId?: number,
-  ): Promise<Consent[]> {
+  async getUserConsents(dataSubjectEmail: string, dataSubjectId?: number): Promise<Consent[]> {
     const where: any = { dataSubjectEmail };
     if (dataSubjectId) {
       where.dataSubjectId = dataSubjectId;
@@ -366,20 +375,12 @@ export class GdprService {
     return `CONSENT-${Date.now()}-${crypto.randomBytes(8).toString('hex')}`;
   }
 
-  private hashConsentRecord(
-    consentKey: string,
-    email: string,
-    consentType: ConsentType,
-  ): string {
+  private hashConsentRecord(consentKey: string, email: string, consentType: ConsentType): string {
     const data = `${consentKey}:${email}:${consentType}:${Date.now()}`;
     return crypto.createHash('sha256').update(data).digest('hex');
   }
 
-  private hashAcceptance(
-    userId: number,
-    policyType: PolicyType,
-    policyVersion: string,
-  ): string {
+  private hashAcceptance(userId: number, policyType: PolicyType, policyVersion: string): string {
     const data = `${userId}:${policyType}:${policyVersion}:${Date.now()}`;
     return crypto.createHash('sha256').update(data).digest('hex');
   }

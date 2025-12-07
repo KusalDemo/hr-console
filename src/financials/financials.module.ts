@@ -23,11 +23,13 @@ import {
   TransactionLineItem,
   BillingRule,
   RecurringInvoice,
+  Invoice,
+  InvoiceLineItem,
 } from './entities';
 
 /**
  * Financials Module
- * 
+ *
  * Provides multi-currency support with:
  * - Currency management (CRUD, organization preferences)
  * - Exchange rate management (historical tracking, organization-specific rates)
@@ -45,6 +47,8 @@ import {
       TransactionLineItem,
       BillingRule,
       RecurringInvoice,
+      Invoice,
+      InvoiceLineItem,
     ]),
   ],
   controllers: [FinancialsController],

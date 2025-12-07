@@ -35,7 +35,7 @@ export enum MaintenanceStatus {
 
 /**
  * Equipment Maintenance Entity
- * 
+ *
  * Maintenance history for equipment with scheduling and tracking.
  */
 @Entity('equipment_maintenance')

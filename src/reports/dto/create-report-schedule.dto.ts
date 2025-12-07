@@ -9,10 +9,7 @@ import {
   IsDateString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  ScheduleFrequency,
-  ScheduleStatus,
-} from '../entities/report-schedule.entity';
+import { ScheduleFrequency, ScheduleStatus } from '../entities/report-schedule.entity';
 
 /**
  * Create Report Schedule DTO

@@ -58,7 +58,7 @@ export enum KPIStatus {
 
 /**
  * KPI Definition Entity
- * 
+ *
  * Configurable KPIs and metric definitions with:
  * - Calculation formulas
  * - Data sources

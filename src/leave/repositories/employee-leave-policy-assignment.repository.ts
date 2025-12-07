@@ -4,7 +4,7 @@ import { EmployeeLeavePolicyAssignment } from '../entities/employee-leave-policy
 
 /**
  * Employee Leave Policy Assignment Repository
- * 
+ *
  * Custom repository methods for employee policy assignment queries.
  */
 @Injectable()
@@ -46,10 +46,9 @@ export class EmployeeLeavePolicyAssignmentRepository extends Repository<Employee
       .where('assignment.employeeId = :employeeId', { employeeId })
       .andWhere('assignment.isActive = :isActive', { isActive: true })
       .andWhere('assignment.effectiveStartDate <= :now', { now })
-      .andWhere(
-        '(assignment.effectiveEndDate IS NULL OR assignment.effectiveEndDate >= :now)',
-        { now },
-      )
+      .andWhere('(assignment.effectiveEndDate IS NULL OR assignment.effectiveEndDate >= :now)', {
+        now,
+      })
       .orderBy('assignment.priority', 'ASC')
       .addOrderBy('assignment.effectiveStartDate', 'DESC')
       .getMany();
@@ -77,10 +76,9 @@ export class EmployeeLeavePolicyAssignmentRepository extends Repository<Employee
       .where('assignment.leavePolicyId = :leavePolicyId', { leavePolicyId })
       .andWhere('assignment.isActive = :isActive', { isActive: true })
       .andWhere('assignment.effectiveStartDate <= :now', { now })
-      .andWhere(
-        '(assignment.effectiveEndDate IS NULL OR assignment.effectiveEndDate >= :now)',
-        { now },
-      )
+      .andWhere('(assignment.effectiveEndDate IS NULL OR assignment.effectiveEndDate >= :now)', {
+        now,
+      })
       .orderBy('assignment.employeeId', 'ASC')
       .getMany();
   }

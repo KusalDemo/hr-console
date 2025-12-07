@@ -6,7 +6,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Employee DataLoader
- * 
+ *
  * Batch loads employees by ID to prevent N+1 queries.
  * Caches results per request.
  */
@@ -21,13 +21,13 @@ export class EmployeeDataLoader {
         const employees = await this.employeeRepository.find({
           where: { id: In([...ids]) },
         });
-        
+
         // Create a map for quick lookup
         const employeeMap = new Map<number, Employee>();
         employees.forEach((employee) => {
           employeeMap.set(employee.id, employee);
         });
-        
+
         // Return employees in the same order as requested IDs
         return ids.map((id) => employeeMap.get(id) || null);
       },
@@ -49,6 +49,7 @@ export class EmployeeDataLoader {
    * Load multiple employees by IDs
    */
   async loadMany(ids: number[]): Promise<(Employee | null)[]> {
-    return this.loader.loadMany(ids);
+    const results = await this.loader.loadMany(ids);
+    return results.map((result) => (result instanceof Error ? null : result));
   }
 }

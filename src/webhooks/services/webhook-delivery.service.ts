@@ -1,22 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createHmac } from 'crypto';
-import {
-  WebhookSubscriptionRepository,
-  WebhookEventRepository,
-} from '../repositories';
+import { WebhookSubscriptionRepository, WebhookEventRepository } from '../repositories';
 import {
   WebhookSubscription,
   WebhookSubscriptionStatus,
 } from '../entities/webhook-subscription.entity';
-import {
-  WebhookEvent,
-  WebhookEventStatus,
-} from '../entities/webhook-event.entity';
+import { WebhookEvent, WebhookEventStatus } from '../entities/webhook-event.entity';
 import { AuditLogService } from '../../activities/services/audit-log.service';
+import { ActorType } from '../../activities/entities/audit-log.entity';
 
 /**
  * Webhook Delivery Service
- * 
+ *
  * Handles webhook event delivery:
  * - HTTP request execution
  * - Retry logic
@@ -41,7 +36,7 @@ export class WebhookDeliveryService {
   async processPendingEvents(): Promise<void> {
     // Get events ready for retry
     const retryEvents = await this.eventRepository.findReadyForRetry();
-    
+
     // Get pending events (limit to prevent overload)
     const pendingEvents = await this.eventRepository.find({
       where: { status: WebhookEventStatus.PENDING },
@@ -207,7 +202,7 @@ export class WebhookDeliveryService {
     // Log activity
     await this.auditLogService.createAuditLog({
       activityType: 'WEBHOOK_DELIVERED',
-      actorType: 'SYSTEM',
+      actorType: ActorType.SYSTEM,
       targetType: 'WEBHOOK_EVENT',
       targetId: event.id,
       organizationId: subscription.organizationId,
@@ -250,9 +245,7 @@ export class WebhookDeliveryService {
     event.nextRetryAt = nextRetryAt;
     await this.eventRepository.save(event);
 
-    this.logger.debug(
-      `Scheduled retry for event ${event.id} at ${nextRetryAt.toISOString()}`,
-    );
+    this.logger.debug(`Scheduled retry for event ${event.id} at ${nextRetryAt.toISOString()}`);
   }
 
   /**
@@ -290,7 +283,7 @@ export class WebhookDeliveryService {
       // Log activity
       await this.auditLogService.createAuditLog({
         activityType: 'WEBHOOK_DEAD_LETTER',
-        actorType: 'SYSTEM',
+        actorType: ActorType.SYSTEM,
         targetType: 'WEBHOOK_EVENT',
         targetId: event.id,
         organizationId: subscription.organizationId,

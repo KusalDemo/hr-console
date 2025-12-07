@@ -135,5 +135,3 @@ export class LeadResponseDto {
     return dto;
   }
 }
-
-

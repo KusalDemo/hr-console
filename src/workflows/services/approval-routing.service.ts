@@ -4,7 +4,7 @@ import { ApprovalDelegation } from '../entities/approval-delegation.entity';
 
 /**
  * Approval Routing Service
- * 
+ *
  * Handles dynamic approval chain routing with:
  * - Approval routing based on department, amount, duration
  * - Delegation resolution
@@ -16,9 +16,7 @@ import { ApprovalDelegation } from '../entities/approval-delegation.entity';
 export class ApprovalRoutingService {
   private readonly logger = new Logger(ApprovalRoutingService.name);
 
-  constructor(
-    private readonly delegationRepository: ApprovalDelegationRepository,
-  ) {}
+  constructor(private readonly delegationRepository: ApprovalDelegationRepository) {}
 
   /**
    * Resolve approver considering delegations
@@ -41,9 +39,8 @@ export class ApprovalRoutingService {
     }
 
     // Find the most specific delegation (workflow-specific > entity-specific > general)
-    const specificDelegation = delegations.find(
-      (d) => d.workflowKey === workflowKey && d.entityType === entityType,
-    ) ||
+    const specificDelegation =
+      delegations.find((d) => d.workflowKey === workflowKey && d.entityType === entityType) ||
       delegations.find((d) => d.workflowKey === workflowKey) ||
       delegations.find((d) => d.entityType === entityType) ||
       delegations[0];
@@ -207,12 +204,7 @@ export class ApprovalRoutingService {
     }
 
     // Resolve delegation for escalation approver
-    return this.resolveApprover(
-      escalationRules.escalationTo,
-      workflowKey,
-      'escalation',
-      {},
-    );
+    return this.resolveApprover(escalationRules.escalationTo, workflowKey, 'escalation', {});
   }
 
   /**

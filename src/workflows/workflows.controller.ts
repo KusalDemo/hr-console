@@ -31,7 +31,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Workflows Controller
- * 
+ *
  * REST API endpoints for workflow management:
  * - Workflow definitions (CRUD)
  * - Workflow instances (start, transition, cancel)
@@ -183,7 +183,9 @@ export class WorkflowsController {
       {
         ...createDto,
         effectiveStartDate: new Date(createDto.effectiveStartDate),
-        effectiveEndDate: createDto.effectiveEndDate ? new Date(createDto.effectiveEndDate) : undefined,
+        effectiveEndDate: createDto.effectiveEndDate
+          ? new Date(createDto.effectiveEndDate)
+          : undefined,
       },
       user.userId,
     );
@@ -218,12 +220,7 @@ export class WorkflowsController {
   @Delete('delegations/:id')
   @Roles('ADMIN', 'HR', 'MANAGER')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeDelegation(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async removeDelegation(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     await this.workflowService.removeDelegation(id, user.userId);
   }
 }
-
-

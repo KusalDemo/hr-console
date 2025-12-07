@@ -4,7 +4,7 @@ import { FormResponse, FormResponseStatus } from '../entities/form-response.enti
 
 /**
  * Form Response Repository
- * 
+ *
  * Custom repository methods for form response queries.
  */
 @Injectable()
@@ -45,10 +45,7 @@ export class FormResponseRepository extends Repository<FormResponse> {
   /**
    * Find responses by user
    */
-  async findByUser(
-    userId: number,
-    formDefinitionId?: number,
-  ): Promise<FormResponse[]> {
+  async findByUser(userId: number, formDefinitionId?: number): Promise<FormResponse[]> {
     const query = this.createQueryBuilder('response')
       .where('response.submittedBy = :userId', { userId })
       .andWhere('response.isAnonymous = :isAnonymous', { isAnonymous: false })
@@ -82,9 +79,7 @@ export class FormResponseRepository extends Repository<FormResponse> {
   /**
    * Find anonymous responses
    */
-  async findAnonymous(
-    formDefinitionId?: number,
-  ): Promise<FormResponse[]> {
+  async findAnonymous(formDefinitionId?: number): Promise<FormResponse[]> {
     const query = this.createQueryBuilder('response')
       .where('response.isAnonymous = :isAnonymous', { isAnonymous: true })
       .orderBy('response.submittedAt', 'DESC');
@@ -103,8 +98,10 @@ export class FormResponseRepository extends Repository<FormResponse> {
     formDefinitionId: number,
     status?: FormResponseStatus,
   ): Promise<number> {
-    const query = this.createQueryBuilder('response')
-      .where('response.formDefinitionId = :formDefinitionId', { formDefinitionId });
+    const query = this.createQueryBuilder('response').where(
+      'response.formDefinitionId = :formDefinitionId',
+      { formDefinitionId },
+    );
 
     if (status) {
       query.andWhere('response.status = :status', { status });
@@ -116,10 +113,7 @@ export class FormResponseRepository extends Repository<FormResponse> {
   /**
    * Count responses by user for form
    */
-  async countByUserForForm(
-    userId: number,
-    formDefinitionId: number,
-  ): Promise<number> {
+  async countByUserForForm(userId: number, formDefinitionId: number): Promise<number> {
     return this.createQueryBuilder('response')
       .where('response.submittedBy = :userId', { userId })
       .andWhere('response.formDefinitionId = :formDefinitionId', { formDefinitionId })
@@ -140,8 +134,10 @@ export class FormResponseRepository extends Repository<FormResponse> {
     anonymous: number;
     authenticated: number;
   }> {
-    const query = this.createQueryBuilder('response')
-      .where('response.formDefinitionId = :formDefinitionId', { formDefinitionId });
+    const query = this.createQueryBuilder('response').where(
+      'response.formDefinitionId = :formDefinitionId',
+      { formDefinitionId },
+    );
 
     if (startDate) {
       query.andWhere('response.submittedAt >= :startDate', { startDate });
@@ -162,8 +158,7 @@ export class FormResponseRepository extends Repository<FormResponse> {
 
     responses.forEach((response) => {
       // Count by status
-      statistics.byStatus[response.status] =
-        (statistics.byStatus[response.status] || 0) + 1;
+      statistics.byStatus[response.status] = (statistics.byStatus[response.status] || 0) + 1;
 
       // Count anonymous vs authenticated
       if (response.isAnonymous) {
@@ -186,8 +181,7 @@ export class FormResponseRepository extends Repository<FormResponse> {
     startDate?: Date,
     endDate?: Date,
   ): Promise<FormResponse[]> {
-    const query = this.createQueryBuilder('response')
-      .orderBy('response.submittedAt', 'DESC');
+    const query = this.createQueryBuilder('response').orderBy('response.submittedAt', 'DESC');
 
     if (formDefinitionId) {
       query.andWhere('response.formDefinitionId = :formDefinitionId', { formDefinitionId });

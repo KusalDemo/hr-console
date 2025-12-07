@@ -50,7 +50,7 @@ export enum JobPriority {
 
 /**
  * Job Queue Entity
- * 
+ *
  * Job definitions and status tracking:
  * - Job type and configuration
  * - Priority and scheduling
@@ -215,3 +215,4 @@ export class JobQueue {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
+

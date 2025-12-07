@@ -1,10 +1,11 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  ComplianceFramework,
-  FrameworkType,
-} from '../entities/compliance-framework.entity';
+import { ComplianceFramework, FrameworkType } from '../entities/compliance-framework.entity';
+import { ComplianceFrameworkRepository } from '../repositories/compliance-framework.repository';
+import { ComplianceChecklistRepository } from '../repositories/compliance-checklist.repository';
+import { ComplianceAuditRepository } from '../repositories/compliance-audit.repository';
+import { ComplianceEvidenceRepository } from '../repositories/compliance-evidence.repository';
 import {
   ComplianceRequirement,
   RequirementType,
@@ -15,15 +16,8 @@ import {
   ChecklistType,
   ChecklistStatus,
 } from '../entities/compliance-checklist.entity';
-import {
-  ComplianceChecklistItem,
-  ItemStatus,
-} from '../entities/compliance-checklist-item.entity';
-import {
-  ComplianceAudit,
-  AuditType,
-  AuditStatus,
-} from '../entities/compliance-audit.entity';
+import { ComplianceChecklistItem, ItemStatus } from '../entities/compliance-checklist-item.entity';
+import { ComplianceAudit, AuditType, AuditStatus } from '../entities/compliance-audit.entity';
 import {
   ComplianceAuditFinding,
   FindingType,
@@ -42,7 +36,7 @@ import * as crypto from 'crypto';
 
 /**
  * Compliance Service
- * 
+ *
  * Handles compliance tracking and reporting:
  * - Framework management
  * - Checklist creation and management
@@ -55,20 +49,16 @@ export class ComplianceService {
   private readonly logger = new Logger(ComplianceService.name);
 
   constructor(
-    @InjectRepository(ComplianceFramework)
-    private frameworkRepository: Repository<ComplianceFramework>,
+    public readonly frameworkRepository: ComplianceFrameworkRepository,
     @InjectRepository(ComplianceRequirement)
     private requirementRepository: Repository<ComplianceRequirement>,
-    @InjectRepository(ComplianceChecklist)
-    private checklistRepository: Repository<ComplianceChecklist>,
+    public readonly checklistRepository: ComplianceChecklistRepository,
     @InjectRepository(ComplianceChecklistItem)
     private checklistItemRepository: Repository<ComplianceChecklistItem>,
-    @InjectRepository(ComplianceAudit)
-    private auditRepository: Repository<ComplianceAudit>,
+    public readonly auditRepository: ComplianceAuditRepository,
     @InjectRepository(ComplianceAuditFinding)
     private findingRepository: Repository<ComplianceAuditFinding>,
-    @InjectRepository(ComplianceEvidence)
-    private evidenceRepository: Repository<ComplianceEvidence>,
+    public readonly evidenceRepository: ComplianceEvidenceRepository,
     @InjectRepository(ComplianceAutomatedCheck)
     private automatedCheckRepository: Repository<ComplianceAutomatedCheck>,
   ) {}
@@ -313,9 +303,7 @@ export class ComplianceService {
   /**
    * Get compliance status for framework
    */
-  async getFrameworkComplianceStatus(
-    frameworkId: number,
-  ): Promise<{
+  async getFrameworkComplianceStatus(frameworkId: number): Promise<{
     framework: ComplianceFramework;
     totalRequirements: number;
     compliantRequirements: number;
@@ -361,8 +349,7 @@ export class ComplianceService {
     }
 
     const total = requirements.length;
-    const compliancePercentage =
-      total > 0 ? (compliantCount / total) * 100 : 0;
+    const compliancePercentage = total > 0 ? (compliantCount / total) * 100 : 0;
 
     return {
       framework,
@@ -448,9 +435,7 @@ export class ComplianceService {
     await this.auditRepository.save(audit);
   }
 
-  private async updateChecklistItemEvidenceCount(
-    checklistItemId: number,
-  ): Promise<void> {
+  private async updateChecklistItemEvidenceCount(checklistItemId: number): Promise<void> {
     const count = await this.evidenceRepository.count({
       where: { checklistItemId, isActive: true },
     });
@@ -468,9 +453,7 @@ export class ComplianceService {
     }
   }
 
-  private calculateNextExecutionTime(
-    frequency: ExecutionFrequency,
-  ): Date {
+  private calculateNextExecutionTime(frequency: ExecutionFrequency): Date {
     const now = new Date();
     const next = new Date(now);
 

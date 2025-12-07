@@ -58,7 +58,7 @@ export enum FindingStatus {
 
 /**
  * Compliance Audit Finding Entity
- * 
+ *
  * Individual findings from compliance audits.
  */
 @Entity('compliance_audit_findings')
@@ -132,7 +132,13 @@ export class ComplianceAuditFinding {
   @Column({ name: 'remediation_deadline', type: 'date', nullable: true })
   remediationDeadline: Date | null;
 
-  @Column({ name: 'remediation_status', type: 'varchar', length: 32, nullable: false, default: RemediationStatus.PENDING })
+  @Column({
+    name: 'remediation_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: RemediationStatus.PENDING,
+  })
   remediationStatus: RemediationStatus;
 
   @Column({ name: 'remediation_completed_at', type: 'timestamptz', nullable: true })
@@ -166,7 +172,13 @@ export class ComplianceAuditFinding {
   @Column({ name: 'assigned_at', type: 'timestamptz', nullable: true })
   assignedAt: Date | null;
 
-  @Column({ name: 'finding_status', type: 'varchar', length: 32, nullable: false, default: FindingStatus.OPEN })
+  @Column({
+    name: 'finding_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: FindingStatus.OPEN,
+  })
   findingStatus: FindingStatus;
 
   @Column({ name: 'resolved_at', type: 'timestamptz', nullable: true })
@@ -211,3 +223,4 @@ export class ComplianceAuditFinding {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedById: number | null;
 }
+

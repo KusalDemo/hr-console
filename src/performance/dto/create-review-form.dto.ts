@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsArray,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsArray, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 import { FormType, FormStatus } from '../entities/performance-review-form.entity';
 

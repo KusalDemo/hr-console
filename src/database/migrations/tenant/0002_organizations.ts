@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Organizations Migration & Seeding
- * 
+ *
  * This migration:
  * - Ensures all organization-related tables exist (idempotent)
  * - Adds any missing indexes or constraints
  * - Seeds default organization data if none exists
  * - Creates default organization settings
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  * It's safe to run on existing tenants as it checks for existing data.
  */
@@ -197,29 +197,39 @@ export class Organizations0000000000002 implements MigrationInterface {
         const defaultOrgKey = 'default-organization';
 
         // Check if key already exists (shouldn't, but be safe)
-        const keyExists = await queryRunner.query(`
+        const keyExists = await queryRunner.query(
+          `
           SELECT id FROM organizations WHERE organization_key = $1
-        `, [defaultOrgKey]);
+        `,
+          [defaultOrgKey],
+        );
 
         if (keyExists.length === 0) {
-          await queryRunner.query(`
+          await queryRunner.query(
+            `
             INSERT INTO organizations (
               organization_key, name, display_name, organization_type, status,
               is_default, created_at, updated_at
             )
             VALUES ($1, $2, $3, 'COMPANY', 'ACTIVE', true, now(), now())
-          `, [defaultOrgKey, defaultOrgName, defaultOrgName]);
+          `,
+            [defaultOrgKey, defaultOrgName, defaultOrgName],
+          );
 
           // Get the created organization ID
-          const createdOrg = await queryRunner.query(`
+          const createdOrg = await queryRunner.query(
+            `
             SELECT id FROM organizations WHERE organization_key = $1
-          `, [defaultOrgKey]);
+          `,
+            [defaultOrgKey],
+          );
 
           if (createdOrg.length > 0) {
             const orgId = createdOrg[0].id;
 
             // Seed default organization settings
-            await queryRunner.query(`
+            await queryRunner.query(
+              `
               INSERT INTO organization_settings (
                 organization_id, setting_key, setting_value, setting_type,
                 category, description, created_at, updated_at
@@ -231,7 +241,9 @@ export class Organizations0000000000002 implements MigrationInterface {
                 ($1, 'currency', 'USD', 'STRING', 'general', 'Default currency code', now(), now()),
                 ($1, 'locale', 'en-US', 'STRING', 'general', 'Default locale', now(), now())
               ON CONFLICT (organization_id, setting_key) DO NOTHING
-            `, [orgId]);
+            `,
+              [orgId],
+            );
           }
         }
       } else {
@@ -265,4 +277,3 @@ export class Organizations0000000000002 implements MigrationInterface {
     // The baseline migration handles table drops
   }
 }
-

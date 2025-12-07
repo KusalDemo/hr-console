@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Advanced Leave Policies Migration
- * 
+ *
  * This migration enhances leave policies with:
  * - Employee leave policy assignments table (multiple policies per employee with priorities)
  * - Enhanced indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class LeavePoliciesEnhanced0000000000030 implements MigrationInterface {

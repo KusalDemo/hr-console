@@ -115,4 +115,3 @@ export class CreateAuditLogs0000000000003 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS admin.audit_logs CASCADE`);
   }
 }
-

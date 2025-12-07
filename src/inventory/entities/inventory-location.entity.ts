@@ -11,7 +11,7 @@ import { InventoryItem } from './inventory-item.entity';
 
 /**
  * Inventory Location Entity
- * 
+ *
  * Multi-location inventory support with warehouse, bin tracking.
  */
 @Entity('inventory_locations')

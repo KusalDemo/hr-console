@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Custom Fields Framework Migration
- * 
+ *
  * This migration creates:
  * - custom_field_definitions table (field definitions for any entity type)
  * - custom_field_values table (actual values for entity instances)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class CustomFieldsFramework0000000000007 implements MigrationInterface {
@@ -154,5 +154,4 @@ export class CustomFieldsFramework0000000000007 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS custom_field_definitions CASCADE`);
   }
 }
-
 

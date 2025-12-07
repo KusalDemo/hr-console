@@ -11,14 +11,14 @@ import { ImportTemplate } from '../entities/import-template.entity';
 
 /**
  * Import Processor Service
- * 
+ *
  * Handles the actual processing of import files:
  * - File parsing (CSV, Excel, JSON)
  * - Data transformation
  * - Validation
  * - Batch processing
  * - Error handling
- * 
+ *
  * Note: Requires additional packages:
  * - csv-parser or papaparse for CSV
  * - xlsx or exceljs for Excel
@@ -33,10 +33,7 @@ export class ImportProcessorService {
   /**
    * Parse file based on format
    */
-  async parseFile(
-    filePath: string,
-    format: ImportFormat,
-  ): Promise<Array<Record<string, any>>> {
+  async parseFile(filePath: string, format: ImportFormat): Promise<Array<Record<string, any>>> {
     try {
       switch (format) {
         case ImportFormat.CSV:
@@ -50,7 +47,8 @@ export class ImportProcessorService {
       }
     } catch (error) {
       this.logger.error(`Failed to parse file: ${filePath}`, error);
-      throw new InternalServerErrorException(`Failed to parse file: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new InternalServerErrorException(`Failed to parse file: ${errorMessage}`);
     }
   }
 
@@ -69,8 +67,10 @@ export class ImportProcessorService {
     //     .on('end', () => resolve(results))
     //     .on('error', reject);
     // });
-    
-    throw new BadRequestException('CSV parsing not yet implemented. Please install csv-parser package.');
+
+    throw new BadRequestException(
+      'CSV parsing not yet implemented. Please install csv-parser package.',
+    );
   }
 
   /**
@@ -84,8 +84,10 @@ export class ImportProcessorService {
     // const sheetName = workbook.SheetNames[0];
     // const worksheet = workbook.Sheets[sheetName];
     // return xlsx.utils.sheet_to_json(worksheet);
-    
-    throw new BadRequestException('Excel parsing not yet implemented. Please install xlsx or exceljs package.');
+
+    throw new BadRequestException(
+      'Excel parsing not yet implemented. Please install xlsx or exceljs package.',
+    );
   }
 
   /**
@@ -95,7 +97,7 @@ export class ImportProcessorService {
     try {
       const fileContent = readFileSync(filePath, 'utf-8');
       const data = JSON.parse(fileContent);
-      
+
       // Handle both array and object formats
       if (Array.isArray(data)) {
         return data;
@@ -107,12 +109,14 @@ export class ImportProcessorService {
         // Otherwise, wrap in array
         return [data];
       }
-      
+
       throw new BadRequestException('Invalid JSON format. Expected array or object.');
     } catch (error) {
       if (error instanceof SyntaxError) {
         throw new BadRequestException(`Invalid JSON format: ${error.message}`);
       }
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      throw new BadRequestException(`Failed to parse JSON: ${errorMessage}`);
       throw error;
     }
   }
@@ -152,7 +156,11 @@ export class ImportProcessorService {
       // Apply default values
       const defaultValues = template.defaultValues || {};
       Object.keys(defaultValues).forEach((field) => {
-        if (transformed[field] === undefined || transformed[field] === null || transformed[field] === '') {
+        if (
+          transformed[field] === undefined ||
+          transformed[field] === null ||
+          transformed[field] === ''
+        ) {
           transformed[field] = defaultValues[field];
         }
       });
@@ -298,10 +306,7 @@ export class ImportProcessorService {
   /**
    * Detect duplicates based on template configuration
    */
-  detectDuplicates(
-    data: Array<Record<string, any>>,
-    template: ImportTemplate | null,
-  ): Set<number> {
+  detectDuplicates(data: Array<Record<string, any>>, template: ImportTemplate | null): Set<number> {
     const duplicateRows = new Set<number>();
 
     if (!template || !template.duplicateDetection) {
@@ -319,9 +324,7 @@ export class ImportProcessorService {
 
     data.forEach((record, index) => {
       // Create a key from the duplicate detection fields
-      const key = fields
-        .map((field: string) => String(record[field] || ''))
-        .join('|');
+      const key = fields.map((field: string) => String(record[field] || '')).join('|');
 
       if (key && seen.has(key)) {
         duplicateRows.add(index + 1); // 1-based row number

@@ -29,7 +29,7 @@ export enum EquipmentStatus {
 
 /**
  * Equipment Entity
- * 
+ *
  * Lifecycle asset management with asset tags, categories, locations, maintenance schedules.
  */
 @Entity('equipment')

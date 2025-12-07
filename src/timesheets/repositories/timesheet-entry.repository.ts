@@ -36,4 +36,3 @@ export class TimesheetEntryRepository extends Repository<TimesheetEntry> {
       .getMany();
   }
 }
-

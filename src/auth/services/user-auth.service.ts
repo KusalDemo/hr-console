@@ -61,9 +61,7 @@ export class UserAuthService {
     }
 
     // Validate users table exists
-    const hasUsersTable = await this.multiTenantService.validateSchemaTables(schemaName, [
-      'users',
-    ]);
+    const hasUsersTable = await this.multiTenantService.validateSchemaTables(schemaName, ['users']);
     if (!hasUsersTable) {
       throw new BusinessException(
         ErrorCode.TENANT_NOT_FOUND,
@@ -126,8 +124,7 @@ export class UserAuthService {
       }
 
       // Calculate remaining attempts
-      const remainingAttempts =
-        this.MAX_FAILED_ATTEMPTS - updatedUser.failed_login_attempts;
+      const remainingAttempts = this.MAX_FAILED_ATTEMPTS - updatedUser.failed_login_attempts;
 
       throw new UnauthorizedException(
         `Invalid email or password. ${remainingAttempts} attempt(s) remaining before account lockout.`,
@@ -321,10 +318,9 @@ export class UserAuthService {
       const quotedSchema = `"${schemaName.replace(/"/g, '""')}"`;
 
       // Check if organization_memberships table exists
-      const hasMembershipsTable = await this.multiTenantService.validateSchemaTables(
-        schemaName,
-        ['organization_memberships'],
-      );
+      const hasMembershipsTable = await this.multiTenantService.validateSchemaTables(schemaName, [
+        'organization_memberships',
+      ]);
 
       if (!hasMembershipsTable) {
         // Organizations not yet implemented, return empty
@@ -388,10 +384,7 @@ export class UserAuthService {
   /**
    * Check if account is locked
    */
-  private isAccountLocked(user: {
-    is_locked: boolean;
-    locked_until: Date | null;
-  }): boolean {
+  private isAccountLocked(user: { is_locked: boolean; locked_until: Date | null }): boolean {
     if (!user.is_locked) {
       return false;
     }
@@ -407,10 +400,7 @@ export class UserAuthService {
   /**
    * Increment failed login attempts
    */
-  private async incrementFailedLoginAttempts(
-    schemaName: string,
-    userId: number,
-  ): Promise<void> {
+  private async incrementFailedLoginAttempts(schemaName: string, userId: number): Promise<void> {
     const quotedSchema = `"${schemaName.replace(/"/g, '""')}"`;
     const query = `
       UPDATE ${quotedSchema}.users
@@ -442,11 +432,7 @@ export class UserAuthService {
   /**
    * Lock account
    */
-  private async lockAccount(
-    schemaName: string,
-    userId: number,
-    lockedUntil?: Date,
-  ): Promise<void> {
+  private async lockAccount(schemaName: string, userId: number, lockedUntil?: Date): Promise<void> {
     const quotedSchema = `"${schemaName.replace(/"/g, '""')}"`;
     const query = `
       UPDATE ${quotedSchema}.users
@@ -490,4 +476,3 @@ export class UserAuthService {
     await this.dataSource.query(query, [userId]);
   }
 }
-

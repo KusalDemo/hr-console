@@ -176,9 +176,7 @@ export class TaskResponseDto {
       }
 
       if (task.subTasks && Array.isArray(task.subTasks)) {
-        dto.subTasks = task.subTasks.map((subTask) =>
-          TaskResponseDto.fromEntity(subTask, false),
-        );
+        dto.subTasks = task.subTasks.map((subTask) => TaskResponseDto.fromEntity(subTask, false));
       }
 
       if (task.dependencies && Array.isArray(task.dependencies)) {
@@ -191,5 +189,4 @@ export class TaskResponseDto {
     return dto;
   }
 }
-
 

@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository, Between } from 'typeorm';
-import {
-  CalendarEvent,
-  EventStatus,
-  EventType,
-} from '../entities/calendar-event.entity';
+import { CalendarEvent, EventStatus, EventType } from '../entities/calendar-event.entity';
 
 /**
  * Calendar Event Repository
- * 
+ *
  * Custom repository methods for calendar event queries.
  */
 @Injectable()
@@ -47,10 +43,10 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
       .orderBy('event.startTime', 'ASC');
 
     if (startDate && endDate) {
-      query.andWhere(
-        '(event.startTime <= :endDate AND event.endTime >= :startDate)',
-        { startDate, endDate },
-      );
+      query.andWhere('(event.startTime <= :endDate AND event.endTime >= :startDate)', {
+        startDate,
+        endDate,
+      });
     }
 
     return query.getMany();
@@ -78,10 +74,7 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
     }
 
     if (userId) {
-      query.andWhere(
-        '(event.organizerId = :userId OR attendees.userId = :userId)',
-        { userId },
-      );
+      query.andWhere('(event.organizerId = :userId OR attendees.userId = :userId)', { userId });
     }
 
     return query.getMany();
@@ -102,10 +95,10 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
       .orderBy('event.startTime', 'ASC');
 
     if (startDate && endDate) {
-      query.andWhere(
-        '(event.startTime <= :endDate AND event.endTime >= :startDate)',
-        { startDate, endDate },
-      );
+      query.andWhere('(event.startTime <= :endDate AND event.endTime >= :startDate)', {
+        startDate,
+        endDate,
+      });
     }
 
     return query.getMany();
@@ -114,11 +107,7 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
   /**
    * Find events by attendee
    */
-  async findByAttendee(
-    userId: number,
-    startDate?: Date,
-    endDate?: Date,
-  ): Promise<CalendarEvent[]> {
+  async findByAttendee(userId: number, startDate?: Date, endDate?: Date): Promise<CalendarEvent[]> {
     const query = this.createQueryBuilder('event')
       .leftJoinAndSelect('event.calendar', 'calendar')
       .leftJoinAndSelect('event.attendees', 'attendees')
@@ -127,10 +116,10 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
       .orderBy('event.startTime', 'ASC');
 
     if (startDate && endDate) {
-      query.andWhere(
-        '(event.startTime <= :endDate AND event.endTime >= :startDate)',
-        { startDate, endDate },
-      );
+      query.andWhere('(event.startTime <= :endDate AND event.endTime >= :startDate)', {
+        startDate,
+        endDate,
+      });
     }
 
     return query.getMany();
@@ -162,10 +151,7 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
     }
 
     if (userId) {
-      query.andWhere(
-        '(event.organizerId = :userId OR attendees.userId = :userId)',
-        { userId },
-      );
+      query.andWhere('(event.organizerId = :userId OR attendees.userId = :userId)', { userId });
     }
 
     if (calendarIds && calendarIds.length > 0) {
@@ -193,10 +179,7 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
       .where('event.startTime >= :now', { now })
       .andWhere('event.startTime <= :endDate', { endDate })
       .andWhere('event.eventStatus != :cancelled', { cancelled: EventStatus.CANCELLED })
-      .andWhere(
-        '(event.organizerId = :userId OR attendees.userId = :userId)',
-        { userId },
-      )
+      .andWhere('(event.organizerId = :userId OR attendees.userId = :userId)', { userId })
       .orderBy('event.startTime', 'ASC');
 
     if (calendarIds && calendarIds.length > 0) {
@@ -206,4 +189,3 @@ export class CalendarEventRepository extends Repository<CalendarEvent> {
     return query.getMany();
   }
 }
-

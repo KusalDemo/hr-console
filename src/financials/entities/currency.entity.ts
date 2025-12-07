@@ -21,7 +21,7 @@ export enum CurrencyStatus {
 
 /**
  * Currency Entity
- * 
+ *
  * Represents supported currencies in the system with:
  * - ISO 4217 currency codes (USD, EUR, GBP, etc.)
  * - Currency symbols and display names

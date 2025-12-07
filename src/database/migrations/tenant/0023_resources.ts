@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Resources Migration
- * 
+ *
  * This migration creates:
  * - resources table (bookable resources: rooms, equipment, vehicles with capacity, availability, location mapping)
  * - resource_bookings table (resource bookings with conflict detection, approval workflows, usage tracking)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Resources0000000000023 implements MigrationInterface {

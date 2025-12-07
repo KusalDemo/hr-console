@@ -1,17 +1,8 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InventoryItemRepository } from '../repositories/inventory-item.repository';
 import { InventoryTransactionRepository } from '../repositories/inventory-transaction.repository';
 import { InventoryLocationRepository } from '../repositories/inventory-location.repository';
-import {
-  InventoryItem,
-  ItemType,
-  ItemStatus,
-} from '../entities/inventory-item.entity';
+import { InventoryItem, ItemType, ItemStatus } from '../entities/inventory-item.entity';
 import {
   InventoryTransaction,
   TransactionType,
@@ -21,7 +12,7 @@ import { InventoryLocation } from '../entities/inventory-location.entity';
 
 /**
  * Inventory Service
- * 
+ *
  * Manages inventory with:
  * - Item CRUD operations
  * - Stock tracking
@@ -62,9 +53,10 @@ export class InventoryService {
 
     const saved = await this.itemRepository.save(item);
 
-    this.logger.log(`Created inventory item: ${saved.id} (${saved.sku})`);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Created inventory item: ${savedEntity.id} (${savedEntity.sku})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -158,6 +150,7 @@ export class InventoryService {
       serialNumbers?: string[];
       lotNumber?: string;
       expiryDate?: Date;
+      transactionDate?: Date;
       notes?: string;
     },
     createdBy?: number,
@@ -185,7 +178,10 @@ export class InventoryService {
 
     // Calculate stock after
     let stockAfter = stockBefore;
-    if (createDto.transactionType === TransactionType.RECEIPT || createDto.transactionType === TransactionType.RETURN) {
+    if (
+      createDto.transactionType === TransactionType.RECEIPT ||
+      createDto.transactionType === TransactionType.RETURN
+    ) {
       stockAfter = stockBefore + createDto.quantity;
     } else if (
       createDto.transactionType === TransactionType.ISSUE ||
@@ -199,9 +195,7 @@ export class InventoryService {
 
     // Calculate total cost
     const totalCost =
-      createDto.unitCost !== undefined
-        ? createDto.unitCost * Math.abs(createDto.quantity)
-        : null;
+      createDto.unitCost !== undefined ? createDto.unitCost * Math.abs(createDto.quantity) : null;
 
     const transaction = this.transactionRepository.create({
       ...createDto,
@@ -269,9 +263,10 @@ export class InventoryService {
 
     const saved = await this.locationRepository.save(location);
 
-    this.logger.log(`Created inventory location: ${saved.id} (${saved.locationName})`);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Created inventory location: ${savedEntity.id} (${savedEntity.locationName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**

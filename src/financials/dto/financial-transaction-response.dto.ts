@@ -87,9 +87,7 @@ export class FinancialTransactionResponseDto {
     dto.updatedAt = transaction.updatedAt;
 
     if (includeLineItems && transaction.lineItems) {
-      const items = Array.isArray(transaction.lineItems)
-        ? transaction.lineItems
-        : [];
+      const items = Array.isArray(transaction.lineItems) ? transaction.lineItems : [];
       dto.lineItems = items.map((item) => TransactionLineItemResponseDto.fromEntity(item));
     }
 

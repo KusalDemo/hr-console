@@ -6,3 +6,4 @@ export class VerifyMfaDto {
   @Length(6, 6)
   code: string;
 }
+

@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Project Financials Migration
- * 
+ *
  * This migration creates:
  * - project_budgets table (budget lines with categories, cost tracking)
  * - project_costs table (actual costs: labor, materials, expenses)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class ProjectFinancials0000000000018 implements MigrationInterface {
@@ -175,5 +175,4 @@ export class ProjectFinancials0000000000018 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS project_budgets CASCADE`);
   }
 }
-
 

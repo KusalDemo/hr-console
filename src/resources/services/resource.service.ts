@@ -1,15 +1,10 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ResourceRepository } from '../repositories/resource.repository';
 import { Resource, ResourceType, ResourceStatus } from '../entities/resource.entity';
 
 /**
  * Resource Service
- * 
+ *
  * Manages resources with:
  * - Resource CRUD operations
  * - Availability checking
@@ -35,10 +30,11 @@ export class ResourceService {
     });
 
     const saved = await this.resourceRepository.save(resource);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created resource: ${saved.id} (${saved.resourceName})`);
+    this.logger.log(`Created resource: ${savedEntity.id} (${savedEntity.resourceName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -57,11 +53,7 @@ export class ResourceService {
   /**
    * Update resource
    */
-  async updateResource(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<Resource> {
+  async updateResource(id: number, updateDto: any, updatedBy?: number): Promise<Resource> {
     const resource = await this.resourceRepository.findById(id);
 
     if (!resource) {
@@ -91,7 +83,7 @@ export class ResourceService {
     }
 
     resource.isActive = false;
-    resource.updatedBy = updatedBy;
+    resource.updatedBy = updatedBy ?? null;
 
     await this.resourceRepository.save(resource);
 
@@ -112,47 +104,36 @@ export class ResourceService {
   /**
    * Get resources by status
    */
-  async getResourcesByStatus(
-    status: ResourceStatus,
-    organizationId?: number,
-  ): Promise<Resource[]> {
+  async getResourcesByStatus(status: ResourceStatus, organizationId?: number): Promise<Resource[]> {
     return this.resourceRepository.findByStatus(status, organizationId);
   }
 
   /**
    * Get resources by category
    */
-  async getResourcesByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<Resource[]> {
+  async getResourcesByCategory(category: string, organizationId?: number): Promise<Resource[]> {
     return this.resourceRepository.findByCategory(category, organizationId);
   }
 
   /**
    * Get resources by location
    */
-  async getResourcesByLocation(
-    locationId: number,
-    organizationId?: number,
-  ): Promise<Resource[]> {
+  async getResourcesByLocation(locationId: number, organizationId?: number): Promise<Resource[]> {
     return this.resourceRepository.findByLocation(locationId, organizationId);
   }
 
   /**
    * Search resources
    */
-  async searchResources(
-    filters: {
-      searchTerm?: string;
-      resourceType?: ResourceType;
-      category?: string;
-      locationId?: number;
-      organizationId?: number;
-      minCapacity?: number;
-      hasFeatures?: string[];
-    },
-  ): Promise<Resource[]> {
+  async searchResources(filters: {
+    searchTerm?: string;
+    resourceType?: ResourceType;
+    category?: string;
+    locationId?: number;
+    organizationId?: number;
+    minCapacity?: number;
+    hasFeatures?: string[];
+  }): Promise<Resource[]> {
     return this.resourceRepository.searchResources(
       filters.searchTerm,
       filters.resourceType,
@@ -218,10 +199,7 @@ export class ResourceService {
         const ruleStartMinutes = ruleStartHour * 60 + ruleStartMinute;
         const ruleEndMinutes = ruleEndHour * 60 + ruleEndMinute;
 
-        if (
-          bookingStartMinutes < ruleStartMinutes ||
-          bookingEndMinutes > ruleEndMinutes
-        ) {
+        if (bookingStartMinutes < ruleStartMinutes || bookingEndMinutes > ruleEndMinutes) {
           return {
             available: false,
             reason: `Resource only available between ${rules.startTime} and ${rules.endTime}`,
@@ -282,7 +260,7 @@ export class ResourceService {
     }
 
     resource.resourceStatus = status;
-    resource.updatedBy = updatedBy;
+    resource.updatedBy = updatedBy ?? null;
 
     return this.resourceRepository.save(resource);
   }
@@ -306,7 +284,7 @@ export class ResourceService {
     if (maintenanceSchedule) {
       resource.maintenanceSchedule = maintenanceSchedule;
     }
-    resource.updatedBy = updatedBy;
+    resource.updatedBy = updatedBy ?? null;
 
     return this.resourceRepository.save(resource);
   }

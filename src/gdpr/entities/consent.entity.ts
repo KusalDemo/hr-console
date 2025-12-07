@@ -49,7 +49,7 @@ export enum DataSubjectType {
 
 /**
  * Consent Entity
- * 
+ *
  * Consent tracking and management for GDPR compliance.
  */
 @Entity('consents')
@@ -91,7 +91,13 @@ export class Consent {
   @Column({ name: 'consent_purpose', type: 'text', nullable: true })
   consentPurpose: string | null;
 
-  @Column({ name: 'consent_status', type: 'varchar', length: 32, nullable: false, default: ConsentStatus.PENDING })
+  @Column({
+    name: 'consent_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: ConsentStatus.PENDING,
+  })
   consentStatus: ConsentStatus;
 
   // Consent metadata
@@ -196,3 +202,4 @@ export class Consent {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any> | null;
 }
+

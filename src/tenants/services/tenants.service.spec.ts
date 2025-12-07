@@ -116,9 +116,7 @@ describe('TenantsService', () => {
     it('should throw ConflictException if tenant key already exists', async () => {
       tenantRepository.exists.mockResolvedValue(true);
 
-      await expect(service.createTenant(createTenantDto)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(service.createTenant(createTenantDto)).rejects.toThrow(ConflictException);
 
       expect(tenantRepository.exists).toHaveBeenCalledWith('test-tenant');
       expect(tenantProvisioningService.provisionTenant).not.toHaveBeenCalled();
@@ -173,9 +171,7 @@ describe('TenantsService', () => {
     it('should throw NotFoundException when tenant not found', async () => {
       tenantRepository.findByKey.mockResolvedValue(null);
 
-      await expect(service.findOne('non-existent')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findOne('non-existent')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -203,9 +199,8 @@ describe('TenantsService', () => {
     it('should throw NotFoundException when tenant not found', async () => {
       tenantRepository.findById.mockResolvedValue(null);
 
-      await expect(service.updateTenant(999, updateTenantDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.updateTenant(999, updateTenantDto)).rejects.toThrow(NotFoundException);
     });
   });
 });
+

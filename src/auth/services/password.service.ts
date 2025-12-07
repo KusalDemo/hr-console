@@ -57,7 +57,9 @@ export class PasswordService {
       return hash;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Failed to hash password: ${errorMessage}. Rounds: ${rounds}, Type: ${typeof rounds}, Password length: ${password.length}`);
+      this.logger.error(
+        `Failed to hash password: ${errorMessage}. Rounds: ${rounds}, Type: ${typeof rounds}, Password length: ${password.length}`,
+      );
       throw new Error(`Failed to hash password: ${errorMessage}`);
     }
   }
@@ -77,7 +79,9 @@ export class PasswordService {
       const result = await bcrypt.compare(password, hash);
       return result;
     } catch (error) {
-      this.logger.error(`[DEBUG] PasswordService.verifyPassword - Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `[DEBUG] PasswordService.verifyPassword - Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       return false;
     }
   }
@@ -193,4 +197,3 @@ export class PasswordService {
     return rounds < this.bcryptRounds;
   }
 }
-

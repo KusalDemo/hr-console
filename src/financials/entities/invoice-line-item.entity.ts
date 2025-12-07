@@ -24,7 +24,7 @@ export enum InvoiceLineItemType {
 
 /**
  * Invoice Line Item Entity
- * 
+ *
  * Invoice line items with products/services, quantities, and pricing.
  */
 @Entity('invoice_line_items')

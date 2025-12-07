@@ -22,14 +22,14 @@ import { EmailModule } from '../email/email.module';
 
 /**
  * Tenants Module
- * 
+ *
  * Wires up all tenant management components:
  * - Tenant management controller
  * - Tenant services (provisioning, initialization, context, business logic)
  * - Tenant guards (existence validation)
  * - Tenant context middleware
  * - Tenant repositories
- * 
+ *
  * This module provides:
  * - Tenant creation and management (super admin only)
  * - Tenant context management for multi-tenancy
@@ -95,4 +95,3 @@ export class TenantsModule implements NestModule {
       .forRoutes('*'); // Apply to all routes
   }
 }
-

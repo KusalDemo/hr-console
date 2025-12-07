@@ -12,7 +12,7 @@ import { Task } from './task.entity';
 
 /**
  * Dependency Type Enum
- * 
+ *
  * FS = Finish-to-Start: Dependent task cannot start until this task finishes
  * SS = Start-to-Start: Dependent task cannot start until this task starts
  * FF = Finish-to-Finish: Dependent task cannot finish until this task finishes
@@ -27,7 +27,7 @@ export enum DependencyType {
 
 /**
  * Task Dependency Entity
- * 
+ *
  * Represents dependencies between tasks.
  * Supports different dependency types (FS, SS, FF, SF).
  */
@@ -134,5 +134,4 @@ export class TaskDependency {
     }
   }
 }
-
 

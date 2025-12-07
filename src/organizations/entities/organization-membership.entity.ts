@@ -13,13 +13,13 @@ import { Organization } from './organization.entity';
 
 /**
  * Organization Membership Entity - Represents user-organization relationships
- * 
+ *
  * This entity tracks:
  * - Which users belong to which organizations
  * - User's role within each organization
  * - Primary organization flag (one per user)
  * - Join and leave timestamps
- * 
+ *
  * Users can belong to multiple organizations, but only one can be marked as primary.
  * When a user leaves an organization, the left_at timestamp is set (soft delete).
  */
@@ -164,4 +164,3 @@ export class OrganizationMembership {
     this.isPrimary = false;
   }
 }
-

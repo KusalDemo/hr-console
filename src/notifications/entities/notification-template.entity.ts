@@ -20,14 +20,14 @@ export enum NotificationChannel {
 
 /**
  * Notification Template Entity
- * 
+ *
  * Stores notification templates for different channels:
  * - Email templates with subject and body
  * - SMS templates
  * - Push notification templates
  * - In-app notification templates
  * - Webhook templates
- * 
+ *
  * Supports template variables (e.g., {{userName}}, {{action}})
  */
 @Entity('notification_templates')

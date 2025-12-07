@@ -21,7 +21,7 @@ export enum HealthStatus {
 
 /**
  * Integration Health Entity
- * 
+ *
  * Tracks integration health status over time:
  * - Health check results
  * - Response times

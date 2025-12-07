@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Roles and Permissions Migration
- * 
+ *
  * This migration enhances the roles system with:
  * - Permissions table for granular permissions
  * - Role-permissions join table with granted/denied flag
  * - Role hierarchy support (parent_role_id in roles table)
  * - Default system roles and permissions seeding
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class RolesPermissions0000000000003 implements MigrationInterface {
@@ -167,7 +167,7 @@ export class RolesPermissions0000000000003 implements MigrationInterface {
     // Seed default system roles
     // Note: These roles will be created if they don't exist
     // We'll use a more complex approach to handle role creation and permission assignment
-    
+
     // First, ensure default roles exist
     await queryRunner.query(`
       INSERT INTO roles (name, description, is_system_role) VALUES
@@ -257,16 +257,15 @@ export class RolesPermissions0000000000003 implements MigrationInterface {
     // Drop tables in reverse order (respecting foreign key constraints)
     await queryRunner.query(`DROP TABLE IF EXISTS role_permissions CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS permissions CASCADE`);
-    
+
     // Remove parent_role_id column from roles table
     await queryRunner.query(`
       ALTER TABLE roles 
       DROP COLUMN IF EXISTS parent_role_id CASCADE
     `);
-    
+
     await queryRunner.query(`
       DROP INDEX IF EXISTS idx_roles_parent
     `);
   }
 }
-

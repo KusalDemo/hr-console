@@ -10,10 +10,11 @@ import {
 import { Document, DocumentVersion, DocumentShare } from './entities';
 import { Employee } from '../employees/entities/employee.entity';
 import { Organization } from '../organizations/entities/organization.entity';
+import { EmployeesModule } from '../employees/employees.module';
 
 /**
  * Documents Module
- * 
+ *
  * Provides document management with:
  * - File storage with versioning
  * - Document sharing and permissions
@@ -23,13 +24,8 @@ import { Organization } from '../organizations/entities/organization.entity';
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Document,
-      DocumentVersion,
-      DocumentShare,
-      Employee,
-      Organization,
-    ]),
+    TypeOrmModule.forFeature([Document, DocumentVersion, DocumentShare, Employee, Organization]),
+    EmployeesModule,
   ],
   controllers: [DocumentsController],
   providers: [

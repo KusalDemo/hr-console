@@ -39,4 +39,3 @@ export class LoggerService implements NestLoggerService {
     logMethod(logMessage, context);
   }
 }
-

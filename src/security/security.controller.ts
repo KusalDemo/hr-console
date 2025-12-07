@@ -19,7 +19,7 @@ import { MfaType } from './entities/mfa-configuration.entity';
 
 /**
  * Security Controller
- * 
+ *
  * Provides endpoints for:
  * - MFA setup and verification
  * - Password policy management
@@ -76,10 +76,7 @@ export class SecurityController {
    * Verify MFA and enable
    */
   @Post('mfa/verify')
-  async verifyMfa(
-    @Request() req: any,
-    @Body() dto: VerifyMfaDto & { mfaType: MfaType },
-  ) {
+  async verifyMfa(@Request() req: any, @Body() dto: VerifyMfaDto & { mfaType: MfaType }) {
     const userId = req.user.id;
     const isValid = await this.mfaService.verifyTotpCode(userId, dto.code);
     if (isValid) {
@@ -112,10 +109,7 @@ export class SecurityController {
    * Generate backup codes
    */
   @Post('mfa/backup-codes')
-  async generateBackupCodes(
-    @Request() req: any,
-    @Body() dto: { mfaType: MfaType },
-  ) {
+  async generateBackupCodes(@Request() req: any, @Body() dto: { mfaType: MfaType }) {
     const userId = req.user.id;
     const codes = await this.mfaService.generateBackupCodes(userId, dto.mfaType);
     return { backupCodes: codes };
@@ -145,10 +139,7 @@ export class SecurityController {
    * Revoke a session
    */
   @Delete('sessions/:sessionId')
-  async revokeSession(
-    @Request() req: any,
-    @Param('sessionId') sessionId: number,
-  ) {
+  async revokeSession(@Request() req: any, @Param('sessionId') sessionId: number) {
     const userId = req.user.id;
     await this.sessionService.revokeSession(sessionId, userId);
     return { message: 'Session revoked successfully' };
@@ -171,10 +162,7 @@ export class SecurityController {
    * Trust a device
    */
   @Put('sessions/:sessionId/trust')
-  async trustDevice(
-    @Request() req: any,
-    @Param('sessionId') sessionId: number,
-  ) {
+  async trustDevice(@Request() req: any, @Param('sessionId') sessionId: number) {
     await this.sessionService.trustDevice(sessionId);
     return { message: 'Device trusted successfully' };
   }
@@ -185,10 +173,7 @@ export class SecurityController {
    * Get password policy
    */
   @Get('password-policy')
-  async getPasswordPolicy(
-    @Request() req: any,
-    @Query('organizationId') organizationId?: number,
-  ) {
+  async getPasswordPolicy(@Request() req: any, @Query('organizationId') organizationId?: number) {
     const orgId = organizationId ? parseInt(organizationId.toString(), 10) : null;
     return this.passwordPolicyService.getPolicyForOrganization(orgId);
   }
@@ -212,3 +197,4 @@ export class SecurityController {
     );
   }
 }
+

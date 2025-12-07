@@ -34,7 +34,7 @@ export class EmailError extends Error {
 
 /**
  * Email Service
- * 
+ *
  * Handles all email sending operations using Nodemailer.
  * Supports SMTP configuration, email templates, retry logic, and error handling.
  */
@@ -62,9 +62,7 @@ export class EmailService {
     const smtpPassword = this.configService.smtpPassword;
 
     if (!smtpUser || !smtpPassword) {
-      this.logger.warn(
-        'SMTP credentials not configured. Email functionality will be disabled.',
-      );
+      this.logger.warn('SMTP credentials not configured. Email functionality will be disabled.');
       return;
     }
 
@@ -144,16 +142,13 @@ export class EmailService {
 
   /**
    * Send a generic email with retry logic
-   * 
+   *
    * @param sendEmailDto - Email sending parameters
    * @param retryCount - Current retry attempt (internal use)
    * @returns Promise resolving to message info
    * @throws EmailError with specific error type
    */
-  async sendEmail(
-    sendEmailDto: SendEmailDto,
-    retryCount: number = 0,
-  ): Promise<void> {
+  async sendEmail(sendEmailDto: SendEmailDto, retryCount: number = 0): Promise<void> {
     if (!this.transporter) {
       const error = new EmailError(
         EmailErrorType.CONFIGURATION_ERROR,
@@ -170,9 +165,7 @@ export class EmailService {
     const emailFromName = this.configService.emailFromName;
 
     const mailOptions = {
-      from: emailFromName
-        ? `${emailFromName} <${emailFrom}>`
-        : emailFrom,
+      from: emailFromName ? `${emailFromName} <${emailFrom}>` : emailFrom,
       to: sendEmailDto.to,
       subject: sendEmailDto.subject,
       text: sendEmailDto.text,
@@ -196,14 +189,8 @@ export class EmailService {
       const emailError = this.classifyError(error, sendEmailDto.to);
 
       // Retry logic for transient errors
-      if (
-        this.isRetryableError(emailError) &&
-        retryCount < this.maxRetries
-      ) {
-        const delay = Math.min(
-          this.retryDelayMs * Math.pow(2, retryCount),
-          this.maxRetryDelayMs,
-        );
+      if (this.isRetryableError(emailError) && retryCount < this.maxRetries) {
+        const delay = Math.min(this.retryDelayMs * Math.pow(2, retryCount), this.maxRetryDelayMs);
 
         this.logger.warn(
           `Email send failed (attempt ${retryCount + 1}/${this.maxRetries + 1}). Retrying in ${delay}ms... Error: ${emailError.message}`,
@@ -219,9 +206,7 @@ export class EmailService {
       // Log final error
       this.logger.error(
         `Failed to send email to ${sendEmailDto.to} after ${retryCount + 1} attempts: ${emailError.message}`,
-        emailError.originalError instanceof Error
-          ? emailError.originalError.stack
-          : undefined,
+        emailError.originalError instanceof Error ? emailError.originalError.stack : undefined,
       );
 
       throw emailError;
@@ -233,17 +218,11 @@ export class EmailService {
    */
   private validateEmailDto(sendEmailDto: SendEmailDto): void {
     if (!sendEmailDto.to || !sendEmailDto.to.trim()) {
-      throw new EmailError(
-        EmailErrorType.VALIDATION_ERROR,
-        'Recipient email address is required',
-      );
+      throw new EmailError(EmailErrorType.VALIDATION_ERROR, 'Recipient email address is required');
     }
 
     if (!sendEmailDto.subject || !sendEmailDto.subject.trim()) {
-      throw new EmailError(
-        EmailErrorType.VALIDATION_ERROR,
-        'Email subject is required',
-      );
+      throw new EmailError(EmailErrorType.VALIDATION_ERROR, 'Email subject is required');
     }
 
     if (!sendEmailDto.text && !sendEmailDto.html) {
@@ -360,14 +339,12 @@ export class EmailService {
   /**
    * Send tenant admin welcome email with credentials
    * Includes enhanced logging and error handling
-   * 
+   *
    * @param dto - Tenant admin welcome email data
    * @returns Promise resolving when email is sent
    * @throws EmailError if email sending fails
    */
-  async sendTenantAdminWelcomeEmail(
-    dto: SendTenantAdminWelcomeEmailDto,
-  ): Promise<void> {
+  async sendTenantAdminWelcomeEmail(dto: SendTenantAdminWelcomeEmailDto): Promise<void> {
     this.logger.log(
       `Preparing to send welcome email to tenant admin: ${dto.tenantAdminEmail} (Tenant: ${dto.tenantKey})`,
     );
@@ -385,9 +362,7 @@ export class EmailService {
       const frontendUrl = this.configService.frontendUrl;
       const loginUrl = `${frontendUrl}/login`;
 
-      this.logger.debug(
-        `Generating email templates for tenant admin: ${dto.tenantAdminEmail}`,
-      );
+      this.logger.debug(`Generating email templates for tenant admin: ${dto.tenantAdminEmail}`);
 
       // Load email template
       const htmlTemplate = this.getTenantAdminWelcomeEmailTemplate(
@@ -427,9 +402,7 @@ export class EmailService {
       if (error instanceof EmailError) {
         this.logger.error(
           `Failed to send welcome email to ${dto.tenantAdminEmail} (Tenant: ${dto.tenantKey}): ${error.type} - ${error.message}`,
-          error.originalError instanceof Error
-            ? error.originalError.stack
-            : undefined,
+          error.originalError instanceof Error ? error.originalError.stack : undefined,
         );
       } else {
         this.logger.error(
@@ -500,12 +473,16 @@ export class EmailService {
                         <td style="padding: 8px 0; color: #374151; font-size: 14px;"><strong>Tenant Key:</strong></td>
                         <td style="padding: 8px 0; color: #1f2937; font-size: 14px; text-align: right; font-family: monospace;">${this.escapeHtml(tenantKey)}</td>
                       </tr>
-                      ${organizationName ? `
+                      ${
+                        organizationName
+                          ? `
                       <tr>
                         <td style="padding: 8px 0; color: #374151; font-size: 14px;"><strong>Default Organization:</strong></td>
                         <td style="padding: 8px 0; color: #1f2937; font-size: 14px; text-align: right;">${this.escapeHtml(organizationName)}</td>
                       </tr>
-                      ` : ''}
+                      `
+                          : ''
+                      }
                     </table>
                   </td>
                 </tr>
@@ -642,11 +619,7 @@ This is an automated email. Please do not reply to this message.
   /**
    * Send password reset email (for future use)
    */
-  async sendPasswordResetEmail(
-    email: string,
-    resetToken: string,
-    resetUrl: string,
-  ): Promise<void> {
+  async sendPasswordResetEmail(email: string, resetToken: string, resetUrl: string): Promise<void> {
     // TODO: Implement password reset email template
     this.logger.log(`Password reset email requested for ${email}`);
   }
@@ -654,11 +627,7 @@ This is an automated email. Please do not reply to this message.
   /**
    * Send generic notification email
    */
-  async sendNotificationEmail(
-    to: string,
-    subject: string,
-    message: string,
-  ): Promise<void> {
+  async sendNotificationEmail(to: string, subject: string, message: string): Promise<void> {
     await this.sendEmail({
       to,
       subject,
@@ -667,4 +636,3 @@ This is an automated email. Please do not reply to this message.
     });
   }
 }
-

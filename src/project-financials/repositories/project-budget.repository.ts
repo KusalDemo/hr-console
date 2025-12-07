@@ -4,7 +4,7 @@ import { ProjectBudget, BudgetCategory, BudgetStatus } from '../entities/project
 
 /**
  * Project Budget Repository
- * 
+ *
  * Custom repository methods for budget queries with aggregation for financial reports.
  */
 @Injectable()
@@ -16,10 +16,7 @@ export class ProjectBudgetRepository extends Repository<ProjectBudget> {
   /**
    * Find budgets by project
    */
-  async findByProject(
-    projectId: number,
-    includeRelations = false,
-  ): Promise<ProjectBudget[]> {
+  async findByProject(projectId: number, includeRelations = false): Promise<ProjectBudget[]> {
     const query = this.createQueryBuilder('budget')
       .where('budget.projectId = :projectId', { projectId })
       .orderBy('budget.version', 'DESC')
@@ -48,10 +45,7 @@ export class ProjectBudgetRepository extends Repository<ProjectBudget> {
   /**
    * Find budgets by category
    */
-  async findByCategory(
-    category: BudgetCategory,
-    projectId?: number,
-  ): Promise<ProjectBudget[]> {
+  async findByCategory(category: BudgetCategory, projectId?: number): Promise<ProjectBudget[]> {
     const query = this.createQueryBuilder('budget')
       .where('budget.category = :category', { category })
       .orderBy('budget.createdAt', 'DESC');
@@ -66,10 +60,7 @@ export class ProjectBudgetRepository extends Repository<ProjectBudget> {
   /**
    * Find budgets by status
    */
-  async findByStatus(
-    status: BudgetStatus,
-    projectId?: number,
-  ): Promise<ProjectBudget[]> {
+  async findByStatus(status: BudgetStatus, projectId?: number): Promise<ProjectBudget[]> {
     const query = this.createQueryBuilder('budget')
       .where('budget.status = :status', { status })
       .orderBy('budget.createdAt', 'DESC');
@@ -117,11 +108,14 @@ export class ProjectBudgetRepository extends Repository<ProjectBudget> {
       }>,
     };
 
-    const categoryMap = new Map<BudgetCategory, {
-      budgeted: number;
-      actual: number;
-      committed: number;
-    }>();
+    const categoryMap = new Map<
+      BudgetCategory,
+      {
+        budgeted: number;
+        actual: number;
+        committed: number;
+      }
+    >();
 
     for (const budget of budgets) {
       summary.totalBudgeted += budget.budgetedAmount;
@@ -144,9 +138,7 @@ export class ProjectBudgetRepository extends Repository<ProjectBudget> {
     summary.totalAvailable = summary.totalBudgeted - summary.totalActual - summary.totalCommitted;
     summary.totalVariance = summary.totalActual - summary.totalBudgeted;
     summary.variancePercentage =
-      summary.totalBudgeted > 0
-        ? (summary.totalVariance / summary.totalBudgeted) * 100
-        : 0;
+      summary.totalBudgeted > 0 ? (summary.totalVariance / summary.totalBudgeted) * 100 : 0;
 
     // Convert category map to array
     for (const [category, data] of categoryMap.entries()) {
@@ -192,5 +184,4 @@ export class ProjectBudgetRepository extends Repository<ProjectBudget> {
     return parseInt(result?.maxVersion || '0');
   }
 }
-
 

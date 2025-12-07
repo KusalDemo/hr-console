@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Comprehensive Audit Logging Migration
- * 
+ *
  * This migration creates:
  * - audit_logs table (comprehensive audit logging with before/after values, field-level changes)
  * - Indexes for performance optimization
  * - Support for retention policies, archival, and compliance export
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class AuditLogging0000000000035 implements MigrationInterface {

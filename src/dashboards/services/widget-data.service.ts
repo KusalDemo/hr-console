@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DashboardWidgetRepository } from '../repositories/dashboard-widget.repository';
 import {
   DashboardWidget,
@@ -14,7 +10,7 @@ import { KPIMeasurementRepository } from '../../kpis/repositories/kpi-measuremen
 
 /**
  * Widget Data Service
- * 
+ *
  * Provides widget data aggregation for:
  * - KPI-based widgets
  * - Database query widgets
@@ -35,10 +31,7 @@ export class WidgetDataService {
   /**
    * Get widget data
    */
-  async getWidgetData(
-    widgetId: number,
-    filters?: Record<string, any>,
-  ): Promise<any> {
+  async getWidgetData(widgetId: number, filters?: Record<string, any>): Promise<any> {
     const widget = await this.dashboardWidgetRepository.findById(widgetId);
 
     if (!widget) {
@@ -79,17 +72,12 @@ export class WidgetDataService {
   /**
    * Get KPI data for widget
    */
-  private async getKPIData(
-    widget: DashboardWidget,
-    filters: Record<string, any>,
-  ): Promise<any> {
+  private async getKPIData(widget: DashboardWidget, filters: Record<string, any>): Promise<any> {
     if (!widget.kpiDefinitionId) {
       return { data: null, message: 'KPI definition ID not set' };
     }
 
-    const kpiDefinition = await this.kpiDefinitionRepository.findById(
-      widget.kpiDefinitionId,
-    );
+    const kpiDefinition = await this.kpiDefinitionRepository.findById(widget.kpiDefinitionId);
 
     if (!kpiDefinition) {
       return { data: null, message: 'KPI definition not found' };
@@ -115,8 +103,12 @@ export class WidgetDataService {
         value: latest ? parseFloat(latest.value.toString()) : 0,
         unit: kpiDefinition.unit || '',
         target: kpiDefinition.targetValue ? parseFloat(kpiDefinition.targetValue.toString()) : null,
-        minThreshold: kpiDefinition.minThreshold ? parseFloat(kpiDefinition.minThreshold.toString()) : null,
-        maxThreshold: kpiDefinition.maxThreshold ? parseFloat(kpiDefinition.maxThreshold.toString()) : null,
+        minThreshold: kpiDefinition.minThreshold
+          ? parseFloat(kpiDefinition.minThreshold.toString())
+          : null,
+        maxThreshold: kpiDefinition.maxThreshold
+          ? parseFloat(kpiDefinition.maxThreshold.toString())
+          : null,
         trend: this.calculateTrend(measurements),
       };
     } else if (widget.widgetType === WidgetType.CHART) {
@@ -157,9 +149,7 @@ export class WidgetDataService {
 
     // This would typically execute a raw SQL query or use TypeORM query builder
     // For now, return a placeholder structure
-    this.logger.warn(
-      `Database data source not fully implemented for widget ${widget.id}`,
-    );
+    this.logger.warn(`Database data source not fully implemented for widget ${widget.id}`);
 
     return {
       data: null,
@@ -170,17 +160,12 @@ export class WidgetDataService {
   /**
    * Get API data for widget
    */
-  private async getAPIData(
-    widget: DashboardWidget,
-    filters: Record<string, any>,
-  ): Promise<any> {
+  private async getAPIData(widget: DashboardWidget, filters: Record<string, any>): Promise<any> {
     const config = widget.dataSourceConfig || {};
 
     // This would typically make an HTTP request to an external API
     // For now, return a placeholder structure
-    this.logger.warn(
-      `API data source not fully implemented for widget ${widget.id}`,
-    );
+    this.logger.warn(`API data source not fully implemented for widget ${widget.id}`);
 
     return {
       data: null,
@@ -211,9 +196,7 @@ export class WidgetDataService {
 
     // This would typically calculate from other widgets or data sources
     // For now, return a placeholder structure
-    this.logger.warn(
-      `Calculated data source not fully implemented for widget ${widget.id}`,
-    );
+    this.logger.warn(`Calculated data source not fully implemented for widget ${widget.id}`);
 
     return {
       data: null,
@@ -260,10 +243,9 @@ export class WidgetDataService {
       try {
         results[widgetId] = await this.getWidgetData(widgetId, filters);
       } catch (error) {
-        this.logger.error(
-          `Error getting data for widget ${widgetId}: ${error.message}`,
-        );
-        results[widgetId] = { data: null, error: error.message };
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Error getting data for widget ${widgetId}: ${errorMessage}`);
+        results[widgetId] = { data: null, error: errorMessage };
       }
     }
 
@@ -277,9 +259,7 @@ export class WidgetDataService {
     dashboardId: number,
     filters?: Record<string, any>,
   ): Promise<Record<number, any>> {
-    const widgets = await this.dashboardWidgetRepository.findVisibleWidgetsByDashboard(
-      dashboardId,
-    );
+    const widgets = await this.dashboardWidgetRepository.findVisibleWidgetsByDashboard(dashboardId);
 
     const widgetIds = widgets.map((w) => w.id);
     return this.getMultipleWidgetsData(widgetIds, filters);

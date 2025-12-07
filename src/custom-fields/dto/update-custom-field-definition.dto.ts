@@ -5,8 +5,5 @@ import { CreateCustomFieldDefinitionDto } from './create-custom-field-definition
  * Update Custom Field Definition DTO
  * All fields are optional
  */
-export class UpdateCustomFieldDefinitionDto extends PartialType(
-  CreateCustomFieldDefinitionDto,
-) {}
-
+export class UpdateCustomFieldDefinitionDto extends PartialType(CreateCustomFieldDefinitionDto) {}
 

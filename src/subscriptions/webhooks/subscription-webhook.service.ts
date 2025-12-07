@@ -88,14 +88,14 @@ export interface WebhookProcessingResult {
 
 /**
  * Subscription Webhook Service
- * 
+ *
  * Handles webhooks from payment gateways:
  * - Update subscription status
  * - Process renewals
  * - Handle payment failures
  * - Update billing periods
  * - Handle trial periods
- * 
+ *
  * Supports multiple payment gateways (Stripe, PayPal, Razorpay, etc.)
  */
 @Injectable()
@@ -109,7 +109,7 @@ export class SubscriptionWebhookService {
 
   /**
    * Process webhook event from payment gateway
-   * 
+   *
    * @param event - Webhook event data
    * @param gateway - Payment gateway source
    * @returns Processing result
@@ -118,10 +118,10 @@ export class SubscriptionWebhookService {
     event: WebhookEvent,
     gateway: PaymentGateway | string,
   ): Promise<WebhookProcessingResult> {
-    this.logger.log(
-      `Processing webhook event: ${event.type} from ${gateway}`,
-      { eventId: event.id, gateway },
-    );
+    this.logger.log(`Processing webhook event: ${event.type} from ${gateway}`, {
+      eventId: event.id,
+      gateway,
+    });
 
     try {
       // Normalize event type
@@ -222,7 +222,10 @@ export class SubscriptionWebhookService {
       await this.subscriptionRepository.updatePaymentGateway(
         subscription.id,
         gateway,
-        event.subscriptionId || event.subscription?.id || subscription.paymentGatewaySubscriptionId || '',
+        event.subscriptionId ||
+          event.subscription?.id ||
+          subscription.paymentGatewaySubscriptionId ||
+          '',
         event.payment.method || subscription.paymentMethodId || undefined,
       );
     }
@@ -265,7 +268,10 @@ export class SubscriptionWebhookService {
     }
 
     // Update subscription status to past due
-    if (subscription.status === SubscriptionStatus.ACTIVE || subscription.status === SubscriptionStatus.TRIAL) {
+    if (
+      subscription.status === SubscriptionStatus.ACTIVE ||
+      subscription.status === SubscriptionStatus.TRIAL
+    ) {
       await this.subscriptionRepository.updateStatus(subscription.id, SubscriptionStatus.PAST_DUE);
 
       // Set grace period (e.g., 7 days)
@@ -367,13 +373,10 @@ export class SubscriptionWebhookService {
     }
 
     // Cancel subscription
-    await this.subscriptionsService.cancelSubscription(
-      subscription.id,
-      {
-        cancelAtPeriodEnd: event.subscription?.cancelAtPeriodEnd || false,
-        reason: 'Canceled via payment gateway webhook',
-      },
-    );
+    await this.subscriptionsService.cancelSubscription(subscription.id, {
+      cancelAtPeriodEnd: event.subscription?.cancelAtPeriodEnd || false,
+      reason: 'Canceled via payment gateway webhook',
+    });
 
     this.logger.log(`Subscription canceled for subscription ID: ${subscription.id}`);
 
@@ -405,13 +408,10 @@ export class SubscriptionWebhookService {
     }
 
     // Renew subscription
-    await this.subscriptionsService.renewSubscription(
-      subscription.id,
-      {
-        amount: event.payment?.amount || event.invoice?.amount,
-        paymentMethodId: event.payment?.method,
-      },
-    );
+    await this.subscriptionsService.renewSubscription(subscription.id, {
+      amount: event.payment?.amount || event.invoice?.amount,
+      paymentMethodId: event.payment?.method,
+    });
 
     this.logger.log(`Subscription renewed for subscription ID: ${subscription.id}`);
 
@@ -629,4 +629,3 @@ export class SubscriptionWebhookService {
     return razorpayMapping[eventType] || eventType;
   }
 }
-

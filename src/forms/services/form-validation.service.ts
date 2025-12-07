@@ -1,12 +1,8 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 
 /**
  * Form Validation Service
- * 
+ *
  * Validates form schemas and form responses:
  * - Form schema validation
  * - Response data validation against schema
@@ -49,21 +45,15 @@ export class FormValidationService {
    */
   private validateField(field: any, index: number): void {
     if (!field.id || typeof field.id !== 'string') {
-      throw new BadRequestException(
-        `Field at index ${index} must have a valid id (string)`,
-      );
+      throw new BadRequestException(`Field at index ${index} must have a valid id (string)`);
     }
 
     if (!field.type || typeof field.type !== 'string') {
-      throw new BadRequestException(
-        `Field at index ${index} must have a valid type (string)`,
-      );
+      throw new BadRequestException(`Field at index ${index} must have a valid type (string)`);
     }
 
     if (!field.label || typeof field.label !== 'string') {
-      throw new BadRequestException(
-        `Field at index ${index} must have a valid label (string)`,
-      );
+      throw new BadRequestException(`Field at index ${index} must have a valid label (string)`);
     }
 
     // Validate field type
@@ -85,9 +75,7 @@ export class FormValidationService {
     ];
 
     if (!validFieldTypes.includes(field.type)) {
-      throw new BadRequestException(
-        `Field at index ${index} has invalid type: ${field.type}`,
-      );
+      throw new BadRequestException(`Field at index ${index} has invalid type: ${field.type}`);
     }
 
     // Validate options for select/radio/checkbox types
@@ -110,9 +98,7 @@ export class FormValidationService {
    */
   private validateFieldValidation(validation: any, fieldIndex: number): void {
     if (typeof validation !== 'object') {
-      throw new BadRequestException(
-        `Field at index ${fieldIndex} validation must be an object`,
-      );
+      throw new BadRequestException(`Field at index ${fieldIndex} validation must be an object`);
     }
 
     // Validate required
@@ -137,15 +123,11 @@ export class FormValidationService {
 
     // Validate min/max value
     if (validation.min !== undefined && typeof validation.min !== 'number') {
-      throw new BadRequestException(
-        `Field at index ${fieldIndex} validation.min must be a number`,
-      );
+      throw new BadRequestException(`Field at index ${fieldIndex} validation.min must be a number`);
     }
 
     if (validation.max !== undefined && typeof validation.max !== 'number') {
-      throw new BadRequestException(
-        `Field at index ${fieldIndex} validation.max must be a number`,
-      );
+      throw new BadRequestException(`Field at index ${fieldIndex} validation.max must be a number`);
     }
 
     // Validate pattern (regex)
@@ -166,10 +148,7 @@ export class FormValidationService {
   /**
    * Validate conditional logic
    */
-  private validateConditionalLogic(
-    conditionalLogic: any,
-    fields: any[],
-  ): void {
+  private validateConditionalLogic(conditionalLogic: any, fields: any[]): void {
     if (!Array.isArray(conditionalLogic)) {
       throw new BadRequestException('Conditional logic must be an array');
     }
@@ -197,9 +176,7 @@ export class FormValidationService {
       }
 
       if (rule.value === undefined) {
-        throw new BadRequestException(
-          `Conditional logic rule at index ${index} must have a value`,
-        );
+        throw new BadRequestException(`Conditional logic rule at index ${index} must have a value`);
       }
 
       if (rule.showFields && !Array.isArray(rule.showFields)) {
@@ -219,10 +196,7 @@ export class FormValidationService {
   /**
    * Validate response data against form schema
    */
-  validateResponseData(
-    formSchema: Record<string, any>,
-    responseData: Record<string, any>,
-  ): void {
+  validateResponseData(formSchema: Record<string, any>, responseData: Record<string, any>): void {
     if (!responseData || typeof responseData !== 'object') {
       throw new BadRequestException('Response data must be an object');
     }
@@ -234,7 +208,10 @@ export class FormValidationService {
       const fieldValue = responseData[field.id];
 
       // Check required fields
-      if (field.validation?.required && (fieldValue === undefined || fieldValue === null || fieldValue === '')) {
+      if (
+        field.validation?.required &&
+        (fieldValue === undefined || fieldValue === null || fieldValue === '')
+      ) {
         throw new BadRequestException(`Field ${field.label || field.id} is required`);
       }
 
@@ -249,10 +226,7 @@ export class FormValidationService {
 
     // Validate conditional logic
     if (formSchema.conditionalLogic) {
-      this.validateConditionalLogicExecution(
-        formSchema.conditionalLogic,
-        responseData,
-      );
+      this.validateConditionalLogicExecution(formSchema.conditionalLogic, responseData);
     }
   }
 
@@ -266,17 +240,13 @@ export class FormValidationService {
     switch (field.type) {
       case 'email':
         if (typeof value !== 'string' || !this.isValidEmail(value)) {
-          throw new BadRequestException(
-            `Field ${field.label || field.id} must be a valid email`,
-          );
+          throw new BadRequestException(`Field ${field.label || field.id} must be a valid email`);
         }
         break;
 
       case 'number':
         if (typeof value !== 'number' && isNaN(Number(value))) {
-          throw new BadRequestException(
-            `Field ${field.label || field.id} must be a number`,
-          );
+          throw new BadRequestException(`Field ${field.label || field.id} must be a number`);
         }
         break;
 
@@ -284,9 +254,7 @@ export class FormValidationService {
       case 'datetime':
       case 'time':
         if (!(value instanceof Date) && isNaN(Date.parse(value))) {
-          throw new BadRequestException(
-            `Field ${field.label || field.id} must be a valid date`,
-          );
+          throw new BadRequestException(`Field ${field.label || field.id} must be a valid date`);
         }
         break;
 
@@ -302,9 +270,7 @@ export class FormValidationService {
       case 'multiselect':
       case 'checkbox':
         if (!Array.isArray(value)) {
-          throw new BadRequestException(
-            `Field ${field.label || field.id} must be an array`,
-          );
+          throw new BadRequestException(`Field ${field.label || field.id} must be an array`);
         }
         const validValues = field.options.map((opt: any) => opt.value);
         if (!value.every((v) => validValues.includes(v))) {
@@ -367,11 +333,7 @@ export class FormValidationService {
 
       if (fieldValue !== undefined && fieldValue !== null) {
         // Evaluate condition (simplified)
-        const conditionMet = this.evaluateCondition(
-          fieldValue,
-          rule.operator,
-          rule.value,
-        );
+        const conditionMet = this.evaluateCondition(fieldValue, rule.operator, rule.value);
 
         if (conditionMet && rule.requiredFields) {
           // Check if required fields are present

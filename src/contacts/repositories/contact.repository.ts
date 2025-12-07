@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import {
-  Contact,
-  ContactType,
-  ContactCategory,
-  ContactStatus,
-} from '../entities/contact.entity';
+import { Contact, ContactType, ContactCategory, ContactStatus } from '../entities/contact.entity';
 
 /**
  * Contact Repository
- * 
+ *
  * Custom repository methods for contact queries with full-text search.
  */
 @Injectable()
@@ -22,8 +17,9 @@ export class ContactRepository extends Repository<Contact> {
    * Find contact by key
    */
   async findByKey(contactKey: string, includeRelations = false): Promise<Contact | null> {
-    const query = this.createQueryBuilder('contact')
-      .where('contact.contactKey = :contactKey', { contactKey });
+    const query = this.createQueryBuilder('contact').where('contact.contactKey = :contactKey', {
+      contactKey,
+    });
 
     if (includeRelations) {
       query
@@ -169,10 +165,7 @@ export class ContactRepository extends Repository<Contact> {
   /**
    * Find potential duplicates based on email, phone, or name
    */
-  async findPotentialDuplicates(
-    contact: Partial<Contact>,
-    excludeId?: number,
-  ): Promise<Contact[]> {
+  async findPotentialDuplicates(contact: Partial<Contact>, excludeId?: number): Promise<Contact[]> {
     const conditions: string[] = [];
     const params: any = {};
 
@@ -182,9 +175,7 @@ export class ContactRepository extends Repository<Contact> {
     }
 
     if (contact.email) {
-      conditions.push(
-        '(contact.email = :email OR contact.emailSecondary = :email)',
-      );
+      conditions.push('(contact.email = :email OR contact.emailSecondary = :email)');
       params.email = contact.email;
     }
 
@@ -218,8 +209,9 @@ export class ContactRepository extends Repository<Contact> {
     organizationId?: number,
     includeArchived = false,
   ): Promise<Contact[]> {
-    const query = this.createQueryBuilder('contact')
-      .where('contact.isArchived = :isArchived', { isArchived: !includeArchived });
+    const query = this.createQueryBuilder('contact').where('contact.isArchived = :isArchived', {
+      isArchived: !includeArchived,
+    });
 
     // Search for contacts that have any of the specified tags
     const tagConditions = tags.map((tag, index) => {
@@ -244,10 +236,7 @@ export class ContactRepository extends Repository<Contact> {
   /**
    * Find contacts needing follow-up
    */
-  async findNeedingFollowUp(
-    organizationId?: number,
-    daysAhead = 7,
-  ): Promise<Contact[]> {
+  async findNeedingFollowUp(organizationId?: number, daysAhead = 7): Promise<Contact[]> {
     const query = this.createQueryBuilder('contact')
       .where('contact.nextFollowUpDate IS NOT NULL')
       .andWhere('contact.nextFollowUpDate <= :endDate', {
@@ -268,8 +257,9 @@ export class ContactRepository extends Repository<Contact> {
    * Check if contact key exists
    */
   async contactKeyExists(contactKey: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('contact')
-      .where('contact.contactKey = :contactKey', { contactKey });
+    const query = this.createQueryBuilder('contact').where('contact.contactKey = :contactKey', {
+      contactKey,
+    });
 
     if (excludeId) {
       query.andWhere('contact.id != :excludeId', { excludeId });
@@ -279,5 +269,4 @@ export class ContactRepository extends Repository<Contact> {
     return count > 0;
   }
 }
-
 

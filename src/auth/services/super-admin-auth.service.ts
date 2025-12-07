@@ -188,7 +188,10 @@ export class SuperAdminAuthService {
    * @param mfaCode - MFA code
    * @returns Token response with user info
    */
-  async verifyMfa(email: string, mfaCode: string): Promise<{ token: TokenResponseDto; user: UserInfoDto }> {
+  async verifyMfa(
+    email: string,
+    mfaCode: string,
+  ): Promise<{ token: TokenResponseDto; user: UserInfoDto }> {
     const superAdmin = await this.superAdminRepository.findByEmail(email);
 
     if (!superAdmin) {
@@ -244,4 +247,3 @@ export class SuperAdminAuthService {
     return Math.max(0, this.MAX_FAILED_ATTEMPTS - superAdmin.failedLoginAttempts);
   }
 }
-

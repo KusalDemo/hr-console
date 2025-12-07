@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Advanced Reporting Engine Migration
- * 
+ *
  * This migration creates:
  * - report_definitions table for custom report definitions
  * - report_schedules table for scheduled report generation
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Reports0000000000049 implements MigrationInterface {

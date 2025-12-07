@@ -28,4 +28,3 @@ export interface TokenResponse {
   expiresIn: number; // Expiration time in seconds
   tokenType: 'Bearer';
 }
-

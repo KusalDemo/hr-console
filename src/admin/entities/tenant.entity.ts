@@ -11,7 +11,7 @@ import { TenantAdmin } from './tenant-admin.entity';
 
 /**
  * Tenant Entity - Represents a tenant in the admin schema
- * 
+ *
  * Tenants are isolated workspaces with their own schema (t_{tenantKey})
  * Each tenant can have multiple organizations and users
  * Tenants are linked to subscriptions for billing and access control
@@ -82,4 +82,3 @@ export class Tenant {
     return `t_${this.tenantKey}`;
   }
 }
-

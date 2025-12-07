@@ -8,7 +8,7 @@ import { ConfigModule } from '../config/config.module';
 
 /**
  * Rate Limit Module
- * 
+ *
  * Provides enhanced rate limiting with:
  * - Redis-based distributed rate limiting
  * - Configurable rate limit rules (per tenant, user, endpoint)
@@ -18,19 +18,8 @@ import { ConfigModule } from '../config/config.module';
  */
 @Global()
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([RateLimitConfig]),
-    ConfigModule,
-  ],
-  providers: [
-    RateLimitService,
-    RateLimitConfigRepository,
-    RateLimitInterceptor,
-  ],
-  exports: [
-    RateLimitService,
-    RateLimitConfigRepository,
-    RateLimitInterceptor,
-  ],
+  imports: [TypeOrmModule.forFeature([RateLimitConfig]), ConfigModule],
+  providers: [RateLimitService, RateLimitConfigRepository, RateLimitInterceptor],
+  exports: [RateLimitService, RateLimitConfigRepository, RateLimitInterceptor],
 })
 export class RateLimitModule {}

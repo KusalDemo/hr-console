@@ -74,8 +74,9 @@ export class WorkflowDefinitionRepository extends Repository<WorkflowDefinition>
    * Check if workflow key exists
    */
   async workflowKeyExists(workflowKey: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('workflow')
-      .where('workflow.workflowKey = :workflowKey', { workflowKey });
+    const query = this.createQueryBuilder('workflow').where('workflow.workflowKey = :workflowKey', {
+      workflowKey,
+    });
 
     if (excludeId) {
       query.andWhere('workflow.id != :excludeId', { excludeId });
@@ -85,5 +86,4 @@ export class WorkflowDefinitionRepository extends Repository<WorkflowDefinition>
     return count > 0;
   }
 }
-
 

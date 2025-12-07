@@ -14,24 +14,17 @@ import {
   ParseBoolPipe,
 } from '@nestjs/common';
 import { JobService } from './services/job.service';
-import {
-  CreateJobDto,
-  UpdateJobDto,
-} from './dto';
+import { CreateJobDto, UpdateJobDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
-import {
-  JobType,
-  JobStatus,
-  JobPriority,
-} from './entities/job-queue.entity';
+import { JobType, JobStatus, JobPriority } from './entities/job-queue.entity';
 
 /**
  * Jobs Controller
- * 
+ *
  * REST API endpoints for job management:
  * - Job CRUD operations
  * - Job scheduling
@@ -54,10 +47,7 @@ export class JobsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'MANAGER')
-  async createJob(
-    @Body() createDto: CreateJobDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createJob(@Body() createDto: CreateJobDto, @CurrentUser() user: JwtPayload) {
     return this.jobService.createJob(createDto, user.userId);
   }
 
@@ -104,10 +94,7 @@ export class JobsController {
    */
   @Post(':id/execute')
   @Roles('ADMIN', 'HR', 'MANAGER')
-  async executeJob(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('workerId') workerId?: string,
-  ) {
+  async executeJob(@Param('id', ParseIntPipe) id: number, @Query('workerId') workerId?: string) {
     return this.jobService.executeJob(id, workerId);
   }
 
@@ -228,12 +215,7 @@ export class JobsController {
     @Query('priority') priority?: JobPriority,
     @Query('organizationId', new ParseIntPipe({ optional: true })) organizationId?: number,
   ) {
-    return this.jobService.searchJobs(
-      searchTerm,
-      jobType,
-      status,
-      priority,
-      organizationId,
-    );
+    return this.jobService.searchJobs(searchTerm, jobType, status, priority, organizationId);
   }
 }
+

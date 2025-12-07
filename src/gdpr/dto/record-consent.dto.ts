@@ -27,3 +27,4 @@ export class RecordConsentDto {
   @IsNumber()
   organizationId?: number;
 }
+

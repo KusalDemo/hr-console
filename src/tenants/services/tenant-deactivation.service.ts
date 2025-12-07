@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { TenantRepository } from '../../admin/repositories/tenant.repository';
 import { TenantAdminRepository } from '../../admin/repositories/tenant-admin.repository';
@@ -12,13 +7,13 @@ import { Tenant } from '../../admin/entities/tenant.entity';
 
 /**
  * Tenant Deactivation Service
- * 
+ *
  * Handles the complete tenant deactivation process:
  * 1. Soft delete tenant (mark inactive)
  * 2. Prevent new logins (deactivate tenant admins)
  * 3. Graceful shutdown of tenant operations
  * 4. Data retention policies
- * 
+ *
  * This service ensures that tenant deactivation is done safely
  * while preserving data for potential reactivation.
  */
@@ -38,11 +33,11 @@ export class TenantDeactivationService {
 
   /**
    * Deactivate a tenant
-   * 
+   *
    * This is the main entry point for tenant deactivation.
    * It performs a soft delete by marking the tenant as inactive
    * and prevents new logins by deactivating all tenant admins.
-   * 
+   *
    * @param tenantId - Tenant ID to deactivate
    * @param reason - Optional reason for deactivation (for audit logging)
    * @param deactivatedBy - User ID who performed the deactivation (for audit logging)
@@ -80,19 +75,13 @@ export class TenantDeactivationService {
       await this.logDeactivationEvent(tenant, reason, deactivatedBy);
 
       // Step 5: Log tenant operations shutdown
-      this.logger.log(
-        `Tenant deactivated successfully: ${tenant.tenantKey} (ID: ${tenant.id})`,
-      );
+      this.logger.log(`Tenant deactivated successfully: ${tenant.tenantKey} (ID: ${tenant.id})`);
 
       // Reload tenant to get updated state
-      const deactivatedTenant = await this.tenantRepository.findByIdIncludeInactive(
-        tenantId,
-      );
+      const deactivatedTenant = await this.tenantRepository.findByIdIncludeInactive(tenantId);
 
       if (!deactivatedTenant) {
-        throw new NotFoundException(
-          `Tenant with ID ${tenantId} not found after deactivation`,
-        );
+        throw new NotFoundException(`Tenant with ID ${tenantId} not found after deactivation`);
       }
 
       return deactivatedTenant;
@@ -103,10 +92,7 @@ export class TenantDeactivationService {
       );
 
       // Re-throw known exceptions
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
 
@@ -119,7 +105,7 @@ export class TenantDeactivationService {
 
   /**
    * Deactivate tenant by tenant key
-   * 
+   *
    * @param tenantKey - Tenant key to deactivate
    * @param reason - Optional reason for deactivation
    * @param deactivatedBy - User ID who performed the deactivation
@@ -146,15 +132,13 @@ export class TenantDeactivationService {
   /**
    * Deactivate all tenant admins for a tenant
    * This prevents new logins while preserving existing sessions
-   * 
+   *
    * @param tenantId - Tenant ID
    */
   private async deactivateTenantAdmins(tenantId: number): Promise<void> {
     this.logger.log(`Deactivating tenant admins for tenant: ${tenantId}`);
 
-    const tenantAdmins = await this.tenantAdminRepository.findByTenantId(
-      tenantId,
-    );
+    const tenantAdmins = await this.tenantAdminRepository.findByTenantId(tenantId);
 
     if (tenantAdmins.length === 0) {
       this.logger.warn(`No tenant admins found for tenant: ${tenantId}`);
@@ -167,22 +151,18 @@ export class TenantDeactivationService {
         await this.tenantAdminRepository.update(admin.id, {
           isActive: false,
         });
-        this.logger.log(
-          `Deactivated tenant admin: ${admin.email} (ID: ${admin.id})`,
-        );
+        this.logger.log(`Deactivated tenant admin: ${admin.email} (ID: ${admin.id})`);
       }
     });
 
     await Promise.all(deactivationPromises);
 
-    this.logger.log(
-      `Deactivated ${tenantAdmins.length} tenant admin(s) for tenant: ${tenantId}`,
-    );
+    this.logger.log(`Deactivated ${tenantAdmins.length} tenant admin(s) for tenant: ${tenantId}`);
   }
 
   /**
    * Log tenant deactivation event to audit logs
-   * 
+   *
    * @param tenant - Tenant entity
    * @param reason - Optional reason for deactivation
    * @param deactivatedBy - User ID who performed the deactivation
@@ -247,7 +227,7 @@ export class TenantDeactivationService {
   /**
    * Check if tenant can be deactivated
    * Validates that tenant is active and has no blocking conditions
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns Validation result with details
    */
@@ -289,7 +269,7 @@ export class TenantDeactivationService {
 
   /**
    * Get data retention information for a tenant
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns Data retention information
    */
@@ -316,9 +296,7 @@ export class TenantDeactivationService {
     // Calculate when tenant can be permanently deleted
     const deactivatedAt = tenant.updatedAt; // Updated when deactivated
     const permanentDeletionDate = new Date(deactivatedAt);
-    permanentDeletionDate.setDate(
-      permanentDeletionDate.getDate() + this.DATA_RETENTION_DAYS,
-    );
+    permanentDeletionDate.setDate(permanentDeletionDate.getDate() + this.DATA_RETENTION_DAYS);
 
     const canBePermanentlyDeleted = permanentDeletionDate <= new Date();
 
@@ -332,7 +310,7 @@ export class TenantDeactivationService {
   /**
    * Get list of tenants eligible for permanent deletion
    * Based on data retention policy
-   * 
+   *
    * @returns List of tenants that can be permanently deleted
    */
   async getTenantsEligibleForPermanentDeletion(): Promise<Tenant[]> {
@@ -354,17 +332,12 @@ export class TenantDeactivationService {
    * Gracefully shutdown tenant operations
    * This method can be called before deactivation to ensure
    * ongoing operations complete gracefully
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param timeoutMs - Timeout in milliseconds (default: 30000)
    */
-  async gracefulShutdown(
-    tenantId: number,
-    timeoutMs: number = 30000,
-  ): Promise<void> {
-    this.logger.log(
-      `Starting graceful shutdown for tenant: ${tenantId} (timeout: ${timeoutMs}ms)`,
-    );
+  async gracefulShutdown(tenantId: number, timeoutMs: number = 30000): Promise<void> {
+    this.logger.log(`Starting graceful shutdown for tenant: ${tenantId} (timeout: ${timeoutMs}ms)`);
 
     const tenant = await this.tenantRepository.findById(tenantId);
 
@@ -385,4 +358,3 @@ export class TenantDeactivationService {
     );
   }
 }
-

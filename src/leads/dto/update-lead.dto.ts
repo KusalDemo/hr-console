@@ -1,17 +1,6 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsDateString,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsDateString, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  LeadStatus,
-  LeadSource,
-  LeadPriority,
-} from '../entities/lead.entity';
+import { LeadStatus, LeadSource, LeadPriority } from '../entities/lead.entity';
 
 /**
  * Update Lead DTO
@@ -152,5 +141,3 @@ export class UpdateLeadDto {
   @IsObject()
   leadMetadata?: Record<string, any>;
 }
-
-

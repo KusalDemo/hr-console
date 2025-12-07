@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Projects Migration
- * 
+ *
  * This migration creates:
  * - projects table (project tracking with budgets, hierarchy, status workflow, phases)
  * - project_phases table (project phases)
  * - project_teams table (team assignments and roles)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Projects0000000000016 implements MigrationInterface {
@@ -233,5 +233,4 @@ export class Projects0000000000016 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS projects CASCADE`);
   }
 }
-
 

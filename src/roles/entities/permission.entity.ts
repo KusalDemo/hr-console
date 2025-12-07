@@ -12,15 +12,15 @@ import { RolePermission } from './role-permission.entity';
 
 /**
  * Permission Entity - Represents granular permissions in the tenant schema
- * 
+ *
  * Permissions define specific actions that can be performed on resources.
  * They are organized by resource type (e.g., EMPLOYEE, PROJECT, TIME_OFF) and
  * action (e.g., CREATE, READ, UPDATE, DELETE, APPROVE).
- * 
+ *
  * Permissions can be:
  * - System permissions: Predefined by the system, cannot be deleted
  * - Custom permissions: Created by tenant admins for specific needs
- * 
+ *
  * Permissions are assigned to roles through the role_permissions join table.
  */
 @Entity('permissions')
@@ -113,4 +113,3 @@ export class Permission {
     return this.permissionKey;
   }
 }
-

@@ -55,7 +55,7 @@ export enum ExecutionMode {
 
 /**
  * Business Rule Entity
- * 
+ *
  * Defines business rules with conditions, actions, and triggers.
  * Supports rule priority, activation dates, tenant/org scoping, and different rule types.
  */
@@ -242,5 +242,4 @@ export class BusinessRule {
     return true;
   }
 }
-
 

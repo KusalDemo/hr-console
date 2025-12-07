@@ -19,7 +19,7 @@ import {
 
 /**
  * Workflows Module
- * 
+ *
  * Provides workflow engine for configurable approval workflows and business process automation.
  */
 @Module({
@@ -53,5 +53,3 @@ import {
   ],
 })
 export class WorkflowsModule {}
-
-

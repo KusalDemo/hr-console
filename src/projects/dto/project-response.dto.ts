@@ -1,9 +1,4 @@
-import {
-  Project,
-  ProjectStatus,
-  ProjectPriority,
-  ProjectHealth,
-} from '../entities/project.entity';
+import { Project, ProjectStatus, ProjectPriority, ProjectHealth } from '../entities/project.entity';
 import { ProjectPhaseResponseDto } from './project-phase-response.dto';
 import { ProjectTeamResponseDto } from './project-team-response.dto';
 
@@ -97,9 +92,7 @@ export class ProjectResponseDto {
 
     if (includeRelations) {
       if (project.phases && Array.isArray(project.phases)) {
-        dto.phases = project.phases.map((phase) =>
-          ProjectPhaseResponseDto.fromEntity(phase),
-        );
+        dto.phases = project.phases.map((phase) => ProjectPhaseResponseDto.fromEntity(phase));
       }
       if (project.teamMembers && Array.isArray(project.teamMembers)) {
         dto.teamMembers = project.teamMembers.map((team) =>
@@ -111,5 +104,4 @@ export class ProjectResponseDto {
     return dto;
   }
 }
-
 

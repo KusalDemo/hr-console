@@ -11,7 +11,7 @@ import { KnowledgeArticle } from './knowledge-article.entity';
 
 /**
  * Knowledge Article Attachment Entity
- * 
+ *
  * File attachments for knowledge articles
  */
 @Entity('knowledge_article_attachments')

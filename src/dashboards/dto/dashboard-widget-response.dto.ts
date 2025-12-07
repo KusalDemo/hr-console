@@ -1,8 +1,4 @@
-import {
-  WidgetType,
-  ChartType,
-  WidgetDataSourceType,
-} from '../entities/dashboard-widget.entity';
+import { WidgetType, ChartType, WidgetDataSourceType } from '../entities/dashboard-widget.entity';
 
 /**
  * Dashboard Widget Response DTO

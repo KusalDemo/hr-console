@@ -13,7 +13,7 @@ import { CreateDepartmentDto, UpdateDepartmentDto } from '../dto';
 
 /**
  * Departments Service
- * 
+ *
  * Provides business logic for department operations:
  * - Create department
  * - Get department by ID
@@ -22,7 +22,7 @@ import { CreateDepartmentDto, UpdateDepartmentDto } from '../dto';
  * - Delete department (soft delete)
  * - Department hierarchy management
  * - Search departments
- * 
+ *
  * This service handles all department management operations
  * including validation, hierarchy validation, and organization relationships.
  */
@@ -38,15 +38,12 @@ export class DepartmentsService {
 
   /**
    * Create a new department
-   * 
+   *
    * @param createDto - Department creation data
    * @param createdBy - User ID who created the department (optional)
    * @returns Created department information
    */
-  async createDepartment(
-    createDto: CreateDepartmentDto,
-    createdBy?: number,
-  ): Promise<Department> {
+  async createDepartment(createDto: CreateDepartmentDto, createdBy?: number): Promise<Department> {
     this.logger.log(`Creating department: ${createDto.name}`);
 
     // Validate organization exists
@@ -68,14 +65,14 @@ export class DepartmentsService {
 
     // Validate parent department if provided
     if (createDto.parentDepartmentId) {
-      const parentDepartment = await this.departmentRepository.findById(createDto.parentDepartmentId);
+      const parentDepartment = await this.departmentRepository.findById(
+        createDto.parentDepartmentId,
+      );
       if (!parentDepartment) {
         throw new NotFoundException('Parent Department', createDto.parentDepartmentId.toString());
       }
       if (parentDepartment.organizationId !== createDto.organizationId) {
-        throw new BadRequestException(
-          'Parent department must belong to the same organization',
-        );
+        throw new BadRequestException('Parent department must belong to the same organization');
       }
       // Prevent circular reference
       if (await this.wouldCreateCircularReference(createDto.parentDepartmentId, null)) {
@@ -142,7 +139,7 @@ export class DepartmentsService {
 
   /**
    * Get department by ID
-   * 
+   *
    * @param id - Department ID
    * @returns Department information
    */
@@ -157,7 +154,7 @@ export class DepartmentsService {
 
   /**
    * Get department with hierarchy
-   * 
+   *
    * @param id - Department ID
    * @returns Department with parent and children
    */
@@ -172,7 +169,7 @@ export class DepartmentsService {
 
   /**
    * Get departments by organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param activeOnly - Only return active departments
    * @returns Array of departments
@@ -188,7 +185,7 @@ export class DepartmentsService {
 
   /**
    * Get root departments (departments without parent)
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Array of root departments
    */
@@ -198,7 +195,7 @@ export class DepartmentsService {
 
   /**
    * Get child departments
-   * 
+   *
    * @param parentDepartmentId - Parent department ID
    * @returns Array of child departments
    */
@@ -208,7 +205,7 @@ export class DepartmentsService {
 
   /**
    * Get department hierarchy (all descendants)
-   * 
+   *
    * @param departmentId - Department ID
    * @returns Array of departments including the department and all descendants
    */
@@ -227,7 +224,7 @@ export class DepartmentsService {
 
   /**
    * Update department
-   * 
+   *
    * @param id - Department ID
    * @param updateDto - Department update data
    * @param updatedBy - User ID who updated the department (optional)
@@ -247,10 +244,7 @@ export class DepartmentsService {
     }
 
     // Check if department key is being changed and if it already exists
-    if (
-      updateDto.departmentKey &&
-      updateDto.departmentKey !== department.departmentKey
-    ) {
+    if (updateDto.departmentKey && updateDto.departmentKey !== department.departmentKey) {
       const keyExists = await this.departmentRepository.keyExists(
         department.organizationId,
         updateDto.departmentKey,
@@ -276,9 +270,7 @@ export class DepartmentsService {
           throw new NotFoundException('Parent Department', updateDto.parentDepartmentId.toString());
         }
         if (parentDepartment.organizationId !== department.organizationId) {
-          throw new BadRequestException(
-            'Parent department must belong to the same organization',
-          );
+          throw new BadRequestException('Parent department must belong to the same organization');
         }
         // Prevent circular reference
         if (await this.wouldCreateCircularReference(updateDto.parentDepartmentId, id)) {
@@ -378,7 +370,7 @@ export class DepartmentsService {
 
   /**
    * Delete department (soft delete)
-   * 
+   *
    * @param id - Department ID
    * @param deletedBy - User ID who deleted the department (optional)
    * @returns Deleted department information
@@ -431,7 +423,7 @@ export class DepartmentsService {
 
   /**
    * Search departments
-   * 
+   *
    * @param searchTerm - Search term (name or key)
    * @param organizationId - Optional organization filter
    * @returns Array of matching departments
@@ -442,7 +434,7 @@ export class DepartmentsService {
 
   /**
    * Check if setting a parent would create a circular reference
-   * 
+   *
    * @param newParentId - New parent department ID
    * @param currentDepartmentId - Current department ID (null for new departments)
    * @returns true if circular reference would be created
@@ -470,4 +462,3 @@ export class DepartmentsService {
     return descendantIds.includes(newParentId);
   }
 }
-

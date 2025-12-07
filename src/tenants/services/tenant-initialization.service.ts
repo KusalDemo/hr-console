@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { MultiTenantService } from '../../database/multi-tenant.service';
 import { PasswordService } from '../../auth/services/password.service';
@@ -11,13 +7,13 @@ import { TenantAdminRepository } from '../../admin/repositories/tenant-admin.rep
 
 /**
  * Tenant Initialization Service
- * 
+ *
  * Initializes a newly provisioned tenant with default data:
  * 1. Create default roles (ADMIN, HR, MANAGER, EMPLOYEE)
  * 2. Create default permissions (if permissions table exists)
  * 3. Create tenant admin user in tenant schema
  * 4. Create default organization
- * 
+ *
  * This service should be called after tenant provisioning is complete.
  */
 @Injectable()
@@ -33,7 +29,7 @@ export class TenantInitializationService {
 
   /**
    * Initialize tenant with default data
-   * 
+   *
    * @param tenant - Tenant entity
    * @param tenantAdminEmail - Email for tenant admin user
    * @param tenantAdminPassword - Password for tenant admin user
@@ -50,18 +46,12 @@ export class TenantInitializationService {
     adminUserCreated: boolean;
     defaultOrganizationCreated: boolean;
   }> {
-    const schemaName = this.multiTenantService.getTenantSchemaName(
-      tenant.tenantKey,
-    );
+    const schemaName = this.multiTenantService.getTenantSchemaName(tenant.tenantKey);
 
-    this.logger.log(
-      `Initializing tenant: ${tenant.tenantKey} (schema: ${schemaName})`,
-    );
+    this.logger.log(`Initializing tenant: ${tenant.tenantKey} (schema: ${schemaName})`);
 
     // Get EntityManager for tenant schema
-    const tenantManager = await this.multiTenantService.getEntityManagerForSchema(
-      schemaName,
-    );
+    const tenantManager = await this.multiTenantService.getEntityManagerForSchema(schemaName);
 
     try {
       // Step 1: Create default roles
@@ -116,9 +106,7 @@ export class TenantInitializationService {
         true, // isPrimary
       );
 
-      this.logger.log(
-        `Successfully initialized tenant: ${tenant.tenantKey}`,
-      );
+      this.logger.log(`Successfully initialized tenant: ${tenant.tenantKey}`);
 
       return {
         rolesCreated,
@@ -165,10 +153,9 @@ export class TenantInitializationService {
 
     for (const roleData of defaultRoles) {
       // Check if role already exists
-      const existingRole = await manager.query(
-        `SELECT id FROM roles WHERE name = $1`,
-        [roleData.name],
-      );
+      const existingRole = await manager.query(`SELECT id FROM roles WHERE name = $1`, [
+        roleData.name,
+      ]);
 
       if (existingRole.length === 0) {
         await manager.query(
@@ -210,16 +197,13 @@ export class TenantInitializationService {
 
     // Validate password
     if (!password || password.length < 8) {
-      throw new BadRequestException(
-        'Tenant admin password must be at least 8 characters',
-      );
+      throw new BadRequestException('Tenant admin password must be at least 8 characters');
     }
 
     // Check if user already exists
-    const existingUser = await manager.query(
-      `SELECT id FROM users WHERE email = $1`,
-      [email.trim().toLowerCase()],
-    );
+    const existingUser = await manager.query(`SELECT id FROM users WHERE email = $1`, [
+      email.trim().toLowerCase(),
+    ]);
 
     if (existingUser.length > 0) {
       this.logger.warn(`User already exists: ${email}`);
@@ -260,7 +244,9 @@ export class TenantInitializationService {
     password: string,
     fullName: string,
   ): Promise<void> {
-    this.logger.log(`Creating tenant admin record in admin schema: ${email} for tenant ${tenant.tenantKey}`);
+    this.logger.log(
+      `Creating tenant admin record in admin schema: ${email} for tenant ${tenant.tenantKey}`,
+    );
 
     try {
       // Check if tenant admin record already exists
@@ -270,7 +256,9 @@ export class TenantInitializationService {
       );
 
       if (existingAdmin) {
-        this.logger.warn(`Tenant admin record already exists: ${email} for tenant ${tenant.tenantKey}`);
+        this.logger.warn(
+          `Tenant admin record already exists: ${email} for tenant ${tenant.tenantKey}`,
+        );
         return;
       }
 
@@ -312,10 +300,7 @@ export class TenantInitializationService {
     roleName: string,
   ): Promise<void> {
     // Get role ID
-    const roleResult = await manager.query(
-      `SELECT id FROM roles WHERE name = $1`,
-      [roleName],
-    );
+    const roleResult = await manager.query(`SELECT id FROM roles WHERE name = $1`, [roleName]);
 
     if (roleResult.length === 0) {
       throw new BadRequestException(`Role not found: ${roleName}`);
@@ -354,9 +339,7 @@ export class TenantInitializationService {
     this.logger.log(`Creating default organization: ${organizationName}`);
 
     // Check if default organization already exists
-    const existingOrg = await manager.query(
-      `SELECT id FROM organizations WHERE is_default = true`,
-    );
+    const existingOrg = await manager.query(`SELECT id FROM organizations WHERE is_default = true`);
 
     if (existingOrg.length > 0) {
       this.logger.warn('Default organization already exists');
@@ -397,9 +380,7 @@ export class TenantInitializationService {
     );
 
     const orgId = result[0].id;
-    this.logger.log(
-      `Created default organization: ${organizationName} (ID: ${orgId})`,
-    );
+    this.logger.log(`Created default organization: ${organizationName} (ID: ${orgId})`);
 
     return { id: orgId };
   }
@@ -427,9 +408,7 @@ export class TenantInitializationService {
     );
 
     if (existingMembership.length > 0) {
-      this.logger.debug(
-        `User ${userId} already belongs to organization ${organizationId}`,
-      );
+      this.logger.debug(`User ${userId} already belongs to organization ${organizationId}`);
       return;
     }
 
@@ -452,9 +431,6 @@ export class TenantInitializationService {
       [userId, organizationId, role, isPrimary],
     );
 
-    this.logger.log(
-      `Assigned user ${userId} to organization ${organizationId} as ${role}`,
-    );
+    this.logger.log(`Assigned user ${userId} to organization ${organizationId} as ${role}`);
   }
 }
-

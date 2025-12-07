@@ -34,7 +34,7 @@ export enum Priority {
 
 /**
  * Compliance Requirement Entity
- * 
+ *
  * Individual compliance requirements within frameworks.
  */
 @Entity('compliance_requirements')
@@ -152,3 +152,4 @@ export class ComplianceRequirement {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedById: number | null;
 }
+

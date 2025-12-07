@@ -15,13 +15,13 @@ import { User } from '../../users/entities/user.entity';
 
 /**
  * Organization Membership Service
- * 
+ *
  * Provides business logic for organization membership operations:
  * - Add user to organization
  * - Remove user from organization
  * - Set primary organization
  * - Update organization role
- * 
+ *
  * This service handles all membership management operations
  * within the current tenant context.
  */
@@ -37,10 +37,10 @@ export class OrganizationMembershipService {
 
   /**
    * Add user to organization
-   * 
+   *
    * Creates a new membership or reactivates an existing inactive membership.
    * If setting as primary, automatically unsets other primary memberships.
-   * 
+   *
    * @param userId - User ID to add
    * @param organizationId - Organization ID
    * @param role - User's role in the organization (optional)
@@ -93,7 +93,9 @@ export class OrganizationMembershipService {
 
     if (inactiveMembership) {
       // Reactivate existing membership
-      this.logger.log(`Reactivating existing membership for user ${userId} in organization ${organizationId}`);
+      this.logger.log(
+        `Reactivating existing membership for user ${userId} in organization ${organizationId}`,
+      );
       inactiveMembership.reactivate();
       inactiveMembership.role = role || null;
       inactiveMembership.isPrimary = isPrimary;
@@ -123,10 +125,10 @@ export class OrganizationMembershipService {
 
   /**
    * Remove user from organization
-   * 
+   *
    * Soft deletes the membership by setting left_at timestamp.
    * If this was the primary organization, it will be unset.
-   * 
+   *
    * @param userId - User ID to remove
    * @param organizationId - Organization ID
    * @returns Updated membership (with left_at set)
@@ -181,11 +183,11 @@ export class OrganizationMembershipService {
 
   /**
    * Set primary organization for user
-   * 
+   *
    * Sets the specified organization as the user's primary organization.
    * Automatically unsets any other primary organization.
    * The user must be a member of the organization.
-   * 
+   *
    * @param userId - User ID
    * @param organizationId - Organization ID to set as primary
    * @returns Updated membership
@@ -243,10 +245,10 @@ export class OrganizationMembershipService {
 
   /**
    * Update organization role for user
-   * 
+   *
    * Updates the user's role within a specific organization.
    * The user must be an active member of the organization.
-   * 
+   *
    * @param userId - User ID
    * @param organizationId - Organization ID
    * @param role - New role (can be null to remove role)
@@ -299,7 +301,7 @@ export class OrganizationMembershipService {
 
   /**
    * Get user's organization memberships
-   * 
+   *
    * @param userId - User ID
    * @param includeInactive - Include inactive memberships (default: false)
    * @returns List of memberships
@@ -313,7 +315,7 @@ export class OrganizationMembershipService {
 
   /**
    * Get organization's members
-   * 
+   *
    * @param organizationId - Organization ID
    * @param includeInactive - Include inactive memberships (default: false)
    * @returns List of memberships
@@ -327,7 +329,7 @@ export class OrganizationMembershipService {
 
   /**
    * Get user's primary organization
-   * 
+   *
    * @param userId - User ID
    * @returns Primary organization membership or null
    */
@@ -337,7 +339,7 @@ export class OrganizationMembershipService {
 
   /**
    * Check if user is a member of organization
-   * 
+   *
    * @param userId - User ID
    * @param organizationId - Organization ID
    * @returns True if user is an active member
@@ -348,7 +350,7 @@ export class OrganizationMembershipService {
 
   /**
    * Get member count for organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Number of active members
    */
@@ -358,7 +360,7 @@ export class OrganizationMembershipService {
 
   /**
    * Get organization count for user
-   * 
+   *
    * @param userId - User ID
    * @returns Number of organizations user belongs to
    */
@@ -368,7 +370,7 @@ export class OrganizationMembershipService {
 
   /**
    * Unset all primary organization flags for a user except the specified one
-   * 
+   *
    * @param userId - User ID
    * @param excludeMembershipId - Membership ID to exclude from unsetting
    */
@@ -394,5 +396,3 @@ export class OrganizationMembershipService {
     }
   }
 }
-
-

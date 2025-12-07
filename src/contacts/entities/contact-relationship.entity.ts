@@ -42,7 +42,7 @@ export enum RelationshipStrength {
 
 /**
  * Contact Relationship Entity
- * 
+ *
  * Represents relationships between contacts (hierarchical and other).
  * Supports parent company, subsidiaries, partners, competitors, etc.
  */
@@ -173,5 +173,4 @@ export class ContactRelationship {
     return true;
   }
 }
-
 

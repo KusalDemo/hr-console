@@ -8,10 +8,7 @@ import {
 import { DataSource } from 'typeorm';
 import { writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import {
-  ExportJobRepository,
-  ExportTemplateRepository,
-} from '../repositories';
+import { ExportJobRepository, ExportTemplateRepository } from '../repositories';
 import { ReportBuilderService } from './report-builder.service';
 import {
   ExportJob,
@@ -32,7 +29,7 @@ import { EmailService } from '../../email/email.service';
 
 /**
  * Export Service
- * 
+ *
  * Manages export operations:
  * - Export template CRUD
  * - Export job creation and management
@@ -50,14 +47,14 @@ export class ExportService {
     private readonly exportTemplateRepository: ExportTemplateRepository,
     private readonly reportBuilderService: ReportBuilderService,
     private readonly organizationRepository: OrganizationRepository,
-    private readonly emailService?: EmailService,
     private readonly dataSource: DataSource,
+    private readonly emailService?: EmailService,
   ) {
     // Ensure export storage directory exists
     try {
       mkdirSync(this.exportStoragePath, { recursive: true });
     } catch (error) {
-      this.logger.warn(`Failed to create export storage directory: ${error.message}`);
+      this.logger.warn(`Failed to create export storage directory: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -72,13 +69,9 @@ export class ExportService {
 
     // Validate organization exists (if provided)
     if (createDto.organizationId) {
-      const organization = await this.organizationRepository.findById(
-        createDto.organizationId,
-      );
+      const organization = await this.organizationRepository.findById(createDto.organizationId);
       if (!organization) {
-        throw new NotFoundException(
-          `Organization not found: ${createDto.organizationId}`,
-        );
+        throw new NotFoundException(`Organization not found: ${createDto.organizationId}`);
       }
     }
 
@@ -88,9 +81,7 @@ export class ExportService {
       createDto.organizationId || null,
     );
     if (nameExists) {
-      throw new BadRequestException(
-        `Template with name '${createDto.name}' already exists`,
-      );
+      throw new BadRequestException(`Template with name '${createDto.name}' already exists`);
     }
 
     try {
@@ -120,7 +111,8 @@ export class ExportService {
       const saved = await this.exportTemplateRepository.save(template);
       return ExportTemplateResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create export template: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to create export template: ${errorMessage}`, error);
       throw new InternalServerErrorException('Failed to create export template');
     }
   }
@@ -175,9 +167,7 @@ export class ExportService {
         id,
       );
       if (nameExists) {
-        throw new BadRequestException(
-          `Template with name '${updateDto.name}' already exists`,
-        );
+        throw new BadRequestException(`Template with name '${updateDto.name}' already exists`);
       }
     }
 
@@ -190,7 +180,8 @@ export class ExportService {
       const saved = await this.exportTemplateRepository.save(template);
       return ExportTemplateResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to update export template: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to update export template: ${errorMessage}`, error);
       throw new InternalServerErrorException('Failed to update export template');
     }
   }
@@ -223,13 +214,9 @@ export class ExportService {
     this.logger.log(`Creating export job for entity: ${createDto.entityType}`);
 
     // Validate organization exists
-    const organization = await this.organizationRepository.findById(
-      createDto.organizationId,
-    );
+    const organization = await this.organizationRepository.findById(createDto.organizationId);
     if (!organization) {
-      throw new NotFoundException(
-        `Organization not found: ${createDto.organizationId}`,
-      );
+      throw new NotFoundException(`Organization not found: ${createDto.organizationId}`);
     }
 
     // Validate template exists (if provided)
@@ -271,7 +258,8 @@ export class ExportService {
       const saved = await this.exportJobRepository.save(exportJob);
       return ExportJobResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create export job: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to create export job: ${errorMessage}`, error);
       throw new InternalServerErrorException('Failed to create export job');
     }
   }
@@ -359,15 +347,15 @@ export class ExportService {
         this.logger.warn('Email service not available, skipping email delivery');
       }
 
-      this.logger.log(
-        `Export job ${jobId} completed: ${job.totalRecords} records exported`,
-      );
+      this.logger.log(`Export job ${jobId} completed: ${job.totalRecords} records exported`);
     } catch (error) {
-      this.logger.error(`Export job ${jobId} failed: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Export job ${jobId} failed: ${errorMessage}`, error);
 
       job.status = ExportJobStatus.FAILED;
-      job.errorMessage = error.message;
-      job.errorDetails = { error: error.message, stack: error.stack };
+      job.errorMessage = errorMessage;
+      job.errorDetails = { error: errorMessage, stack: errorStack ?? null };
       job.completedAt = new Date();
       await this.exportJobRepository.save(job);
     }
@@ -505,9 +493,7 @@ export class ExportService {
     // const stats = fs.statSync(filePath);
     // return { fileName, filePath, fileSize: stats.size };
 
-    throw new BadRequestException(
-      'PDF export not yet implemented. Please install pdfkit package.',
-    );
+    throw new BadRequestException('PDF export not yet implemented. Please install pdfkit package.');
   }
 
   /**
@@ -541,7 +527,8 @@ export class ExportService {
 
       this.logger.log(`Export email sent for job ${job.id}`);
     } catch (error) {
-      this.logger.error(`Failed to send export email: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to send export email: ${errorMessage}`, error);
       throw error;
     }
   }
@@ -556,9 +543,7 @@ export class ExportService {
     }
 
     if (job.status !== ExportJobStatus.PENDING && job.status !== ExportJobStatus.PROCESSING) {
-      throw new BadRequestException(
-        `Cannot cancel export job. Current status: ${job.status}`,
-      );
+      throw new BadRequestException(`Cannot cancel export job. Current status: ${job.status}`);
     }
 
     job.status = ExportJobStatus.CANCELLED;
@@ -579,11 +564,7 @@ export class ExportService {
       isScheduled?: boolean;
     },
   ): Promise<{ jobs: ExportJobResponseDto[]; total: number }> {
-    const result = await this.exportJobRepository.findWithPagination(
-      page,
-      limit,
-      filters,
-    );
+    const result = await this.exportJobRepository.findWithPagination(page, limit, filters);
     return {
       jobs: result.jobs.map((j) => ExportJobResponseDto.fromEntity(j)),
       total: result.total,

@@ -23,7 +23,7 @@ export enum SLATimeUnit {
 
 /**
  * Ticket SLA Entity
- * 
+ *
  * Defines Service Level Agreements for tickets:
  * - First response time
  * - Resolution time
@@ -180,10 +180,7 @@ export class TicketSLA {
    * Calculate resolution due date
    */
   calculateResolutionDueDate(startDate: Date): Date {
-    const timeInMs = this.convertTimeToMilliseconds(
-      this.resolutionTime,
-      this.resolutionTimeUnit,
-    );
+    const timeInMs = this.convertTimeToMilliseconds(this.resolutionTime, this.resolutionTimeUnit);
     return new Date(startDate.getTime() + timeInMs);
   }
 

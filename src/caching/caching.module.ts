@@ -5,7 +5,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 
 /**
  * Caching Module
- * 
+ *
  * Provides distributed caching with Redis:
  * - Cache service with Redis integration
  * - Cache decorators for automatic caching
@@ -25,6 +25,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       useClass: CacheInterceptor,
     },
   ],
-  exports: [CacheService, CacheInterceptor],
+  exports: [CacheService],
 })
 export class CachingModule {}

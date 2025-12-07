@@ -8,11 +8,7 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  ReportType,
-  ReportOutputFormat,
-  ReportStatus,
-} from '../entities/report-definition.entity';
+import { ReportType, ReportOutputFormat, ReportStatus } from '../entities/report-definition.entity';
 
 /**
  * Update Report Definition DTO

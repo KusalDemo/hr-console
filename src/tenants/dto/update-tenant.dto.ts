@@ -4,7 +4,7 @@ import { IsString, IsOptional, IsBoolean, MinLength, MaxLength } from 'class-val
  * Update Tenant Request DTO
  * Used for updating tenant information
  * All fields are optional - only provided fields will be updated
- * 
+ *
  * Supports both 'active' and 'isActive' property names for backward compatibility
  */
 export class UpdateTenantDto {
@@ -24,4 +24,3 @@ export class UpdateTenantDto {
   @IsBoolean({ message: 'isActive must be a boolean' })
   isActive?: boolean;
 }
-

@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsBoolean,
-  IsEnum,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsEnum, IsObject } from 'class-validator';
 import { CalendarType } from '../entities/holiday-calendar.entity';
 import { Type } from 'class-transformer';
 import { IsNumber } from 'class-validator';

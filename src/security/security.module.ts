@@ -17,11 +17,7 @@ import {
   IpWhitelistRepository,
   SecurityAuditLogRepository,
 } from './repositories';
-import {
-  MfaService,
-  PasswordPolicyService,
-  SessionService,
-} from './services';
+import { MfaService, PasswordPolicyService, SessionService } from './services';
 import { AuthModule } from '../auth/auth.module';
 import { EmailModule } from '../email/email.module';
 import { User } from '../users/entities/user.entity';
@@ -29,7 +25,7 @@ import { Organization } from '../organizations/entities/organization.entity';
 
 /**
  * Security Module
- * 
+ *
  * Provides enterprise-grade security features:
  * - Multi-factor authentication (TOTP, SMS, Email)
  * - Password policies and validation
@@ -81,3 +77,4 @@ import { Organization } from '../organizations/entities/organization.entity';
   ],
 })
 export class SecurityModule {}
+

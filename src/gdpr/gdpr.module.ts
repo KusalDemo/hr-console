@@ -1,11 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GdprController } from './gdpr.controller';
-import {
-  DataSubjectRequest,
-  Consent,
-  PrivacyPolicyAcceptance,
-} from './entities';
+import { DataSubjectRequest, Consent, PrivacyPolicyAcceptance } from './entities';
 import {
   DataSubjectRequestRepository,
   ConsentRepository,
@@ -17,7 +13,7 @@ import { Organization } from '../organizations/entities/organization.entity';
 
 /**
  * GDPR Module
- * 
+ *
  * Provides GDPR compliance features:
  * - Data subject requests (access, deletion, portability, rectification, restriction)
  * - Consent management and tracking
@@ -56,3 +52,4 @@ import { Organization } from '../organizations/entities/organization.entity';
   ],
 })
 export class GdprModule {}
+

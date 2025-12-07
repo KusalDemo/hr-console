@@ -23,7 +23,7 @@ import { ContactsModule } from '../contacts/contacts.module';
 
 /**
  * Clients Vendors Module
- * 
+ *
  * Provides advanced client/vendor relationship management:
  * - Client and vendor CRUD operations
  * - Purchase order management
@@ -66,4 +66,3 @@ import { ContactsModule } from '../contacts/contacts.module';
   ],
 })
 export class ClientsVendorsModule {}
-

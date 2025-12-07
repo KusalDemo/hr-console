@@ -21,7 +21,7 @@ export enum PolicyType {
 
 /**
  * Privacy Policy Acceptance Entity
- * 
+ *
  * Tracks privacy policy and terms acceptance.
  */
 @Entity('privacy_policy_acceptances')
@@ -79,3 +79,4 @@ export class PrivacyPolicyAcceptance {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any> | null;
 }
+

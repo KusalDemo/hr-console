@@ -38,7 +38,7 @@ import { ContactCategory } from '../../contacts/entities/contact.entity';
 
 /**
  * Client Vendor Service
- * 
+ *
  * Manages clients, vendors, purchase orders, ratings, certifications, and contracts:
  * - Client and vendor CRUD operations
  * - Purchase order management
@@ -90,10 +90,11 @@ export class ClientVendorService {
     });
 
     const saved = await this.clientRepository.save(client);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created client: ${saved.id} (${saved.clientNumber})`);
+    this.logger.log(`Created client: ${savedEntity.id} (${savedEntity.clientNumber})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -112,11 +113,7 @@ export class ClientVendorService {
   /**
    * Update client
    */
-  async updateClient(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<Client> {
+  async updateClient(id: number, updateDto: any, updatedBy?: number): Promise<Client> {
     const client = await this.clientRepository.findById(id);
 
     if (!client) {
@@ -145,10 +142,7 @@ export class ClientVendorService {
   /**
    * Create a new vendor
    */
-  async createVendor(
-    createDto: any,
-    createdBy?: number,
-  ): Promise<Vendor> {
+  async createVendor(createDto: any, createdBy?: number): Promise<Vendor> {
     // Generate vendor number if not provided
     let vendorNumber = createDto.vendorNumber;
     if (!vendorNumber) {
@@ -170,10 +164,11 @@ export class ClientVendorService {
     });
 
     const saved = await this.vendorRepository.save(vendor);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created vendor: ${saved.id} (${saved.vendorNumber})`);
+    this.logger.log(`Created vendor: ${savedEntity.id} (${savedEntity.vendorNumber})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -192,11 +187,7 @@ export class ClientVendorService {
   /**
    * Update vendor
    */
-  async updateVendor(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<Vendor> {
+  async updateVendor(id: number, updateDto: any, updatedBy?: number): Promise<Vendor> {
     const vendor = await this.vendorRepository.findById(id);
 
     if (!vendor) {
@@ -225,10 +216,7 @@ export class ClientVendorService {
   /**
    * Create a new purchase order
    */
-  async createPurchaseOrder(
-    createDto: any,
-    createdBy?: number,
-  ): Promise<PurchaseOrder> {
+  async createPurchaseOrder(createDto: any, createdBy?: number): Promise<PurchaseOrder> {
     // Generate PO number if not provided
     let poNumber = createDto.poNumber;
     if (!poNumber) {
@@ -247,15 +235,12 @@ export class ClientVendorService {
       createDto.items.forEach((item: any) => {
         const lineTotal = item.quantityOrdered * item.unitPrice;
         totalAmount += lineTotal;
-        taxAmount += lineTotal * (item.taxRate || 0) / 100;
+        taxAmount += (lineTotal * (item.taxRate || 0)) / 100;
       });
     }
 
     const grandTotal =
-      totalAmount +
-      taxAmount +
-      (createDto.shippingAmount || 0) -
-      (createDto.discountAmount || 0);
+      totalAmount + taxAmount + (createDto.shippingAmount || 0) - (createDto.discountAmount || 0);
 
     const po = this.purchaseOrderRepository.create({
       ...createDto,
@@ -280,9 +265,10 @@ export class ClientVendorService {
       // Items will be saved via cascade
     }
 
-    this.logger.log(`Created purchase order: ${saved.id} (${saved.poNumber})`);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Created purchase order: ${savedEntity.id} (${savedEntity.poNumber})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -303,11 +289,7 @@ export class ClientVendorService {
   /**
    * Add vendor rating
    */
-  async addVendorRating(
-    vendorId: number,
-    ratingDto: any,
-    ratedBy?: number,
-  ): Promise<VendorRating> {
+  async addVendorRating(vendorId: number, ratingDto: any, ratedBy?: number): Promise<VendorRating> {
     const vendor = await this.vendorRepository.findById(vendorId);
 
     if (!vendor) {
@@ -394,10 +376,7 @@ export class ClientVendorService {
   /**
    * Create a new contract
    */
-  async createContract(
-    createDto: any,
-    createdBy?: number,
-  ): Promise<Contract> {
+  async createContract(createDto: any, createdBy?: number): Promise<Contract> {
     // Generate contract number if not provided
     let contractNumber = createDto.contractNumber;
     if (!contractNumber) {
@@ -422,9 +401,10 @@ export class ClientVendorService {
 
     const saved = await this.contractRepository.save(contract);
 
-    this.logger.log(`Created contract: ${saved.id} (${saved.contractNumber})`);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Created contract: ${savedEntity.id} (${savedEntity.contractNumber})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -510,4 +490,3 @@ export class ClientVendorService {
     return contractNumber;
   }
 }
-

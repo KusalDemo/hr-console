@@ -35,7 +35,7 @@ export enum ChecklistStatus {
 
 /**
  * Compliance Checklist Entity
- * 
+ *
  * Tenant-specific compliance checklists.
  */
 @Entity('compliance_checklists')
@@ -71,7 +71,13 @@ export class ComplianceChecklist {
   @Column({ name: 'checklist_type', type: 'varchar', length: 64, nullable: false })
   checklistType: ChecklistType;
 
-  @Column({ name: 'checklist_version', type: 'varchar', length: 32, nullable: false, default: '1.0' })
+  @Column({
+    name: 'checklist_version',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: '1.0',
+  })
   checklistVersion: string;
 
   @ManyToOne(() => Organization, {
@@ -91,10 +97,23 @@ export class ComplianceChecklist {
   @Column({ name: 'is_tenant_wide', type: 'boolean', nullable: false, default: true })
   isTenantWide: boolean;
 
-  @Column({ name: 'checklist_status', type: 'varchar', length: 32, nullable: false, default: ChecklistStatus.DRAFT })
+  @Column({
+    name: 'checklist_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: ChecklistStatus.DRAFT,
+  })
   checklistStatus: ChecklistStatus;
 
-  @Column({ name: 'completion_percentage', type: 'decimal', precision: 5, scale: 2, nullable: false, default: 0.0 })
+  @Column({
+    name: 'completion_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+    default: 0.0,
+  })
   completionPercentage: number;
 
   @Column({ name: 'total_requirements', type: 'integer', nullable: false, default: 0 })
@@ -163,3 +182,4 @@ export class ComplianceChecklist {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any> | null;
 }
+

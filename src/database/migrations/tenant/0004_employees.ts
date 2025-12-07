@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Employees Migration
- * 
+ *
  * This migration creates the employees table with:
  * - Basic employee information (name, email, employee number)
  * - Employment details (type, status, hire date, termination)
@@ -10,7 +10,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - Department and manager relationships (references to be created later)
  * - Personal information (address, contact, emergency contact)
  * - Profile metadata (JSONB for flexible data)
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Employees0000000000004 implements MigrationInterface {
@@ -119,4 +119,3 @@ export class Employees0000000000004 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS employees CASCADE`);
   }
 }
-

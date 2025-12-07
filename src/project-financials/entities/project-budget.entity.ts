@@ -37,7 +37,7 @@ export enum BudgetStatus {
 
 /**
  * Project Budget Entity
- * 
+ *
  * Represents budget lines for a project with categories.
  * Supports multiple budget versions and revisions.
  */
@@ -212,5 +212,4 @@ export class ProjectBudget {
     return total > this.budgetedAmount * 0.9; // 90% threshold
   }
 }
-
 

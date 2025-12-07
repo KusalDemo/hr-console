@@ -27,7 +27,7 @@ import { BillingCycle } from './entities/subscription-plan.entity';
 
 /**
  * Subscription Plans Management Controller
- * 
+ *
  * Handles subscription plan management operations (super admin only):
  * - GET /admin/plans - List plans
  * - GET /admin/plans/:id - Get plan details
@@ -44,7 +44,7 @@ export class SubscriptionPlansController {
 
   /**
    * List all subscription plans
-   * 
+   *
    * @param page - Page number (default: 1)
    * @param limit - Items per page (default: 10, max: 100)
    * @param includeInactive - Include inactive plans (default: false)
@@ -118,7 +118,7 @@ export class SubscriptionPlansController {
 
   /**
    * Get plan details by ID
-   * 
+   *
    * @param id - Plan ID
    * @param includeInactive - Include inactive plans (default: false)
    * @returns Plan details
@@ -156,7 +156,7 @@ export class SubscriptionPlansController {
 
   /**
    * Create a new subscription plan
-   * 
+   *
    * @param createDto - Plan creation data
    * @param user - Current user (super admin)
    * @returns Created plan
@@ -194,7 +194,7 @@ export class SubscriptionPlansController {
 
   /**
    * Update a subscription plan
-   * 
+   *
    * @param id - Plan ID
    * @param updateDto - Plan update data
    * @param user - Current user (super admin)
@@ -234,7 +234,7 @@ export class SubscriptionPlansController {
 
   /**
    * Deactivate a subscription plan
-   * 
+   *
    * @param id - Plan ID
    * @param user - Current user (super admin)
    * @returns Deactivated plan
@@ -270,5 +270,4 @@ export class SubscriptionPlansController {
     };
   }
 }
-
 

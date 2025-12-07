@@ -22,7 +22,7 @@ export enum LeaveRequestStatus {
 
 /**
  * Leave Request Entity - Represents employee leave requests
- * 
+ *
  * Leave requests support:
  * - Employee relationship
  * - Start and end dates
@@ -31,7 +31,7 @@ export enum LeaveRequestStatus {
  * - Number of days calculation
  * - Reason/notes
  * - Organization context (via employee)
- * 
+ *
  * This is the foundation entity for the leave management system.
  * Future enhancements will include:
  * - Leave type relationship
@@ -244,4 +244,3 @@ export class LeaveRequest {
     );
   }
 }
-

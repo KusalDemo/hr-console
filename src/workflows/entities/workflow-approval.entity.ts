@@ -24,7 +24,7 @@ export enum ApprovalStatus {
 
 /**
  * Workflow Approval Entity
- * 
+ *
  * Represents a single approval step in a workflow instance.
  * Supports parallel and sequential approvals, delegation, and auto-approval.
  */
@@ -179,5 +179,4 @@ export class WorkflowApproval {
     return this.dueDate !== null && this.dueDate < new Date() && this.isPending();
   }
 }
-
 

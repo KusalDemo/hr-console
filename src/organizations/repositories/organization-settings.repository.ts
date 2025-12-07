@@ -133,16 +133,11 @@ export class OrganizationSettingsRepository extends Repository<OrganizationSetti
   /**
    * Delete all settings in a category for an organization
    */
-  async deleteByOrganizationAndCategory(
-    organizationId: number,
-    category: string,
-  ): Promise<void> {
+  async deleteByOrganizationAndCategory(organizationId: number, category: string): Promise<void> {
     await this.delete({
       organizationId,
       category: category.trim(),
     });
   }
 }
-
-
 

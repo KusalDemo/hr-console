@@ -2,15 +2,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RulesController } from './rules.controller';
 import { RuleEngineService, ExpressionEvaluatorService } from './services';
-import {
-  BusinessRuleRepository,
-  RuleExecutionLogRepository,
-} from './repositories';
+import { BusinessRuleRepository, RuleExecutionLogRepository } from './repositories';
 import { BusinessRule, RuleExecutionLog } from './entities';
 
 /**
  * Rules Module
- * 
+ *
  * Provides business rule validation and automation with expression evaluation.
  */
 @Module({
@@ -30,5 +27,4 @@ import { BusinessRule, RuleExecutionLog } from './entities';
   ],
 })
 export class RulesModule {}
-
 

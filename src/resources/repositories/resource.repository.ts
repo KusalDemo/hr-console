@@ -4,7 +4,7 @@ import { Resource, ResourceType, ResourceStatus } from '../entities/resource.ent
 
 /**
  * Resource Repository
- * 
+ *
  * Custom repository methods for resource queries with optimized queries.
  */
 @Injectable()
@@ -52,10 +52,7 @@ export class ResourceRepository extends Repository<Resource> {
   /**
    * Find resources by status
    */
-  async findByStatus(
-    status: ResourceStatus,
-    organizationId?: number,
-  ): Promise<Resource[]> {
+  async findByStatus(status: ResourceStatus, organizationId?: number): Promise<Resource[]> {
     const query = this.createQueryBuilder('resource')
       .where('resource.resourceStatus = :status', { status })
       .andWhere('resource.isActive = :isActive', { isActive: true })
@@ -71,10 +68,7 @@ export class ResourceRepository extends Repository<Resource> {
   /**
    * Find resources by category
    */
-  async findByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<Resource[]> {
+  async findByCategory(category: string, organizationId?: number): Promise<Resource[]> {
     const query = this.createQueryBuilder('resource')
       .where('resource.category = :category', { category })
       .andWhere('resource.isActive = :isActive', { isActive: true })
@@ -90,10 +84,7 @@ export class ResourceRepository extends Repository<Resource> {
   /**
    * Find resources by location
    */
-  async findByLocation(
-    locationId: number,
-    organizationId?: number,
-  ): Promise<Resource[]> {
+  async findByLocation(locationId: number, organizationId?: number): Promise<Resource[]> {
     const query = this.createQueryBuilder('resource')
       .where('resource.locationId = :locationId', { locationId })
       .andWhere('resource.isActive = :isActive', { isActive: true })

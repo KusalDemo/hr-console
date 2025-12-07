@@ -4,7 +4,7 @@ import { JobQueue, JobStatus, JobType, JobPriority } from '../entities/job-queue
 
 /**
  * Job Queue Repository
- * 
+ *
  * Custom repository methods for job queue queries.
  */
 @Injectable()
@@ -17,8 +17,7 @@ export class JobQueueRepository extends Repository<JobQueue> {
    * Find job by ID
    */
   async findById(id: number, includeExecutions = false): Promise<JobQueue | null> {
-    const query = this.createQueryBuilder('job')
-      .where('job.id = :id', { id });
+    const query = this.createQueryBuilder('job').where('job.id = :id', { id });
 
     if (includeExecutions) {
       query.leftJoinAndSelect('job.executions', 'executions');
@@ -30,10 +29,7 @@ export class JobQueueRepository extends Repository<JobQueue> {
   /**
    * Find jobs by status
    */
-  async findByStatus(
-    status: JobStatus,
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async findByStatus(status: JobStatus, organizationId?: number): Promise<JobQueue[]> {
     const query = this.createQueryBuilder('job')
       .where('job.status = :status', { status })
       .orderBy('job.priority', 'DESC')
@@ -50,17 +46,11 @@ export class JobQueueRepository extends Repository<JobQueue> {
   /**
    * Find pending jobs
    */
-  async findPendingJobs(
-    organizationId?: number,
-    beforeDate?: Date,
-  ): Promise<JobQueue[]> {
+  async findPendingJobs(organizationId?: number, beforeDate?: Date): Promise<JobQueue[]> {
     const executionDate = beforeDate || new Date();
     const query = this.createQueryBuilder('job')
       .where('job.status = :status', { status: JobStatus.PENDING })
-      .andWhere(
-        '(job.scheduledAt IS NULL OR job.scheduledAt <= :executionDate)',
-        { executionDate },
-      )
+      .andWhere('(job.scheduledAt IS NULL OR job.scheduledAt <= :executionDate)', { executionDate })
       .orderBy('job.priority', 'DESC')
       .addOrderBy('job.scheduledAt', 'ASC')
       .addOrderBy('job.createdAt', 'ASC');
@@ -75,10 +65,7 @@ export class JobQueueRepository extends Repository<JobQueue> {
   /**
    * Find jobs by type
    */
-  async findByType(
-    jobType: JobType,
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async findByType(jobType: JobType, organizationId?: number): Promise<JobQueue[]> {
     const query = this.createQueryBuilder('job')
       .where('job.jobType = :jobType', { jobType })
       .orderBy('job.priority', 'DESC')
@@ -94,9 +81,7 @@ export class JobQueueRepository extends Repository<JobQueue> {
   /**
    * Find recurring jobs
    */
-  async findRecurringJobs(
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async findRecurringJobs(organizationId?: number): Promise<JobQueue[]> {
     const query = this.createQueryBuilder('job')
       .where('job.isRecurring = :isRecurring', { isRecurring: true })
       .andWhere('job.status != :cancelled', { cancelled: JobStatus.CANCELLED })
@@ -112,17 +97,11 @@ export class JobQueueRepository extends Repository<JobQueue> {
   /**
    * Find jobs due for execution
    */
-  async findJobsDueForExecution(
-    beforeDate?: Date,
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async findJobsDueForExecution(beforeDate?: Date, organizationId?: number): Promise<JobQueue[]> {
     const executionDate = beforeDate || new Date();
     const query = this.createQueryBuilder('job')
       .where('job.status = :status', { status: JobStatus.PENDING })
-      .andWhere(
-        '(job.scheduledAt IS NULL OR job.scheduledAt <= :executionDate)',
-        { executionDate },
-      )
+      .andWhere('(job.scheduledAt IS NULL OR job.scheduledAt <= :executionDate)', { executionDate })
       .orderBy('job.priority', 'DESC')
       .addOrderBy('job.scheduledAt', 'ASC');
 
@@ -136,10 +115,7 @@ export class JobQueueRepository extends Repository<JobQueue> {
   /**
    * Find jobs by priority
    */
-  async findByPriority(
-    priority: JobPriority,
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async findByPriority(priority: JobPriority, organizationId?: number): Promise<JobQueue[]> {
     const query = this.createQueryBuilder('job')
       .where('job.priority = :priority', { priority })
       .andWhere('job.status = :status', { status: JobStatus.PENDING })
@@ -156,9 +132,7 @@ export class JobQueueRepository extends Repository<JobQueue> {
   /**
    * Find failed jobs that can be retried
    */
-  async findRetryableJobs(
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async findRetryableJobs(organizationId?: number): Promise<JobQueue[]> {
     const query = this.createQueryBuilder('job')
       .where('job.status = :status', { status: JobStatus.FAILED })
       .andWhere('job.retryCount < job.maxRetries')
@@ -214,3 +188,4 @@ export class JobQueueRepository extends Repository<JobQueue> {
     return query.getMany();
   }
 }
+

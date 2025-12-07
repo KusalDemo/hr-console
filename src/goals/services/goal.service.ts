@@ -1,22 +1,12 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { GoalRepository } from '../repositories/goal.repository';
 import { KeyResultRepository } from '../repositories/key-result.repository';
-import {
-  Goal,
-  GoalType,
-  GoalStatus,
-  GoalPriority,
-} from '../entities/goal.entity';
+import { Goal, GoalType, GoalStatus, GoalPriority } from '../entities/goal.entity';
 import { KeyResult } from '../entities/key-result.entity';
 
 /**
  * Goal Service
- * 
+ *
  * Manages goals with:
  * - Goal CRUD operations
  * - Goal alignment (cascading from org to individual)
@@ -55,20 +45,17 @@ export class GoalService {
     });
 
     const saved = await this.goalRepository.save(goal);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created goal: ${saved.id} (${saved.goalTitle})`);
+    this.logger.log(`Created goal: ${savedEntity.id} (${savedEntity.goalTitle})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
    * Get goal by ID
    */
-  async getGoalById(
-    id: number,
-    includeKeyResults = false,
-    includeChildren = false,
-  ): Promise<Goal> {
+  async getGoalById(id: number, includeKeyResults = false, includeChildren = false): Promise<Goal> {
     const goal = await this.goalRepository.findById(id, includeKeyResults, includeChildren);
 
     if (!goal) {
@@ -124,7 +111,7 @@ export class GoalService {
 
     goal.isArchived = true;
     goal.status = GoalStatus.ARCHIVED;
-    goal.updatedBy = updatedBy;
+    goal.updatedBy = updatedBy ?? null;
 
     await this.goalRepository.save(goal);
 
@@ -209,11 +196,7 @@ export class GoalService {
   /**
    * Align goal to parent (cascade from parent goal)
    */
-  async alignGoalToParent(
-    goalId: number,
-    parentGoalId: number,
-    updatedBy?: number,
-  ): Promise<Goal> {
+  async alignGoalToParent(goalId: number, parentGoalId: number, updatedBy?: number): Promise<Goal> {
     const goal = await this.goalRepository.findById(goalId);
     const parentGoal = await this.goalRepository.findById(parentGoalId);
 
@@ -231,7 +214,7 @@ export class GoalService {
     }
 
     goal.parentGoalId = parentGoalId;
-    goal.updatedBy = updatedBy;
+    goal.updatedBy = updatedBy ?? null;
 
     const saved = await this.goalRepository.save(goal);
 
@@ -321,7 +304,7 @@ export class GoalService {
       goal.nextCheckInDate = nextDate;
     }
 
-    goal.updatedBy = updatedBy;
+    goal.updatedBy = updatedBy ?? null;
 
     const saved = await this.goalRepository.save(goal);
 
@@ -352,11 +335,7 @@ export class GoalService {
   /**
    * Update goal status
    */
-  async updateGoalStatus(
-    id: number,
-    status: GoalStatus,
-    updatedBy?: number,
-  ): Promise<Goal> {
+  async updateGoalStatus(id: number, status: GoalStatus, updatedBy?: number): Promise<Goal> {
     const goal = await this.goalRepository.findById(id);
 
     if (!goal) {
@@ -370,7 +349,7 @@ export class GoalService {
     }
 
     goal.status = status;
-    goal.updatedBy = updatedBy;
+    goal.updatedBy = updatedBy ?? null;
 
     return this.goalRepository.save(goal);
   }
@@ -412,10 +391,7 @@ export class GoalService {
   /**
    * Get goals needing check-in
    */
-  async getGoalsNeedingCheckIn(
-    organizationId?: number,
-    beforeDate?: Date,
-  ): Promise<Goal[]> {
+  async getGoalsNeedingCheckIn(organizationId?: number, beforeDate?: Date): Promise<Goal[]> {
     return this.goalRepository.findGoalsNeedingCheckIn(organizationId, beforeDate);
   }
 

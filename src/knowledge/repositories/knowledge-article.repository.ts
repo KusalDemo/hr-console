@@ -16,8 +16,7 @@ export class KnowledgeArticleRepository extends Repository<KnowledgeArticle> {
    * Find article by ID
    */
   async findById(id: number, includeRelations = false): Promise<KnowledgeArticle | null> {
-    const query = this.createQueryBuilder('article')
-      .where('article.id = :id', { id });
+    const query = this.createQueryBuilder('article').where('article.id = :id', { id });
 
     if (includeRelations) {
       query

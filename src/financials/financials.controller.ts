@@ -34,6 +34,8 @@ import {
   CreateBillingRuleDto,
   CreateRecurringInvoiceDto,
 } from './dto';
+import { BillingRule } from './entities/billing-rule.entity';
+import { RecurringInvoice } from './entities/recurring-invoice.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -42,7 +44,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Financials Controller
- * 
+ *
  * REST API endpoints for multi-currency support:
  * - Currency management (CRUD)
  * - Exchange rate management (CRUD, historical)
@@ -347,7 +349,9 @@ export class FinancialsController {
    * GET /financials/transactions/:id
    */
   @Get('transactions/:id')
-  async getTransaction(@Param('id', ParseIntPipe) id: number): Promise<FinancialTransactionResponseDto> {
+  async getTransaction(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<FinancialTransactionResponseDto> {
     const transaction = await this.accountingService.getTransactionById(id);
     return FinancialTransactionResponseDto.fromEntity(transaction, true);
   }
@@ -377,10 +381,7 @@ export class FinancialsController {
    */
   @Get('reports/profit-loss')
   @Roles('ADMIN', 'HR', 'FINANCE')
-  async getProfitAndLoss(
-    @Query('startDate') startDate: string,
-    @Query('endDate') endDate: string,
-  ) {
+  async getProfitAndLoss(@Query('startDate') startDate: string, @Query('endDate') endDate: string) {
     return this.reportingService.generateProfitAndLoss(new Date(startDate), new Date(endDate));
   }
 
@@ -434,7 +435,14 @@ export class FinancialsController {
     @Body() createDto: CreateBillingRuleDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.billingService.createBillingRule(createDto, user.userId);
+    const ruleData: Partial<BillingRule> = {
+      ...createDto,
+      billingPeriodStart: createDto.billingPeriodStart ? new Date(createDto.billingPeriodStart) : null,
+      billingPeriodEnd: createDto.billingPeriodEnd ? new Date(createDto.billingPeriodEnd) : null,
+      recurrenceEndDate: createDto.recurrenceEndDate ? new Date(createDto.recurrenceEndDate) : null,
+      nextBillingDate: createDto.nextBillingDate ? new Date(createDto.nextBillingDate) : null,
+    };
+    return this.billingService.createBillingRule(ruleData, user.userId);
   }
 
   /**
@@ -466,7 +474,12 @@ export class FinancialsController {
     @Body() createDto: CreateRecurringInvoiceDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.billingService.createRecurringInvoice(createDto, user.userId);
+    const scheduleData: Partial<RecurringInvoice> = {
+      ...createDto,
+      recurrenceEndDate: createDto.recurrenceEndDate ? new Date(createDto.recurrenceEndDate) : null,
+      nextInvoiceDate: new Date(createDto.nextInvoiceDate),
+    };
+    return this.billingService.createRecurringInvoice(scheduleData, user.userId);
   }
 
   /**

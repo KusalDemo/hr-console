@@ -6,7 +6,7 @@ import { Organization } from '../../organizations/entities/organization.entity';
 
 /**
  * Organization DataLoader
- * 
+ *
  * Batch loads organizations by ID to prevent N+1 queries.
  * Caches results per request.
  */
@@ -21,13 +21,13 @@ export class OrganizationDataLoader {
         const organizations = await this.organizationRepository.find({
           where: { id: In([...ids]) },
         });
-        
+
         // Create a map for quick lookup
         const organizationMap = new Map<number, Organization>();
         organizations.forEach((organization) => {
           organizationMap.set(organization.id, organization);
         });
-        
+
         // Return organizations in the same order as requested IDs
         return ids.map((id) => organizationMap.get(id) || null);
       },
@@ -49,6 +49,7 @@ export class OrganizationDataLoader {
    * Load multiple organizations by IDs
    */
   async loadMany(ids: number[]): Promise<(Organization | null)[]> {
-    return this.loader.loadMany(ids);
+    const results = await this.loader.loadMany(ids);
+    return results.map((result) => (result instanceof Error ? null : result));
   }
 }

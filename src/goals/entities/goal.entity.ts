@@ -47,7 +47,7 @@ export enum GoalPriority {
 
 /**
  * Goal Entity
- * 
+ *
  * Objectives and Key Results (OKR) tracking with:
  * - Goal alignment (cascading from org to individual)
  * - Progress tracking
@@ -164,7 +164,7 @@ export class Goal {
   /**
    * Parent goal relationship
    */
-  @ManyToOne(() => Goal, (goal) => childGoals, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => Goal, (goal) => goal.childGoals, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'parent_goal_id' })
   parentGoal: Goal | null;
 
@@ -216,7 +216,14 @@ export class Goal {
   /**
    * Overall progress percentage (0-100)
    */
-  @Column({ name: 'progress_percentage', type: 'decimal', precision: 5, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'progress_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   progressPercentage: number;
 
   /**

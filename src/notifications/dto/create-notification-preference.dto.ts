@@ -1,11 +1,4 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsBoolean,
-  IsString,
-  MaxLength,
-  ValidateIf,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsBoolean, IsString, MaxLength, ValidateIf } from 'class-validator';
 
 export class CreateNotificationPreferenceDto {
   @IsOptional()

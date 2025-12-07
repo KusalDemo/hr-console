@@ -3,6 +3,7 @@ import { GraphQLModule as NestGraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AppConfigService } from '../config/config.service';
+import { JSONScalar } from './scalars/json.scalar';
 import { EmployeesModule } from '../employees/employees.module';
 import { ProjectsModule } from '../projects/projects.module';
 import { TimesheetsModule } from '../timesheets/timesheets.module';
@@ -15,7 +16,7 @@ import { DataLoaderModule } from './dataloaders/dataloader.module';
 
 /**
  * GraphQL Module
- * 
+ *
  * Provides GraphQL API layer with:
  * - Code-first schema generation
  * - Query, mutation, and subscription support
@@ -38,8 +39,11 @@ import { DataLoaderModule } from './dataloaders/dataloader.module';
         // Apollo Server v4+ uses Explorer by default (playground is deprecated)
         // Enable introspection (can be disabled in production for security)
         introspection: configService.nodeEnv !== 'production',
+        // Explicitly disable playground (deprecated in Apollo Server v4+)
+        // This prevents @nestjs/apollo from trying to load the deprecated plugin
+        playground: false,
         // Context function to extract user and tenant info
-        context: ({ req }) => ({
+        context: ({ req }: { req: any }) => ({
           req,
           user: req.user, // Set by JWT guard
           tenantContext: (req as any).tenantContext, // Set by tenant middleware
@@ -48,7 +52,7 @@ import { DataLoaderModule } from './dataloaders/dataloader.module';
         formatError: (error) => {
           // Log error for debugging
           console.error('GraphQL Error:', error);
-          
+
           // Return user-friendly error messages
           return {
             message: error.message,
@@ -56,7 +60,7 @@ import { DataLoaderModule } from './dataloaders/dataloader.module';
             path: error.path,
             // Only include stack trace in development
             ...(configService.nodeEnv !== 'production' && {
-              stack: error.stack,
+              stack: (error as any).stack,
             }),
           };
         },
@@ -82,6 +86,8 @@ import { DataLoaderModule } from './dataloaders/dataloader.module';
     ProjectsResolver,
     TimesheetsResolver,
     TimesheetEntriesResolver,
+    // Custom scalars
+    JSONScalar,
   ],
   exports: [NestGraphQLModule],
 })

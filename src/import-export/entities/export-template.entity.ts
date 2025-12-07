@@ -14,7 +14,7 @@ import { ExportJob } from './export-job.entity';
 
 /**
  * Export Template Entity
- * 
+ *
  * Defines reusable export templates with:
  * - Field selection
  * - Formatting rules

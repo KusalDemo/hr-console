@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Document Management System Migration
- * 
+ *
  * This migration creates:
  * - documents table (document metadata, storage paths, versions, lifecycle)
  * - document_versions table (version history)
  * - document_shares table (sharing and permissions)
  * - Indexes for performance optimization
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Documents0000000000043 implements MigrationInterface {

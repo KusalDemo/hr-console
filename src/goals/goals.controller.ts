@@ -32,7 +32,7 @@ import { GoalType, GoalStatus } from './entities/goal.entity';
 
 /**
  * Goals Controller
- * 
+ *
  * REST API endpoints for goals and OKR management:
  * - Goals (CRUD, alignment, cloning, templates)
  * - Key results (CRUD, progress tracking)
@@ -57,10 +57,7 @@ export class GoalsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async createGoal(
-    @Body() createDto: CreateGoalDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createGoal(@Body() createDto: CreateGoalDto, @CurrentUser() user: JwtPayload) {
     return this.goalService.createGoal(
       {
         ...createDto,
@@ -119,10 +116,7 @@ export class GoalsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async deleteGoal(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async deleteGoal(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     await this.goalService.deleteGoal(id, user.userId);
   }
 
@@ -312,10 +306,7 @@ export class GoalsController {
   @Post('key-results')
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async createKeyResult(
-    @Body() createDto: CreateKeyResultDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createKeyResult(@Body() createDto: CreateKeyResultDto, @CurrentUser() user: JwtPayload) {
     return this.keyResultService.createKeyResult(createDto, user.userId);
   }
 

@@ -199,10 +199,7 @@ export class TenantRepository extends Repository<Tenant> {
   /**
    * Search tenants by name or tenant key
    */
-  async search(
-    searchTerm: string,
-    includeInactive = false,
-  ): Promise<Tenant[]> {
+  async search(searchTerm: string, includeInactive = false): Promise<Tenant[]> {
     const queryBuilder = this.createQueryBuilder('tenant')
       .where(
         '(LOWER(tenant.name) LIKE LOWER(:searchTerm) OR LOWER(tenant.tenantKey) LIKE LOWER(:searchTerm))',
@@ -217,4 +214,3 @@ export class TenantRepository extends Repository<Tenant> {
     return queryBuilder.getMany();
   }
 }
-

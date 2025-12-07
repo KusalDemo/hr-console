@@ -41,7 +41,7 @@ export enum CostStatus {
 
 /**
  * Project Cost Entity
- * 
+ *
  * Represents actual costs incurred for a project.
  * Supports labor costs (from time tracking), materials, expenses, etc.
  * Integration with time tracking for labor costs.
@@ -304,5 +304,4 @@ export class ProjectCost {
     return this.costType === CostType.LABOR && this.timeEntryId !== null;
   }
 }
-
 

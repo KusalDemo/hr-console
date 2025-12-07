@@ -26,7 +26,7 @@ import {
 
 /**
  * Webhooks Controller
- * 
+ *
  * REST API for webhook subscription management:
  * - Create, read, update, delete subscriptions
  * - Test webhook delivery
@@ -69,9 +69,7 @@ export class WebhooksController {
    */
   @Get('subscriptions/key/:key')
   @Roles('ROLE_ADMIN', 'ROLE_HR')
-  async getSubscriptionByKey(
-    @Param('key') key: string,
-  ): Promise<WebhookSubscriptionResponseDto> {
+  async getSubscriptionByKey(@Param('key') key: string): Promise<WebhookSubscriptionResponseDto> {
     return this.webhookService.getSubscriptionByKey(key);
   }
 

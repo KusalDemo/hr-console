@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Calendars Migration
- * 
+ *
  * This migration creates:
  * - calendars table (multi-calendar support for users, teams, organizations)
  * - calendar_events table (calendar events with attendees, recurrence, reminders, timezone support)
@@ -10,7 +10,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - recurrence_rules table (recurrence rules for recurring events)
  * - Full-text search indexes
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Calendars0000000000022 implements MigrationInterface {
@@ -285,4 +285,3 @@ export class Calendars0000000000022 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS calendars CASCADE`);
   }
 }
-

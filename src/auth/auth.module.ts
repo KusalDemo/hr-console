@@ -117,4 +117,3 @@ export class AuthModule implements NestModule {
     consumer.apply(RateLimitMiddleware).forRoutes('auth/login', 'auth/refresh');
   }
 }
-

@@ -1,14 +1,10 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { ReportDefinition } from '../entities/report-definition.entity';
 
 /**
  * Report Query Builder Service
- * 
+ *
  * Builds dynamic queries for reports:
  * - Data source queries
  * - Field selections
@@ -286,7 +282,7 @@ export class ReportQueryBuilderService {
       const entityMetadata = entities.find((e) => e.name === entityName);
       return entityMetadata?.target;
     } catch (error) {
-      this.logger.error(`Error finding entity class for ${entityName}: ${error.message}`);
+      this.logger.error(`Error finding entity class for ${entityName}: ${error instanceof Error ? error.message : String(error)}`);
       return null;
     }
   }

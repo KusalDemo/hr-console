@@ -1,20 +1,9 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { In } from 'typeorm';
 import { JobQueueRepository } from '../repositories/job-queue.repository';
 import { JobExecutionRepository } from '../repositories/job-execution.repository';
-import {
-  JobQueue,
-  JobStatus,
-  JobType,
-} from '../entities/job-queue.entity';
-import {
-  JobExecution,
-  ExecutionStatus,
-} from '../entities/job-execution.entity';
+import { JobQueue, JobStatus, JobType } from '../entities/job-queue.entity';
+import { JobExecution, ExecutionStatus } from '../entities/job-execution.entity';
 import { EmailJobProcessor } from '../processors/email-job.processor';
 import { ReportJobProcessor } from '../processors/report-job.processor';
 import { ExportJobProcessor } from '../processors/export-job.processor';
@@ -26,7 +15,7 @@ import { CleanupJobProcessor } from '../processors/cleanup-job.processor';
 
 /**
  * Job Processor Service
- * 
+ *
  * Processes jobs with:
  * - Job execution
  * - Retry logic
@@ -81,10 +70,8 @@ export class JobProcessorService {
     if (job.dependencies && job.dependencies.length > 0) {
       const dependencyStatuses = await this.checkDependencies(job.dependencies);
       if (!dependencyStatuses.allCompleted) {
-        this.logger.warn(
-          `Job ${jobId} has incomplete dependencies, skipping execution`,
-        );
-        return null;
+        this.logger.warn(`Job ${jobId} has incomplete dependencies, skipping execution`);
+        throw new Error(`Job ${jobId} has incomplete dependencies`);
       }
     }
 
@@ -116,8 +103,8 @@ export class JobProcessorService {
       const timeoutPromise = job.timeout
         ? new Promise((_, reject) => {
             timeoutHandle = setTimeout(() => {
-              reject(new Error(`Job ${jobId} timed out after ${job.timeout} seconds`));
-            }, job.timeout * 1000);
+              reject(new Error(`Job ${jobId} timed out after ${job.timeout!} seconds`));
+            }, job.timeout! * 1000);
           })
         : null;
 
@@ -161,14 +148,16 @@ export class JobProcessorService {
       const durationMs = Date.now() - savedExecution.startedAt.getTime();
 
       // Update execution with failure
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
       savedExecution.status =
-        error.message?.includes('timed out') || job.timeout
+        (error instanceof Error && errorMessage.includes('timed out')) || job.timeout
           ? ExecutionStatus.TIMEOUT
           : ExecutionStatus.FAILED;
       savedExecution.completedAt = new Date();
       savedExecution.durationMs = durationMs;
-      savedExecution.errorMessage = error.message;
-      savedExecution.errorStack = error.stack;
+      savedExecution.errorMessage = errorMessage;
+      savedExecution.errorStack = errorStack ?? null;
 
       await this.jobExecutionRepository.save(savedExecution);
 
@@ -176,13 +165,9 @@ export class JobProcessorService {
       if (job.retryCount < job.maxRetries) {
         job.status = JobStatus.RETRYING;
         job.retryCount += 1;
-        job.scheduledAt = new Date(
-          Date.now() + job.retryDelay * 1000 * job.retryCount,
-        ); // Exponential backoff
+        job.scheduledAt = new Date(Date.now() + job.retryDelay * 1000 * job.retryCount); // Exponential backoff
 
-        this.logger.warn(
-          `Job ${jobId} failed, will retry (${job.retryCount}/${job.maxRetries})`,
-        );
+        this.logger.warn(`Job ${jobId} failed, will retry (${job.retryCount}/${job.maxRetries})`);
       } else {
         job.status = JobStatus.FAILED;
         this.logger.error(`Job ${jobId} failed after ${job.maxRetries} retries`);

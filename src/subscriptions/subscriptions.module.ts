@@ -26,14 +26,14 @@ import { TenantAdminRepository } from '../admin/repositories/tenant-admin.reposi
 
 /**
  * Subscriptions Module
- * 
+ *
  * Wires up all subscription management components:
  * - Subscription management controller
  * - Subscription services (CRUD, status, renewal, plans, webhooks)
  * - Subscription guards (active subscription validation)
  * - Subscription scheduled jobs (expiration checks)
  * - Subscription repositories
- * 
+ *
  * This module provides:
  * - Subscription creation and management (super admin only)
  * - Subscription status validation and access control
@@ -98,4 +98,3 @@ import { TenantAdminRepository } from '../admin/repositories/tenant-admin.reposi
   ],
 })
 export class SubscriptionsModule {}
-

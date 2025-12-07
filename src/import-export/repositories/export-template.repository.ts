@@ -32,10 +32,7 @@ export class ExportTemplateRepository extends Repository<ExportTemplate> {
   /**
    * Find templates by entity type
    */
-  async findByEntityType(
-    entityType: string,
-    organizationId?: number,
-  ): Promise<ExportTemplate[]> {
+  async findByEntityType(entityType: string, organizationId?: number): Promise<ExportTemplate[]> {
     const query = this.createQueryBuilder('template')
       .where('template.entityType = :entityType', { entityType })
       .andWhere('template.isActive = :isActive', { isActive: true })
@@ -146,10 +143,7 @@ export class ExportTemplateRepository extends Repository<ExportTemplate> {
   /**
    * Count templates by entity type
    */
-  async countByEntityType(
-    entityType: string,
-    organizationId?: number,
-  ): Promise<number> {
+  async countByEntityType(entityType: string, organizationId?: number): Promise<number> {
     const query = this.createQueryBuilder('template')
       .where('template.entityType = :entityType', { entityType })
       .andWhere('template.isActive = :isActive', { isActive: true });

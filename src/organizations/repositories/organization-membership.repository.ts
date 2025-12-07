@@ -169,5 +169,3 @@ export class OrganizationMembershipRepository extends Repository<OrganizationMem
     });
   }
 }
-
-

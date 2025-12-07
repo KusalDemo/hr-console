@@ -4,7 +4,7 @@ import { ExchangeRate, ExchangeRateSource } from '../entities/exchange-rate.enti
 
 /**
  * Exchange Rate Repository
- * 
+ *
  * Custom repository methods for exchange rate queries with historical tracking.
  */
 @Injectable()
@@ -17,8 +17,7 @@ export class ExchangeRateRepository extends Repository<ExchangeRate> {
    * Find exchange rate by ID
    */
   async findById(id: number, includeRelations = false): Promise<ExchangeRate | null> {
-    const query = this.createQueryBuilder('rate')
-      .where('rate.id = :id', { id });
+    const query = this.createQueryBuilder('rate').where('rate.id = :id', { id });
 
     if (includeRelations) {
       query.leftJoinAndSelect('rate.fromCurrency', 'fromCurrency');
@@ -44,19 +43,15 @@ export class ExchangeRateRepository extends Repository<ExchangeRate> {
       .where('rate.fromCurrencyId = :fromCurrencyId', { fromCurrencyId })
       .andWhere('rate.toCurrencyId = :toCurrencyId', { toCurrencyId })
       .andWhere('rate.effectiveDate <= :date', { date: dateString })
-      .andWhere(
-        '(rate.expiryDate IS NULL OR rate.expiryDate >= :date)',
-        { date: dateString },
-      )
+      .andWhere('(rate.expiryDate IS NULL OR rate.expiryDate >= :date)', { date: dateString })
       .orderBy('rate.effectiveDate', 'DESC')
       .addOrderBy('rate.isDefault', 'DESC')
       .limit(1);
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(rate.organizationId = :organizationId OR rate.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(rate.organizationId = :organizationId OR rate.organizationId IS NULL)', {
+        organizationId,
+      });
       // Prefer organization-specific rates
       query.addOrderBy('rate.organizationId', 'DESC');
     } else {
@@ -81,19 +76,15 @@ export class ExchangeRateRepository extends Repository<ExchangeRate> {
       .where('rate.fromCurrencyId = :fromCurrencyId', { fromCurrencyId })
       .andWhere('rate.toCurrencyId = :toCurrencyId', { toCurrencyId })
       .andWhere('rate.effectiveDate <= :date', { date: dateString })
-      .andWhere(
-        '(rate.expiryDate IS NULL OR rate.expiryDate >= :date)',
-        { date: dateString },
-      )
+      .andWhere('(rate.expiryDate IS NULL OR rate.expiryDate >= :date)', { date: dateString })
       .orderBy('rate.effectiveDate', 'DESC')
       .addOrderBy('rate.isDefault', 'DESC')
       .limit(1);
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(rate.organizationId = :organizationId OR rate.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(rate.organizationId = :organizationId OR rate.organizationId IS NULL)', {
+        organizationId,
+      });
       query.addOrderBy('rate.organizationId', 'DESC');
     } else {
       query.andWhere('rate.organizationId IS NULL');
@@ -116,10 +107,9 @@ export class ExchangeRateRepository extends Repository<ExchangeRate> {
       .orderBy('rate.effectiveDate', 'DESC');
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(rate.organizationId = :organizationId OR rate.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(rate.organizationId = :organizationId OR rate.organizationId IS NULL)', {
+        organizationId,
+      });
     } else {
       query.andWhere('rate.organizationId IS NULL');
     }
@@ -135,17 +125,15 @@ export class ExchangeRateRepository extends Repository<ExchangeRate> {
     organizationId?: number | null,
   ): Promise<ExchangeRate[]> {
     const query = this.createQueryBuilder('rate')
-      .where(
-        '(rate.fromCurrencyId = :currencyId OR rate.toCurrencyId = :currencyId)',
-        { currencyId },
-      )
+      .where('(rate.fromCurrencyId = :currencyId OR rate.toCurrencyId = :currencyId)', {
+        currencyId,
+      })
       .orderBy('rate.effectiveDate', 'DESC');
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(rate.organizationId = :organizationId OR rate.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(rate.organizationId = :organizationId OR rate.organizationId IS NULL)', {
+        organizationId,
+      });
     } else {
       query.andWhere('rate.organizationId IS NULL');
     }
@@ -178,10 +166,9 @@ export class ExchangeRateRepository extends Repository<ExchangeRate> {
       .orderBy('rate.effectiveDate', 'DESC');
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(rate.organizationId = :organizationId OR rate.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(rate.organizationId = :organizationId OR rate.organizationId IS NULL)', {
+        organizationId,
+      });
     } else {
       query.andWhere('rate.organizationId IS NULL');
     }
@@ -199,9 +186,10 @@ export class ExchangeRateRepository extends Repository<ExchangeRate> {
       FROM exchange_rates
       WHERE (expiry_date IS NULL OR expiry_date >= CURRENT_DATE)
         AND effective_date <= CURRENT_DATE
-        ${organizationId !== undefined
-          ? `AND (organization_id = $1 OR organization_id IS NULL)`
-          : `AND organization_id IS NULL`
+        ${
+          organizationId !== undefined
+            ? `AND (organization_id = $1 OR organization_id IS NULL)`
+            : `AND organization_id IS NULL`
         }
       ORDER BY from_currency_id, to_currency_id, effective_date DESC, is_default DESC
       ${organizationId !== undefined ? `, organization_id DESC NULLS LAST` : ''}

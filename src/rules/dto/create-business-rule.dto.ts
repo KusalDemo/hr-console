@@ -9,7 +9,12 @@ import {
   MinLength,
   MaxLength,
 } from 'class-validator';
-import { RuleType, RuleTriggerType, TenantScope, ExecutionMode } from '../entities/business-rule.entity';
+import {
+  RuleType,
+  RuleTriggerType,
+  TenantScope,
+  ExecutionMode,
+} from '../entities/business-rule.entity';
 
 /**
  * Create Business Rule DTO
@@ -85,5 +90,4 @@ export class CreateBusinessRuleDto {
   @IsObject()
   metadata?: Record<string, any>;
 }
-
 

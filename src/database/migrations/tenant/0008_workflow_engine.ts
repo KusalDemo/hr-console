@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Workflow Engine Migration
- * 
+ *
  * This migration creates:
  * - workflow_definitions table (workflow definitions with JSON-based state machine)
  * - workflow_instances table (active workflow executions)
@@ -10,7 +10,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - workflow_approvals table (approval steps)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class WorkflowEngine0000000000008 implements MigrationInterface {
@@ -222,5 +222,4 @@ export class WorkflowEngine0000000000008 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS workflow_definitions CASCADE`);
   }
 }
-
 

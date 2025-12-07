@@ -16,14 +16,14 @@ import { RolePermission } from './role-permission.entity';
 
 /**
  * Role Entity - Represents roles in the tenant schema with RBAC support
- * 
+ *
  * Roles define sets of permissions that can be assigned to users.
  * Roles support:
  * - Hierarchical relationships (parent-child roles)
  * - Permission assignments (many-to-many through role_permissions)
  * - System roles (predefined, cannot be deleted)
  * - Custom roles (created by tenant admins)
- * 
+ *
  * Role hierarchy allows child roles to inherit permissions from parent roles,
  * with the ability to override or deny specific permissions.
  */
@@ -161,4 +161,3 @@ export class Role {
     return descendants;
   }
 }
-

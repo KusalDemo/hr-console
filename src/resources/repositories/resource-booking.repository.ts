@@ -4,7 +4,7 @@ import { ResourceBooking, BookingStatus } from '../entities/resource-booking.ent
 
 /**
  * Resource Booking Repository
- * 
+ *
  * Custom repository methods for resource booking queries with optimized queries.
  */
 @Injectable()
@@ -191,18 +191,9 @@ export class ResourceBookingRepository extends Repository<ResourceBooking> {
         `COUNT(CASE WHEN booking_status = 'APPROVED' OR booking_status = 'CONFIRMED' THEN 1 END)`,
         'approvedBookings',
       )
-      .addSelect(
-        `COUNT(CASE WHEN booking_status = 'CANCELLED' THEN 1 END)`,
-        'cancelledBookings',
-      )
-      .addSelect(
-        `SUM(EXTRACT(EPOCH FROM (end_time - start_time)) / 3600)`,
-        'totalHours',
-      )
-      .addSelect(
-        `AVG(EXTRACT(EPOCH FROM (end_time - start_time)) / 3600)`,
-        'averageDuration',
-      )
+      .addSelect(`COUNT(CASE WHEN booking_status = 'CANCELLED' THEN 1 END)`, 'cancelledBookings')
+      .addSelect(`SUM(EXTRACT(EPOCH FROM (end_time - start_time)) / 3600)`, 'totalHours')
+      .addSelect(`AVG(EXTRACT(EPOCH FROM (end_time - start_time)) / 3600)`, 'averageDuration')
       .where('booking.resourceId = :resourceId', { resourceId })
       .andWhere('booking.startTime >= :startDate', { startDate })
       .andWhere('booking.endTime <= :endDate', { endDate })

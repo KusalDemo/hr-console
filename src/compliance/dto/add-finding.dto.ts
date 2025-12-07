@@ -22,3 +22,4 @@ export class AddFindingDto {
   @IsNumber()
   checklistItemId?: number;
 }
+

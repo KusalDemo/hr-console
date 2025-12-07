@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import {
-  LeadScoringRule,
-  ScoringRuleType,
-} from '../entities/lead-scoring-rule.entity';
+import { LeadScoringRule, ScoringRuleType } from '../entities/lead-scoring-rule.entity';
 
 /**
  * Lead Scoring Rule Repository
- * 
+ *
  * Custom repository methods for lead scoring rule queries.
  */
 @Injectable()
@@ -22,22 +19,15 @@ export class LeadScoringRuleRepository extends Repository<LeadScoringRule> {
   async findActive(organizationId?: number): Promise<LeadScoringRule[]> {
     const query = this.createQueryBuilder('rule')
       .where('rule.isActive = :isActive', { isActive: true })
-      .andWhere(
-        '(rule.activationDate IS NULL OR rule.activationDate <= :now)',
-        { now: new Date() },
-      )
-      .andWhere(
-        '(rule.expirationDate IS NULL OR rule.expirationDate >= :now)',
-        { now: new Date() },
-      )
+      .andWhere('(rule.activationDate IS NULL OR rule.activationDate <= :now)', { now: new Date() })
+      .andWhere('(rule.expirationDate IS NULL OR rule.expirationDate >= :now)', { now: new Date() })
       .orderBy('rule.priority', 'DESC')
       .addOrderBy('rule.createdAt', 'ASC');
 
     if (organizationId) {
-      query.andWhere(
-        '(rule.organizationId IS NULL OR rule.organizationId = :organizationId)',
-        { organizationId },
-      );
+      query.andWhere('(rule.organizationId IS NULL OR rule.organizationId = :organizationId)', {
+        organizationId,
+      });
     }
 
     return query.getMany();
@@ -56,10 +46,9 @@ export class LeadScoringRuleRepository extends Repository<LeadScoringRule> {
       .orderBy('rule.priority', 'DESC');
 
     if (organizationId) {
-      query.andWhere(
-        '(rule.organizationId IS NULL OR rule.organizationId = :organizationId)',
-        { organizationId },
-      );
+      query.andWhere('(rule.organizationId IS NULL OR rule.organizationId = :organizationId)', {
+        organizationId,
+      });
     }
 
     if (!includeInactive) {
@@ -77,10 +66,9 @@ export class LeadScoringRuleRepository extends Repository<LeadScoringRule> {
     includeInactive = false,
   ): Promise<LeadScoringRule[]> {
     const query = this.createQueryBuilder('rule')
-      .where(
-        '(rule.organizationId IS NULL OR rule.organizationId = :organizationId)',
-        { organizationId },
-      )
+      .where('(rule.organizationId IS NULL OR rule.organizationId = :organizationId)', {
+        organizationId,
+      })
       .orderBy('rule.priority', 'DESC')
       .addOrderBy('rule.createdAt', 'ASC');
 
@@ -91,5 +79,3 @@ export class LeadScoringRuleRepository extends Repository<LeadScoringRule> {
     return query.getMany();
   }
 }
-
-

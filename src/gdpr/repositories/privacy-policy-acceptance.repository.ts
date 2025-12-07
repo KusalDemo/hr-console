@@ -54,3 +54,4 @@ export class PrivacyPolicyAcceptanceRepository extends Repository<PrivacyPolicyA
     return count > 0;
   }
 }
+

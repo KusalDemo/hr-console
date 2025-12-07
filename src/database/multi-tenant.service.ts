@@ -52,7 +52,9 @@ export class MultiTenantService {
    */
   async createSchema(schemaName: string): Promise<void> {
     try {
-      await this.dataSource.query(`CREATE SCHEMA IF NOT EXISTS ${this.quoteIdentifier(schemaName)}`);
+      await this.dataSource.query(
+        `CREATE SCHEMA IF NOT EXISTS ${this.quoteIdentifier(schemaName)}`,
+      );
       this.logger.log(`Schema created: ${schemaName}`);
     } catch (error) {
       this.logger.error(`Error creating schema: ${schemaName}`, error);
@@ -148,4 +150,3 @@ export class MultiTenantService {
     }
   }
 }
-

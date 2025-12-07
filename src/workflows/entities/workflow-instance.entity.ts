@@ -25,7 +25,7 @@ export enum WorkflowStatus {
 
 /**
  * Workflow Instance Entity
- * 
+ *
  * Represents an active workflow execution for a specific entity.
  * Tracks current state, history, pending approvals, and workflow data.
  */
@@ -161,5 +161,4 @@ export class WorkflowInstance {
     return this.status === WorkflowStatus.COMPLETED;
   }
 }
-
 

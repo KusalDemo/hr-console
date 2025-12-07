@@ -74,11 +74,7 @@ export class User {
   })
   roles: Role[];
 
-  @OneToMany(
-    () => OrganizationMembership,
-    (membership) => membership.user,
-    { eager: false },
-  )
+  @OneToMany(() => OrganizationMembership, (membership) => membership.user, { eager: false })
   organizationMemberships: OrganizationMembership[];
 
   /**
@@ -115,9 +111,7 @@ export class User {
       return null;
     }
 
-    const primaryMembership = this.organizationMemberships.find(
-      (m) => m.isPrimary && !m.leftAt,
-    );
+    const primaryMembership = this.organizationMemberships.find((m) => m.isPrimary && !m.leftAt);
     return primaryMembership?.organizationId || null;
   }
 
@@ -143,4 +137,3 @@ export class User {
     );
   }
 }
-

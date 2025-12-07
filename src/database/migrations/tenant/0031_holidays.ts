@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Holiday Calendar Management Migration
- * 
+ *
  * This migration creates:
  * - holiday_calendars table (country/region-specific holiday calendars)
  * - holidays table (individual holidays with dates, types, recurrence, observance rules)
  * - employee_holiday_calendar_assignments table (calendar assignment to employees)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Holidays0000000000031 implements MigrationInterface {

@@ -14,10 +14,10 @@ import { IS_PUBLIC_KEY } from '../../auth/decorators/public.decorator';
 
 /**
  * Tenant Context Middleware
- * 
+ *
  * Extracts tenant information from JWT token and sets tenant context for the request.
  * This middleware should run after JWT authentication but before route handlers.
- * 
+ *
  * Features:
  * - Extracts tenant from JWT token
  * - Sets tenant context using AsyncLocalStorage
@@ -118,7 +118,7 @@ export class TenantContextMiddleware implements NestMiddleware {
    * Note: This is a simplified check. The actual public route check
    * should be done by the JWT guard, but we check here to avoid
    * unnecessary processing.
-   * 
+   *
    * @param req - Express request object
    * @returns True if route is public
    */
@@ -131,4 +131,3 @@ export class TenantContextMiddleware implements NestMiddleware {
     return publicPaths.some((publicPath) => path.startsWith(publicPath));
   }
 }
-

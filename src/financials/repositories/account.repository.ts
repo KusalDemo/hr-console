@@ -4,7 +4,7 @@ import { Account, AccountType, AccountCategory } from '../entities/account.entit
 
 /**
  * Account Repository
- * 
+ *
  * Custom repository methods for account queries with hierarchy support.
  */
 @Injectable()
@@ -34,8 +34,10 @@ export class AccountRepository extends Repository<Account> {
     accountNumber: string,
     includeRelations = false,
   ): Promise<Account | null> {
-    const query = this.createQueryBuilder('account')
-      .where('account.accountNumber = :accountNumber', { accountNumber });
+    const query = this.createQueryBuilder('account').where(
+      'account.accountNumber = :accountNumber',
+      { accountNumber },
+    );
 
     if (includeRelations) {
       query.leftJoinAndSelect('account.currency', 'currency');
@@ -118,7 +120,10 @@ export class AccountRepository extends Repository<Account> {
   /**
    * Get account balance summary
    */
-  async getAccountBalanceSummary(accountId: number, asOfDate?: Date): Promise<{
+  async getAccountBalanceSummary(
+    accountId: number,
+    asOfDate?: Date,
+  ): Promise<{
     accountId: number;
     openingBalance: number;
     currentBalance: number;

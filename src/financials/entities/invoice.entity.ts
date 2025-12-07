@@ -38,7 +38,7 @@ export enum InvoiceStatus {
 
 /**
  * Invoice Entity
- * 
+ *
  * Invoice generation and tracking with payment status.
  */
 @Entity('invoices')

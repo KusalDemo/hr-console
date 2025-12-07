@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import {
-  VendorCertification,
-  CertificationStatus,
-} from '../entities/vendor-certification.entity';
+import { VendorCertification, CertificationStatus } from '../entities/vendor-certification.entity';
 
 /**
  * Vendor Certification Repository
- * 
+ *
  * Custom repository methods for vendor certification queries.
  */
 @Injectable()
@@ -38,10 +35,7 @@ export class VendorCertificationRepository extends Repository<VendorCertificatio
   /**
    * Find expiring certifications
    */
-  async findExpiring(
-    daysAhead: number,
-    organizationId?: number,
-  ): Promise<VendorCertification[]> {
+  async findExpiring(daysAhead: number, organizationId?: number): Promise<VendorCertification[]> {
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() + daysAhead);
 
@@ -61,4 +55,3 @@ export class VendorCertificationRepository extends Repository<VendorCertificatio
     return query.getMany();
   }
 }
-

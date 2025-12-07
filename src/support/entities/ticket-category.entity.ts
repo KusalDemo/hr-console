@@ -14,7 +14,7 @@ import { SupportTicket } from './support-ticket.entity';
 
 /**
  * Ticket Category Entity
- * 
+ *
  * Categories for organizing support tickets
  */
 @Entity('ticket_categories')

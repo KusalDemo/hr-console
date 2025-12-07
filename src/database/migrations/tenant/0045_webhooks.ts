@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Webhook Event System Migration
- * 
+ *
  * This migration creates:
  * - webhook_subscriptions table for webhook subscription configurations
  * - webhook_events table for webhook event tracking and delivery
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Webhooks0000000000045 implements MigrationInterface {

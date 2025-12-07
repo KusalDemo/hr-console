@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { UserRepository } from '../../users/repositories/user.repository';
 import { RoleRepository } from '../../roles/repositories/role.repository';
@@ -15,7 +10,7 @@ import { RolePermission } from '../../roles/entities/role-permission.entity';
 
 /**
  * RBAC Service
- * 
+ *
  * Provides Role-Based Access Control functionality:
  * - Permission checking (with role hierarchy support)
  * - Role assignment to users
@@ -23,7 +18,7 @@ import { RolePermission } from '../../roles/entities/role-permission.entity';
  * - Dynamic permission evaluation (including inherited permissions)
  * - Permission inheritance from parent roles
  * - Explicit permission denial support
- * 
+ *
  * This service handles all RBAC operations and provides a centralized
  * way to check permissions, assign roles, and manage permissions.
  */
@@ -40,13 +35,13 @@ export class RbacService {
 
   /**
    * Check if user has a specific permission
-   * 
+   *
    * This method:
    * 1. Checks if user is active
    * 2. Gets all user roles
    * 3. Checks if any role has the permission (including inherited permissions)
    * 4. Respects explicit permission denial
-   * 
+   *
    * @param userId - User ID
    * @param permissionKey - Permission key (e.g., 'employee.create')
    * @returns true if user has permission, false otherwise
@@ -84,13 +79,15 @@ export class RbacService {
       }
     }
 
-    this.logger.debug(`User does not have permission: userId=${userId}, permissionKey=${permissionKey}`);
+    this.logger.debug(
+      `User does not have permission: userId=${userId}, permissionKey=${permissionKey}`,
+    );
     return false;
   }
 
   /**
    * Check if user has any of the specified permissions
-   * 
+   *
    * @param userId - User ID
    * @param permissionKeys - Array of permission keys
    * @returns true if user has at least one permission, false otherwise
@@ -106,7 +103,7 @@ export class RbacService {
 
   /**
    * Check if user has all of the specified permissions
-   * 
+   *
    * @param userId - User ID
    * @param permissionKeys - Array of permission keys
    * @returns true if user has all permissions, false otherwise
@@ -122,12 +119,12 @@ export class RbacService {
 
   /**
    * Check if role has permission (including inherited permissions)
-   * 
+   *
    * This method:
    * 1. Checks direct role permissions
    * 2. Checks inherited permissions from parent roles
    * 3. Respects explicit permission denial (granted = false)
-   * 
+   *
    * @param role - Role entity with permissions loaded
    * @param permission - Permission entity
    * @returns true if role has permission, false otherwise
@@ -149,7 +146,10 @@ export class RbacService {
         // Check if parent explicitly denies this permission
         const parentRolePermissions = await parentRole.rolePermissions;
         for (const parentRolePermission of parentRolePermissions) {
-          if (parentRolePermission.permissionId === permission.id && !parentRolePermission.granted) {
+          if (
+            parentRolePermission.permissionId === permission.id &&
+            !parentRolePermission.granted
+          ) {
             // Parent explicitly denies, so child cannot have it
             return false;
           }
@@ -165,10 +165,10 @@ export class RbacService {
 
   /**
    * Get all permissions for a user
-   * 
+   *
    * Returns all permissions the user has through their roles,
    * including inherited permissions from parent roles.
-   * 
+   *
    * @param userId - User ID
    * @returns Array of permission keys
    */
@@ -198,7 +198,7 @@ export class RbacService {
 
   /**
    * Get all permissions for a role (including inherited permissions)
-   * 
+   *
    * @param role - Role entity with permissions loaded
    * @returns Array of permission keys
    */
@@ -240,7 +240,7 @@ export class RbacService {
 
   /**
    * Assign role to user
-   * 
+   *
    * @param userId - User ID
    * @param roleId - Role ID
    * @returns Updated user entity
@@ -279,7 +279,7 @@ export class RbacService {
 
   /**
    * Assign role to user by role name
-   * 
+   *
    * @param userId - User ID
    * @param roleName - Role name
    * @returns Updated user entity
@@ -295,7 +295,7 @@ export class RbacService {
 
   /**
    * Remove role from user
-   * 
+   *
    * @param userId - User ID
    * @param roleId - Role ID
    * @returns Updated user entity
@@ -326,7 +326,7 @@ export class RbacService {
 
   /**
    * Remove role from user by role name
-   * 
+   *
    * @param userId - User ID
    * @param roleName - Role name
    * @returns Updated user entity
@@ -342,13 +342,15 @@ export class RbacService {
 
   /**
    * Assign multiple roles to user
-   * 
+   *
    * @param userId - User ID
    * @param roleIds - Array of role IDs
    * @returns Updated user entity
    */
   async assignRolesToUser(userId: number, roleIds: number[]): Promise<User> {
-    this.logger.log(`Assigning multiple roles to user: userId=${userId}, roleIds=${roleIds.join(',')}`);
+    this.logger.log(
+      `Assigning multiple roles to user: userId=${userId}, roleIds=${roleIds.join(',')}`,
+    );
 
     const user = await this.userRepository.findById(userId);
     if (!user) {
@@ -356,9 +358,7 @@ export class RbacService {
     }
 
     // Get all roles
-    const roles = await Promise.all(
-      roleIds.map((roleId) => this.roleRepository.findById(roleId)),
-    );
+    const roles = await Promise.all(roleIds.map((roleId) => this.roleRepository.findById(roleId)));
 
     const notFoundRoles = roles
       .map((role, index) => (!role ? roleIds[index] : null))
@@ -390,7 +390,7 @@ export class RbacService {
 
   /**
    * Replace all user roles
-   * 
+   *
    * @param userId - User ID
    * @param roleIds - Array of role IDs
    * @returns Updated user entity
@@ -404,9 +404,7 @@ export class RbacService {
     }
 
     // Get all roles
-    const roles = await Promise.all(
-      roleIds.map((roleId) => this.roleRepository.findById(roleId)),
-    );
+    const roles = await Promise.all(roleIds.map((roleId) => this.roleRepository.findById(roleId)));
 
     const notFoundRoles = roles
       .map((role, index) => (!role ? roleIds[index] : null))
@@ -427,7 +425,7 @@ export class RbacService {
 
   /**
    * Assign permission to role
-   * 
+   *
    * @param roleId - Role ID
    * @param permissionId - Permission ID
    * @param granted - Whether to grant (true) or deny (false) the permission
@@ -454,9 +452,7 @@ export class RbacService {
 
     // Check if permission is already assigned
     const rolePermissions = await role.rolePermissions;
-    const existingRolePermission = rolePermissions.find(
-      (rp) => rp.permissionId === permissionId,
-    );
+    const existingRolePermission = rolePermissions.find((rp) => rp.permissionId === permissionId);
 
     if (existingRolePermission) {
       // Update existing assignment
@@ -478,7 +474,7 @@ export class RbacService {
 
   /**
    * Assign permission to role by keys
-   * 
+   *
    * @param roleId - Role ID
    * @param permissionKey - Permission key
    * @param granted - Whether to grant (true) or deny (false) the permission
@@ -499,13 +495,15 @@ export class RbacService {
 
   /**
    * Remove permission from role
-   * 
+   *
    * @param roleId - Role ID
    * @param permissionId - Permission ID
    * @returns Updated role entity
    */
   async removePermissionFromRole(roleId: number, permissionId: number): Promise<Role> {
-    this.logger.log(`Removing permission from role: roleId=${roleId}, permissionId=${permissionId}`);
+    this.logger.log(
+      `Removing permission from role: roleId=${roleId}, permissionId=${permissionId}`,
+    );
 
     const role = await this.roleRepository.findById(roleId, true);
     if (!role) {
@@ -524,7 +522,7 @@ export class RbacService {
 
   /**
    * Assign multiple permissions to role
-   * 
+   *
    * @param roleId - Role ID
    * @param permissionIds - Array of permission IDs
    * @param granted - Whether to grant (true) or deny (false) the permissions
@@ -587,7 +585,7 @@ export class RbacService {
 
   /**
    * Get user roles
-   * 
+   *
    * @param userId - User ID
    * @returns Array of role entities
    */
@@ -602,7 +600,7 @@ export class RbacService {
 
   /**
    * Check if user has a specific role
-   * 
+   *
    * @param userId - User ID
    * @param roleName - Role name
    * @returns true if user has the role, false otherwise
@@ -614,7 +612,7 @@ export class RbacService {
 
   /**
    * Check if user has any of the specified roles
-   * 
+   *
    * @param userId - User ID
    * @param roleNames - Array of role names
    * @returns true if user has at least one role, false otherwise
@@ -625,4 +623,3 @@ export class RbacService {
     return roleNames.some((roleName) => userRoleNames.includes(roleName));
   }
 }
-

@@ -49,7 +49,9 @@ async function bootstrap() {
   // Setup Swagger/OpenAPI documentation (only in non-production)
   if (process.env.NODE_ENV !== 'production') {
     setupSwagger(app);
-    logger.log(`Swagger documentation available at: http://localhost:${configService.port}/${configService.apiPrefix}/docs`);
+    logger.log(
+      `Swagger documentation available at: http://localhost:${configService.port}/${configService.apiPrefix}/docs`,
+    );
   }
 
   const port = configService.port;

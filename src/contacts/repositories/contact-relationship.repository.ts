@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import {
-  ContactRelationship,
-  RelationshipType,
-} from '../entities/contact-relationship.entity';
+import { ContactRelationship, RelationshipType } from '../entities/contact-relationship.entity';
 
 /**
  * Contact Relationship Repository
@@ -17,10 +14,7 @@ export class ContactRelationshipRepository extends Repository<ContactRelationshi
   /**
    * Find relationships for a contact
    */
-  async findByContact(
-    contactId: number,
-    includeRelations = false,
-  ): Promise<ContactRelationship[]> {
+  async findByContact(contactId: number, includeRelations = false): Promise<ContactRelationship[]> {
     const query = this.createQueryBuilder('relationship')
       .where('relationship.contactId = :contactId', { contactId })
       .andWhere('relationship.isActive = :isActive', { isActive: true })
@@ -93,5 +87,4 @@ export class ContactRelationshipRepository extends Repository<ContactRelationshi
       .getOne();
   }
 }
-
 

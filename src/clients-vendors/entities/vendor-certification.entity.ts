@@ -22,7 +22,7 @@ export enum CertificationStatus {
 
 /**
  * Vendor Certification Entity
- * 
+ *
  * Certifications and credentials for vendors with expiration tracking.
  */
 @Entity('vendor_certifications')
@@ -149,4 +149,3 @@ export class VendorCertification {
     return false;
   }
 }
-

@@ -1,17 +1,6 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsBoolean,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsBoolean, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  WidgetType,
-  ChartType,
-  WidgetDataSourceType,
-} from '../entities/dashboard-widget.entity';
+import { WidgetType, ChartType, WidgetDataSourceType } from '../entities/dashboard-widget.entity';
 
 /**
  * Create Dashboard Widget DTO

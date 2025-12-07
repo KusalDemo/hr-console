@@ -55,8 +55,9 @@ export class TimesheetPeriodRepository extends Repository<TimesheetPeriod> {
    * Check if period key exists
    */
   async periodKeyExists(periodKey: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('period')
-      .where('period.periodKey = :periodKey', { periodKey });
+    const query = this.createQueryBuilder('period').where('period.periodKey = :periodKey', {
+      periodKey,
+    });
 
     if (excludeId) {
       query.andWhere('period.id != :excludeId', { excludeId });
@@ -66,5 +67,4 @@ export class TimesheetPeriodRepository extends Repository<TimesheetPeriod> {
     return count > 0;
   }
 }
-
 

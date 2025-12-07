@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, IsDateString, IsAny } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsBoolean, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 /**
@@ -58,5 +58,3 @@ export class CreateCustomFieldValueDto {
   @IsOptional()
   valueMetadata?: Record<string, any>;
 }
-
-

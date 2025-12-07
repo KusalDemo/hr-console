@@ -7,17 +7,13 @@ import {
   HolidayRepository,
   EmployeeHolidayCalendarAssignmentRepository,
 } from './repositories';
-import {
-  HolidayCalendar,
-  Holiday,
-  EmployeeHolidayCalendarAssignment,
-} from './entities';
+import { HolidayCalendar, Holiday, EmployeeHolidayCalendarAssignment } from './entities';
 import { Employee } from '../employees/entities/employee.entity';
 import { Organization } from '../organizations/entities/organization.entity';
 
 /**
  * Holidays Module
- * 
+ *
  * Provides holiday calendar management with:
  * - Holiday calendar CRUD operations
  * - Holiday management (fixed, recurring, floating)

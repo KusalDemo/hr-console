@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * KPIs & Metrics Migration
- * 
+ *
  * This migration creates:
  * - kpi_definitions table (configurable KPIs with calculation formulas, data sources)
  * - kpi_measurements table (time-series KPI values for tracking measurements over time)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class KpisMetrics0000000000025 implements MigrationInterface {

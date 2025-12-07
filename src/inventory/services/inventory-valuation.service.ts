@@ -1,16 +1,16 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InventoryItemRepository } from '../repositories/inventory-item.repository';
 import { InventoryTransactionRepository } from '../repositories/inventory-transaction.repository';
 import { InventoryItem } from '../entities/inventory-item.entity';
-import { InventoryTransaction, TransactionType, TransactionStatus } from '../entities/inventory-transaction.entity';
+import {
+  InventoryTransaction,
+  TransactionType,
+  TransactionStatus,
+} from '../entities/inventory-transaction.entity';
 
 /**
  * Inventory Valuation Service
- * 
+ *
  * Handles inventory valuation with:
  * - FIFO (First In, First Out)
  * - LIFO (Last In, First Out)

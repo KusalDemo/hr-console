@@ -6,11 +6,11 @@ import { DataSubjectType } from '../entities/data-subject-request.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { createWriteStream } from 'fs';
-import * as archiver from 'archiver';
+import archiver from 'archiver';
 
 /**
  * Data Export Service
- * 
+ *
  * Handles data export for GDPR data portability requests.
  * Exports user data in various formats (JSON, CSV, XML, PDF, ZIP).
  */
@@ -85,10 +85,11 @@ export class DataExportService {
         passwordChangedAt: user.passwordChangedAt,
         mfaEnabled: user.mfaEnabled,
       },
-      roles: user.roles?.map((role) => ({
-        id: role.id,
-        name: role.name,
-      })) || [],
+      roles:
+        user.roles?.map((role) => ({
+          id: role.id,
+          name: role.name,
+        })) || [],
       // Add more data sources here:
       // - Time entries
       // - Leave requests
@@ -103,10 +104,7 @@ export class DataExportService {
   /**
    * Export as JSON
    */
-  private async exportAsJson(
-    userId: number,
-    data: Record<string, any>,
-  ): Promise<string> {
+  private async exportAsJson(userId: number, data: Record<string, any>): Promise<string> {
     const filename = `user-${userId}-export-${Date.now()}.json`;
     const filepath = path.join(this.exportDir, filename);
 
@@ -118,10 +116,7 @@ export class DataExportService {
   /**
    * Export as CSV
    */
-  private async exportAsCsv(
-    userId: number,
-    data: Record<string, any>,
-  ): Promise<string> {
+  private async exportAsCsv(userId: number, data: Record<string, any>): Promise<string> {
     const filename = `user-${userId}-export-${Date.now()}.csv`;
     const filepath = path.join(this.exportDir, filename);
 
@@ -146,10 +141,7 @@ export class DataExportService {
   /**
    * Export as XML
    */
-  private async exportAsXml(
-    userId: number,
-    data: Record<string, any>,
-  ): Promise<string> {
+  private async exportAsXml(userId: number, data: Record<string, any>): Promise<string> {
     const filename = `user-${userId}-export-${Date.now()}.xml`;
     const filepath = path.join(this.exportDir, filename);
 
@@ -162,10 +154,7 @@ export class DataExportService {
   /**
    * Export as ZIP (multiple formats)
    */
-  private async exportAsZip(
-    userId: number,
-    data: Record<string, any>,
-  ): Promise<string> {
+  private async exportAsZip(userId: number, data: Record<string, any>): Promise<string> {
     const zipFilename = `user-${userId}-export-${Date.now()}.zip`;
     const zipFilepath = path.join(this.exportDir, zipFilename);
 
@@ -179,7 +168,7 @@ export class DataExportService {
         resolve(zipFilepath);
       });
 
-      archive.on('error', (err) => {
+      archive.on('error', (err: Error) => {
         reject(err);
       });
 

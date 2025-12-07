@@ -31,10 +31,7 @@ export class TeamRepository extends Repository<Team> {
   /**
    * Find team by organization and key
    */
-  async findByOrganizationAndKey(
-    organizationId: number,
-    teamKey: string,
-  ): Promise<Team | null> {
+  async findByOrganizationAndKey(organizationId: number, teamKey: string): Promise<Team | null> {
     return this.findOne({
       where: {
         organizationId,
@@ -213,4 +210,3 @@ export class TeamRepository extends Repository<Team> {
     });
   }
 }
-

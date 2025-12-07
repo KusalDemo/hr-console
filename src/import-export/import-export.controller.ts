@@ -41,7 +41,7 @@ import { createReadStream } from 'fs';
 
 /**
  * Import Export Controller
- * 
+ *
  * REST API endpoints for import/export operations:
  * - Import template management (CRUD)
  * - Import job management
@@ -74,9 +74,7 @@ export class ImportExportController {
    * GET /import-export/templates/:id
    */
   @Get('templates/:id')
-  async getTemplate(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ImportTemplateResponseDto> {
+  async getTemplate(@Param('id', ParseIntPipe) id: number): Promise<ImportTemplateResponseDto> {
     return this.importService.getTemplateById(id);
   }
 
@@ -163,9 +161,7 @@ export class ImportExportController {
    * GET /import-export/jobs/:id
    */
   @Get('jobs/:id')
-  async getImportJob(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ImportJobResponseDto> {
+  async getImportJob(@Param('id', ParseIntPipe) id: number): Promise<ImportJobResponseDto> {
     return this.importService.getImportJobById(id);
   }
 
@@ -340,9 +336,7 @@ export class ImportExportController {
    * GET /import-export/export-jobs/:id
    */
   @Get('export-jobs/:id')
-  async getExportJob(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ExportJobResponseDto> {
+  async getExportJob(@Param('id', ParseIntPipe) id: number): Promise<ExportJobResponseDto> {
     return this.exportService.getExportJobById(id);
   }
 

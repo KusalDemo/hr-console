@@ -8,19 +8,14 @@ import {
   EquipmentMaintenanceRepository,
   EquipmentBookingRepository,
 } from './repositories';
-import {
-  Equipment,
-  EquipmentAssignment,
-  EquipmentMaintenance,
-  EquipmentBooking,
-} from './entities';
+import { Equipment, EquipmentAssignment, EquipmentMaintenance, EquipmentBooking } from './entities';
 import { Organization } from '../organizations/entities/organization.entity';
 import { Employee } from '../employees/entities/employee.entity';
 import { WorkflowsModule } from '../workflows/workflows.module';
 
 /**
  * Equipment Module
- * 
+ *
  * Provides lifecycle asset management with:
  * - Equipment CRUD operations with asset tags, categories, locations
  * - Equipment assignments to employees

@@ -114,9 +114,7 @@ describe('CustomFieldService', () => {
     it('should throw ConflictException if field key already exists', async () => {
       fieldDefinitionRepository.fieldKeyExists.mockResolvedValue(true);
 
-      await expect(service.createFieldDefinition(createDto)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(service.createFieldDefinition(createDto)).rejects.toThrow(ConflictException);
 
       expect(fieldDefinitionRepository.fieldKeyExists).toHaveBeenCalled();
       expect(fieldDefinitionRepository.create).not.toHaveBeenCalled();
@@ -131,9 +129,7 @@ describe('CustomFieldService', () => {
 
       fieldDefinitionRepository.fieldKeyExists.mockResolvedValue(false);
 
-      await expect(service.createFieldDefinition(dropdownDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(service.createFieldDefinition(dropdownDto)).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -191,9 +187,7 @@ describe('CustomFieldService', () => {
     it('should throw NotFoundException if field definition not found', async () => {
       fieldDefinitionRepository.findById.mockResolvedValue(null);
 
-      await expect(service.getFieldDefinition(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.getFieldDefinition(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -226,10 +220,7 @@ describe('CustomFieldService', () => {
         numberValue: 60000,
       } as CustomFieldValue);
 
-      const result = await service.setFieldValue(
-        { ...createValueDto, value: 60000 },
-        1,
-      );
+      const result = await service.setFieldValue({ ...createValueDto, value: 60000 }, 1);
 
       expect(fieldValueRepository.findByEntityAndField).toHaveBeenCalled();
       expect(fieldValueRepository.create).not.toHaveBeenCalled();
@@ -240,9 +231,7 @@ describe('CustomFieldService', () => {
     it('should throw NotFoundException if field definition not found', async () => {
       fieldDefinitionRepository.findById.mockResolvedValue(null);
 
-      await expect(service.setFieldValue(createValueDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.setFieldValue(createValueDto)).rejects.toThrow(NotFoundException);
     });
 
     it('should validate value type matches field type', async () => {
@@ -254,9 +243,9 @@ describe('CustomFieldService', () => {
       fieldDefinitionRepository.findById.mockResolvedValue(stringField);
 
       // Try to set number value for text field
-      await expect(
-        service.setFieldValue({ ...createValueDto, value: 50000 }),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.setFieldValue({ ...createValueDto, value: 50000 })).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -277,3 +266,4 @@ describe('CustomFieldService', () => {
     });
   });
 });
+

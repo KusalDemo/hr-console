@@ -33,7 +33,7 @@ export enum AttendeeRole {
 
 /**
  * Calendar Event Attendee Entity
- * 
+ *
  * Multiple attendees for calendar events with response tracking.
  */
 @Entity('calendar_event_attendees')
@@ -54,7 +54,10 @@ export class CalendarEventAttendee {
   /**
    * Event relationship
    */
-  @ManyToOne(() => CalendarEvent, (event) => event.attendees, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => CalendarEvent, (event) => event.attendees, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'event_id' })
   event: CalendarEvent;
 
@@ -130,4 +133,3 @@ export class CalendarEventAttendee {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-

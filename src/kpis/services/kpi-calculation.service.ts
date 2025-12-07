@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { KPIDefinitionRepository } from '../repositories/kpi-definition.repository';
 import { KPIMeasurementRepository } from '../repositories/kpi-measurement.repository';
@@ -17,7 +12,7 @@ import { KPIMeasurement } from '../entities/kpi-measurement.entity';
 
 /**
  * KPI Calculation Service
- * 
+ *
  * Handles KPI calculation with:
  * - Calculation from data sources
  * - Aggregation
@@ -50,14 +45,14 @@ export class KPICalculationService {
     }
 
     let value: number;
-    let rawData: Record<string, any> | null = null;
+    const rawData: Record<string, any> | null = null;
 
     // Calculate value based on data source type
     switch (kpi.dataSourceType) {
       case KPIDataSourceType.DATABASE:
         value = await this.calculateFromDatabase(kpi);
         break;
-      case KPIDataSourceType.FORMULA:
+      case KPIDataSourceType.CALCULATED:
         value = await this.calculateFromFormula(kpi);
         break;
       case KPIDataSourceType.GOAL:
@@ -140,10 +135,16 @@ export class KPICalculationService {
       const value = parseFloat(row[kpi.dataSourceConfig.valueColumn || 'value'] || 0);
 
       // Apply calculation type
-      return this.applyCalculationType(result, kpi.calculationType, kpi.dataSourceConfig.valueColumn);
+      return this.applyCalculationType(
+        result,
+        kpi.calculationType,
+        kpi.dataSourceConfig.valueColumn,
+      );
     } catch (error) {
-      this.logger.error(`Error calculating KPI from database: ${error.message}`, error.stack);
-      throw new BadRequestException(`Failed to calculate KPI from database: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error calculating KPI from database: ${errorMessage}`, errorStack);
+      throw new BadRequestException(`Failed to calculate KPI from database: ${errorMessage}`);
     }
   }
 
@@ -164,8 +165,10 @@ export class KPICalculationService {
       this.logger.warn('Formula calculation not fully implemented');
       return 0;
     } catch (error) {
-      this.logger.error(`Error calculating KPI from formula: ${error.message}`, error.stack);
-      throw new BadRequestException(`Failed to calculate KPI from formula: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error calculating KPI from formula: ${errorMessage}`, errorStack);
+      throw new BadRequestException(`Failed to calculate KPI from formula: ${errorMessage}`);
     }
   }
 
@@ -264,7 +267,9 @@ export class KPICalculationService {
         const measurement = await this.calculateKPI(kpi.id);
         measurements.push(measurement);
       } catch (error) {
-        this.logger.error(`Failed to calculate KPI ${kpi.id}: ${error.message}`, error.stack);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorStack = error instanceof Error ? error.stack : undefined;
+        this.logger.error(`Failed to calculate KPI ${kpi.id}: ${errorMessage}`, errorStack);
       }
     }
 

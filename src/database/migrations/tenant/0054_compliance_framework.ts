@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Compliance Framework Migration
- * 
+ *
  * This migration creates:
  * - compliance_frameworks table (compliance standards: GDPR, HIPAA, SOC2, ISO27001, etc.)
  * - compliance_requirements table (individual requirements within frameworks)
@@ -14,7 +14,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - compliance_automated_checks table (automated compliance checks)
  * - compliance_check_executions table (execution history for automated checks)
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class ComplianceFramework0000000000054 implements MigrationInterface {
@@ -718,3 +718,4 @@ export class ComplianceFramework0000000000054 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS compliance_frameworks`);
   }
 }
+

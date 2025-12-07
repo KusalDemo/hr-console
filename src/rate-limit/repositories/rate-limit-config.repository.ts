@@ -4,7 +4,7 @@ import { RateLimitConfig, RateLimitScopeType } from '../entities/rate-limit-conf
 
 /**
  * Rate Limit Config Repository
- * 
+ *
  * Provides custom queries for rate limit configuration operations
  */
 @Injectable()
@@ -122,7 +122,10 @@ export class RateLimitConfigRepository extends Repository<RateLimitConfig> {
     }
 
     // If endpoint pattern is specified, check if it matches
-    if (config.endpointPattern && !this.matchesEndpointPattern(config.endpointPattern, path, method)) {
+    if (
+      config.endpointPattern &&
+      !this.matchesEndpointPattern(config.endpointPattern, path, method)
+    ) {
       return false;
     }
 
@@ -155,9 +158,7 @@ export class RateLimitConfigRepository extends Repository<RateLimitConfig> {
     }
 
     // Convert pattern to regex
-    const regexPattern = patternPath
-      .replace(/\*/g, '.*')
-      .replace(/\?/g, '.');
+    const regexPattern = patternPath.replace(/\*/g, '.*').replace(/\?/g, '.');
     const regex = new RegExp(`^${regexPattern}$`);
 
     return regex.test(path);

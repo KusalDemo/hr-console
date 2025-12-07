@@ -52,7 +52,7 @@ export enum LeadPriority {
 
 /**
  * Lead Entity
- * 
+ *
  * Lead pipeline and conversion tracking with scoring, source attribution, campaign tracking.
  * Supports lead assignment, routing, conversion to contacts.
  */
@@ -432,5 +432,3 @@ export class Lead {
     );
   }
 }
-
-

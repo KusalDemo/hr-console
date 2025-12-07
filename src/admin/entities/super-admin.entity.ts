@@ -86,4 +86,3 @@ export class SuperAdmin {
     return this.passwordExpiresAt < new Date();
   }
 }
-

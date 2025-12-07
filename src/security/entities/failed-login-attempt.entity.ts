@@ -11,7 +11,7 @@ import { User } from '../../users/entities/user.entity';
 
 /**
  * Failed Login Attempt Entity
- * 
+ *
  * Tracks failed login attempts for account lockout and security monitoring.
  */
 @Entity('failed_login_attempts')
@@ -49,3 +49,4 @@ export class FailedLoginAttempt {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;
 }
+

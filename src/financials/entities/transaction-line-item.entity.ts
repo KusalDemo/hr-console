@@ -14,7 +14,7 @@ import { Account } from './account.entity';
 
 /**
  * Transaction Line Item Entity
- * 
+ *
  * Individual debit/credit entries for double-entry bookkeeping.
  * Each transaction must have balanced debits and credits.
  */

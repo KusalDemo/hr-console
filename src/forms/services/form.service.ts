@@ -9,11 +9,7 @@ import {
 } from '@nestjs/common';
 import { FormDefinitionRepository } from '../repositories/form-definition.repository';
 import { FormResponseRepository } from '../repositories/form-response.repository';
-import {
-  FormDefinition,
-  FormStatus,
-  FormAccessType,
-} from '../entities/form-definition.entity';
+import { FormDefinition, FormStatus, FormAccessType } from '../entities/form-definition.entity';
 import { FormResponse, FormResponseStatus } from '../entities/form-response.entity';
 import { FormValidationService } from './form-validation.service';
 import { WorkflowService } from '../../workflows/services/workflow.service';
@@ -21,7 +17,7 @@ import { NotificationService } from '../../notifications/services/notification.s
 
 /**
  * Form Service
- * 
+ *
  * Manages forms with:
  * - Form CRUD operations
  * - Form templates and cloning
@@ -37,9 +33,11 @@ export class FormService {
     private readonly formDefinitionRepository: FormDefinitionRepository,
     private readonly formResponseRepository: FormResponseRepository,
     private readonly formValidationService: FormValidationService,
-    @Optional() @Inject(forwardRef(() => WorkflowService))
+    @Optional()
+    @Inject(forwardRef(() => WorkflowService))
     private readonly workflowService?: WorkflowService,
-    @Optional() @Inject(forwardRef(() => NotificationService))
+    @Optional()
+    @Inject(forwardRef(() => NotificationService))
     private readonly notificationService?: NotificationService,
   ) {}
 
@@ -67,19 +65,17 @@ export class FormService {
     });
 
     const saved = await this.formDefinitionRepository.save(form);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created form definition: ${saved.id} (${saved.formName})`);
+    this.logger.log(`Created form definition: ${savedEntity.id} (${savedEntity.formName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
    * Get form definition by ID
    */
-  async getFormDefinitionById(
-    id: number,
-    includeResponses = false,
-  ): Promise<FormDefinition> {
+  async getFormDefinitionById(id: number, includeResponses = false): Promise<FormDefinition> {
     const form = await this.formDefinitionRepository.findById(id, includeResponses);
 
     if (!form) {
@@ -153,8 +149,7 @@ export class FormService {
       allowAnonymous: updateDto.allowAnonymous ?? parentForm.allowAnonymous,
       allowMultipleSubmissions:
         updateDto.allowMultipleSubmissions ?? parentForm.allowMultipleSubmissions,
-      maxSubmissionsPerUser:
-        updateDto.maxSubmissionsPerUser ?? parentForm.maxSubmissionsPerUser,
+      maxSubmissionsPerUser: updateDto.maxSubmissionsPerUser ?? parentForm.maxSubmissionsPerUser,
       category: updateDto.category || parentForm.category,
       tags: updateDto.tags || parentForm.tags,
       permissionsConfig: updateDto.permissionsConfig || parentForm.permissionsConfig,
@@ -166,9 +161,7 @@ export class FormService {
 
     const saved = await this.formDefinitionRepository.save(newVersion);
 
-    this.logger.log(
-      `Created new version ${saved.formVersion} of form ${parentFormId}`,
-    );
+    this.logger.log(`Created new version ${saved.formVersion} of form ${parentFormId}`);
 
     return saved;
   }
@@ -188,7 +181,7 @@ export class FormService {
     }
 
     form.status = FormStatus.PUBLISHED;
-    form.updatedBy = updatedBy;
+    form.updatedBy = updatedBy ?? null;
 
     const saved = await this.formDefinitionRepository.save(form);
 
@@ -209,7 +202,7 @@ export class FormService {
 
     form.status = FormStatus.ARCHIVED;
     form.isActive = false;
-    form.updatedBy = updatedBy;
+    form.updatedBy = updatedBy ?? null;
 
     const saved = await this.formDefinitionRepository.save(form);
 
@@ -323,9 +316,7 @@ export class FormService {
       );
 
       if (existingCount > 0) {
-        throw new BadRequestException(
-          'Multiple submissions are not allowed for this form',
-        );
+        throw new BadRequestException('Multiple submissions are not allowed for this form');
       }
     }
 
@@ -360,9 +351,7 @@ export class FormService {
 
     const saved = await this.formResponseRepository.save(response);
 
-    this.logger.log(
-      `Submitted form response: ${saved.id} for form ${formDefinitionId}`,
-    );
+    this.logger.log(`Submitted form response: ${saved.id} for form ${formDefinitionId}`);
 
     // Trigger workflow if workflowId is set
     if (form.workflowId && this.workflowService) {
@@ -396,13 +385,11 @@ export class FormService {
             await this.formResponseRepository.save(saved);
           }
 
-          this.logger.log(
-            `Triggered workflow for form response: ${saved.id}`,
-          );
+          this.logger.log(`Triggered workflow for form response: ${saved.id}`);
         }
       } catch (error) {
         this.logger.error(
-          `Failed to trigger workflow for form response ${saved.id}: ${error.message}`,
+          `Failed to trigger workflow for form response ${saved.id}: ${error instanceof Error ? error.message : String(error)}`,
         );
         // Don't fail the submission if workflow trigger fails
       }
@@ -441,12 +428,10 @@ export class FormService {
           }
         }
 
-        this.logger.log(
-          `Sent notifications for form response: ${saved.id}`,
-        );
+        this.logger.log(`Sent notifications for form response: ${saved.id}`);
       } catch (error) {
         this.logger.error(
-          `Failed to send notifications for form response ${saved.id}: ${error.message}`,
+          `Failed to send notifications for form response ${saved.id}: ${error instanceof Error ? error.message : String(error)}`,
         );
         // Don't fail the submission if notification sending fails
       }
@@ -468,10 +453,7 @@ export class FormService {
       throw new NotFoundException(`Form definition with ID ${formDefinitionId} not found`);
     }
 
-    return this.formResponseRepository.findByFormDefinition(
-      formDefinitionId,
-      includeInactive,
-    );
+    return this.formResponseRepository.findByFormDefinition(formDefinitionId, includeInactive);
   }
 
   /**
@@ -551,10 +533,7 @@ export class FormService {
     organizationId: number,
     includeInactive = false,
   ): Promise<FormDefinition[]> {
-    return this.formDefinitionRepository.findByOrganization(
-      organizationId,
-      includeInactive,
-    );
+    return this.formDefinitionRepository.findByOrganization(organizationId, includeInactive);
   }
 
   /**

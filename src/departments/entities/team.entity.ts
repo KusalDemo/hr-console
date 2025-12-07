@@ -23,13 +23,13 @@ export enum TeamStatus {
 
 /**
  * Team Entity - Represents teams within departments or organizations
- * 
+ *
  * Teams are smaller groups that can:
  * - Belong to a department (optional - can be cross-departmental)
  * - Belong to an organization
  * - Have a team lead (employee)
  * - Have team members (via employee-team relationship - to be implemented)
- * 
+ *
  * Teams are more flexible than departments and can span multiple departments.
  */
 @Entity('teams')
@@ -161,4 +161,3 @@ export class Team {
     return this.departmentId === null;
   }
 }
-

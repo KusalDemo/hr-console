@@ -4,7 +4,7 @@ import { Holiday } from '../entities/holiday.entity';
 
 /**
  * Holiday Repository
- * 
+ *
  * Custom repository methods for holiday queries.
  */
 @Injectable()
@@ -46,15 +46,13 @@ export class HolidayRepository extends Repository<Holiday> {
         { startDate, endDate },
       );
     } else if (startDate) {
-      query.andWhere(
-        '(holiday.holidayDate >= :startDate OR holiday.observedDate >= :startDate)',
-        { startDate },
-      );
+      query.andWhere('(holiday.holidayDate >= :startDate OR holiday.observedDate >= :startDate)', {
+        startDate,
+      });
     } else if (endDate) {
-      query.andWhere(
-        '(holiday.holidayDate <= :endDate OR holiday.observedDate <= :endDate)',
-        { endDate },
-      );
+      query.andWhere('(holiday.holidayDate <= :endDate OR holiday.observedDate <= :endDate)', {
+        endDate,
+      });
     }
 
     return query.getMany();
@@ -67,10 +65,7 @@ export class HolidayRepository extends Repository<Holiday> {
     const dateStr = date.toISOString().split('T')[0];
     return this.createQueryBuilder('holiday')
       .where('holiday.holidayCalendarId = :calendarId', { calendarId })
-      .andWhere(
-        '(holiday.holidayDate = :date OR holiday.observedDate = :date)',
-        { date: dateStr },
-      )
+      .andWhere('(holiday.holidayDate = :date OR holiday.observedDate = :date)', { date: dateStr })
       .andWhere('holiday.isActive = :isActive', { isActive: true })
       .getMany();
   }

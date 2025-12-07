@@ -94,4 +94,3 @@ export class WorkflowApprovalRepository extends Repository<WorkflowApproval> {
   }
 }
 
-

@@ -27,13 +27,13 @@ export enum RateLimitStrategy {
 
 /**
  * Rate Limit Config Entity
- * 
+ *
  * Configurable rate limit rules for:
  * - Global limits
  * - Per-tenant limits
  * - Per-user limits
  * - Per-endpoint limits
- * 
+ *
  * Supports multiple strategies (token bucket, sliding window)
  * and tiered limits (per minute, hour, day)
  */

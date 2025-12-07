@@ -10,12 +10,7 @@ import {
   ContactRelationshipRepository,
   ContactInteractionRepository,
 } from '../repositories';
-import {
-  Contact,
-  ContactType,
-  ContactCategory,
-  ContactStatus,
-} from '../entities/contact.entity';
+import { Contact, ContactType, ContactCategory, ContactStatus } from '../entities/contact.entity';
 import {
   ContactRelationship,
   RelationshipType,
@@ -34,7 +29,7 @@ import {
 
 /**
  * Contact Service
- * 
+ *
  * Manages contacts with:
  * - Contact CRUD operations
  * - Duplicate detection and merge
@@ -61,7 +56,11 @@ export class ContactService {
     createdBy?: number,
   ): Promise<ContactResponseDto> {
     // Check for potential duplicates
-    const duplicates = await this.contactRepository.findPotentialDuplicates(createDto);
+    const duplicateCheckDto: Partial<Contact> = {
+      ...createDto,
+      nextFollowUpDate: createDto.nextFollowUpDate ? new Date(createDto.nextFollowUpDate) : null,
+    };
+    const duplicates = await this.contactRepository.findPotentialDuplicates(duplicateCheckDto);
 
     if (duplicates.length > 0) {
       this.logger.warn(
@@ -105,9 +104,7 @@ export class ContactService {
       contactKey,
       contactNumber,
       contactStatus: createDto.contactStatus || ContactStatus.ACTIVE,
-      nextFollowUpDate: createDto.nextFollowUpDate
-        ? new Date(createDto.nextFollowUpDate)
-        : null,
+      nextFollowUpDate: createDto.nextFollowUpDate ? new Date(createDto.nextFollowUpDate) : null,
       createdBy,
     });
 
@@ -116,6 +113,9 @@ export class ContactService {
     this.logger.log(`Created contact: ${saved.id} (${saved.fullName})`);
 
     const reloaded = await this.contactRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Contact not found after save`);
+    }
     return ContactResponseDto.fromEntity(reloaded, true);
   }
 
@@ -162,6 +162,9 @@ export class ContactService {
     this.logger.log(`Updated contact: ${id}`);
 
     const reloaded = await this.contactRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Contact not found after save`);
+    }
     return ContactResponseDto.fromEntity(reloaded, true);
   }
 
@@ -250,11 +253,7 @@ export class ContactService {
     organizationId?: number,
     includeArchived = false,
   ): Promise<ContactResponseDto[]> {
-    const contacts = await this.contactRepository.findByTags(
-      tags,
-      organizationId,
-      includeArchived,
-    );
+    const contacts = await this.contactRepository.findByTags(tags, organizationId, includeArchived);
 
     return contacts.map((contact) => ContactResponseDto.fromEntity(contact));
   }
@@ -266,10 +265,7 @@ export class ContactService {
     organizationId?: number,
     daysAhead = 7,
   ): Promise<ContactResponseDto[]> {
-    const contacts = await this.contactRepository.findNeedingFollowUp(
-      organizationId,
-      daysAhead,
-    );
+    const contacts = await this.contactRepository.findNeedingFollowUp(organizationId, daysAhead);
 
     return contacts.map((contact) => ContactResponseDto.fromEntity(contact));
   }
@@ -277,9 +273,7 @@ export class ContactService {
   /**
    * Find potential duplicates for a contact
    */
-  async findPotentialDuplicates(
-    contactId: number,
-  ): Promise<ContactResponseDto[]> {
+  async findPotentialDuplicates(contactId: number): Promise<ContactResponseDto[]> {
     const contact = await this.contactRepository.findById(contactId);
 
     if (!contact) {
@@ -364,9 +358,8 @@ export class ContactService {
     }
 
     // Move relationships from duplicate to primary
-    const duplicateRelationships = await this.contactRelationshipRepository.findByContact(
-      duplicateContactId,
-    );
+    const duplicateRelationships =
+      await this.contactRelationshipRepository.findByContact(duplicateContactId);
 
     for (const relationship of duplicateRelationships) {
       // Check if relationship already exists
@@ -385,9 +378,8 @@ export class ContactService {
     }
 
     // Move interactions from duplicate to primary
-    const duplicateInteractions = await this.contactInteractionRepository.findByContact(
-      duplicateContactId,
-    );
+    const duplicateInteractions =
+      await this.contactInteractionRepository.findByContact(duplicateContactId);
 
     for (const interaction of duplicateInteractions) {
       interaction.contactId = primaryContactId;
@@ -400,7 +392,7 @@ export class ContactService {
     // Archive duplicate contact
     duplicateContact.isArchived = true;
     duplicateContact.archivedAt = new Date();
-    duplicateContact.archivedBy = mergedBy;
+    duplicateContact.archivedBy = mergedBy ?? null;
     duplicateContact.contactStatus = ContactStatus.ARCHIVED;
 
     // Add merge metadata
@@ -413,11 +405,12 @@ export class ContactService {
 
     await this.contactRepository.save(duplicateContact);
 
-    this.logger.log(
-      `Merged contact ${duplicateContactId} into ${primaryContactId}`,
-    );
+    this.logger.log(`Merged contact ${duplicateContactId} into ${primaryContactId}`);
 
     const reloaded = await this.contactRepository.findById(primaryContactId, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Contact with ID ${primaryContactId} not found after merge`);
+    }
     return ContactResponseDto.fromEntity(reloaded, true);
   }
 
@@ -437,7 +430,7 @@ export class ContactService {
 
     contact.isArchived = true;
     contact.archivedAt = new Date();
-    contact.archivedBy = archivedBy;
+    contact.archivedBy = archivedBy ?? null;
     contact.contactStatus = ContactStatus.ARCHIVED;
 
     const saved = await this.contactRepository.save(contact);
@@ -445,6 +438,9 @@ export class ContactService {
     this.logger.log(`Archived contact: ${id}`);
 
     const reloaded = await this.contactRepository.findById(saved.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Contact not found after save`);
+    }
     return ContactResponseDto.fromEntity(reloaded, true);
   }
 
@@ -488,8 +484,7 @@ export class ContactService {
       contactId,
       relatedContactId: createDto.relatedContactId,
       relationshipType: createDto.relationshipType,
-      relationshipDirection:
-        createDto.relationshipDirection || RelationshipDirection.BIDIRECTIONAL,
+      relationshipDirection: createDto.relationshipDirection || RelationshipDirection.BIDIRECTIONAL,
       relationshipStrength: createDto.relationshipStrength,
       description: createDto.description,
       startDate: createDto.startDate ? new Date(createDto.startDate) : null,
@@ -516,9 +511,7 @@ export class ContactService {
       await this.contactRelationshipRepository.save(reverse);
     }
 
-    this.logger.log(
-      `Added relationship: contact ${contactId} -> ${createDto.relatedContactId}`,
-    );
+    this.logger.log(`Added relationship: contact ${contactId} -> ${createDto.relatedContactId}`);
 
     const reloaded = await this.contactRelationshipRepository
       .createQueryBuilder('relationship')
@@ -547,9 +540,7 @@ export class ContactService {
       contactId,
       ...createDto,
       interactionDate: new Date(createDto.interactionDate),
-      nextFollowUpDate: createDto.nextFollowUpDate
-        ? new Date(createDto.nextFollowUpDate)
-        : null,
+      nextFollowUpDate: createDto.nextFollowUpDate ? new Date(createDto.nextFollowUpDate) : null,
       createdBy,
     });
 
@@ -581,9 +572,7 @@ export class ContactService {
       ? await this.contactInteractionRepository.findRecent(contactId, limit)
       : await this.contactInteractionRepository.findByContact(contactId);
 
-    return interactions.map((interaction) =>
-      ContactInteractionResponseDto.fromEntity(interaction),
-    );
+    return interactions.map((interaction) => ContactInteractionResponseDto.fromEntity(interaction));
   }
 
   /**
@@ -612,5 +601,3 @@ export class ContactService {
     return key;
   }
 }
-
-

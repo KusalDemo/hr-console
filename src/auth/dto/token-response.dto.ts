@@ -65,4 +65,3 @@ export class AuthResponseDto {
   token: TokenResponseDto;
   user: UserInfoDto;
 }
-

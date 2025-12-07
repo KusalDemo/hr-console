@@ -4,7 +4,7 @@ import { LeavePolicy } from '../entities/leave-policy.entity';
 
 /**
  * Leave Policy Repository
- * 
+ *
  * Custom repository methods for leave policy queries.
  */
 @Injectable()
@@ -34,10 +34,9 @@ export class LeavePolicyRepository extends Repository<LeavePolicy> {
     const query = this.createQueryBuilder('policy')
       .where('policy.active = :active', { active: true })
       .andWhere('policy.effectiveStartDate <= :now', { now: new Date() })
-      .andWhere(
-        '(policy.effectiveEndDate IS NULL OR policy.effectiveEndDate >= :now)',
-        { now: new Date() },
-      )
+      .andWhere('(policy.effectiveEndDate IS NULL OR policy.effectiveEndDate >= :now)', {
+        now: new Date(),
+      })
       .orderBy('policy.policyName', 'ASC');
 
     // Note: organizationId filtering would require organization relationship

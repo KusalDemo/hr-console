@@ -21,25 +21,25 @@ export const BYPASS_SUBSCRIPTION_KEY = 'bypassSubscription';
 
 /**
  * Subscription Active Guard
- * 
+ *
  * Validates that:
  * - Tenant has an active subscription
  * - Subscription is not expired (or is in grace period if allowed)
  * - Subscription status is valid
- * 
+ *
  * This guard should be used on routes that require an active subscription.
  * Super admin requests are automatically allowed (they don't have a subscription).
- * 
+ *
  * Grace period handling:
  * - By default, grace period access is allowed
  * - Use @AllowGracePeriod(false) to disallow grace period access
  * - Use @BypassSubscription() to skip subscription validation
- * 
+ *
  * Usage:
  * @UseGuards(JwtAuthGuard, TenantExistsGuard, SubscriptionActiveGuard)
  * @Get('some-route')
  * someHandler() { ... }
- * 
+ *
  * Or with grace period disabled:
  * @UseGuards(JwtAuthGuard, TenantExistsGuard, SubscriptionActiveGuard)
  * @AllowGracePeriod(false)
@@ -61,10 +61,10 @@ export class SubscriptionActiveGuard implements CanActivate {
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Check if subscription check should be bypassed
-    const bypassSubscription = this.reflector.getAllAndOverride<boolean>(
-      BYPASS_SUBSCRIPTION_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const bypassSubscription = this.reflector.getAllAndOverride<boolean>(BYPASS_SUBSCRIPTION_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
     if (bypassSubscription) {
       this.logger.debug('Subscription check bypassed');
@@ -93,10 +93,11 @@ export class SubscriptionActiveGuard implements CanActivate {
     }
 
     // Check if grace period is allowed
-    const allowGracePeriod = this.reflector.getAllAndOverride<boolean>(
-      ALLOW_GRACE_PERIOD_KEY,
-      [context.getHandler(), context.getClass()],
-    ) ?? true; // Default to true
+    const allowGracePeriod =
+      this.reflector.getAllAndOverride<boolean>(ALLOW_GRACE_PERIOD_KEY, [
+        context.getHandler(),
+        context.getClass(),
+      ]) ?? true; // Default to true
 
     // Validate subscription access
     const result = await this.subscriptionStatusService.validateSubscriptionAccess(
@@ -106,15 +107,12 @@ export class SubscriptionActiveGuard implements CanActivate {
 
     // Check if access is granted
     if (!result.hasAccess) {
-      this.logger.warn(
-        `Subscription access denied for tenant ID: ${tenantContext.tenantId}`,
-        {
-          tenantId: tenantContext.tenantId,
-          tenantKey: tenantContext.tenantKey,
-          reason: result.reason,
-          status: result.status,
-        },
-      );
+      this.logger.warn(`Subscription access denied for tenant ID: ${tenantContext.tenantId}`, {
+        tenantId: tenantContext.tenantId,
+        tenantKey: tenantContext.tenantKey,
+        reason: result.reason,
+        status: result.status,
+      });
 
       // Provide helpful error message
       let errorMessage = 'Subscription is not active or valid';
@@ -125,7 +123,8 @@ export class SubscriptionActiveGuard implements CanActivate {
       } else if (result.isCanceled) {
         errorMessage = 'Your subscription has been canceled. Please contact support to reactivate.';
       } else if (result.status === 'SUSPENDED') {
-        errorMessage = 'Your subscription has been suspended. Please contact support for assistance.';
+        errorMessage =
+          'Your subscription has been suspended. Please contact support for assistance.';
       }
 
       throw new ForbiddenException(errorMessage);
@@ -133,13 +132,10 @@ export class SubscriptionActiveGuard implements CanActivate {
 
     // Log warnings if any
     if (result.warnings && result.warnings.length > 0) {
-      this.logger.warn(
-        `Subscription warnings for tenant ID: ${tenantContext.tenantId}`,
-        {
-          tenantId: tenantContext.tenantId,
-          warnings: result.warnings,
-        },
-      );
+      this.logger.warn(`Subscription warnings for tenant ID: ${tenantContext.tenantId}`, {
+        tenantId: tenantContext.tenantId,
+        warnings: result.warnings,
+      });
     }
 
     // Add subscription information to request for use in controllers
@@ -150,5 +146,3 @@ export class SubscriptionActiveGuard implements CanActivate {
     return true;
   }
 }
-
-

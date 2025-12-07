@@ -26,7 +26,7 @@ export enum BookingStatus {
 
 /**
  * Equipment Booking Entity
- * 
+ *
  * Shared equipment booking system with approval workflows.
  * Supports reservations, conflict detection, usage analytics, and return tracking.
  */

@@ -30,7 +30,7 @@ export enum PurchaseOrderStatus {
 
 /**
  * Purchase Order Entity
- * 
+ *
  * Purchase orders for vendor procurement with line items, approval workflow, and tracking.
  */
 @Entity('purchase_orders')
@@ -119,7 +119,14 @@ export class PurchaseOrder {
   /**
    * Total amount (sum of line items)
    */
-  @Column({ name: 'total_amount', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'total_amount',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   totalAmount: number;
 
   /**
@@ -131,25 +138,53 @@ export class PurchaseOrder {
   /**
    * Tax amount
    */
-  @Column({ name: 'tax_amount', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'tax_amount',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   taxAmount: number;
 
   /**
    * Shipping amount
    */
-  @Column({ name: 'shipping_amount', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'shipping_amount',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   shippingAmount: number;
 
   /**
    * Discount amount
    */
-  @Column({ name: 'discount_amount', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'discount_amount',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   discountAmount: number;
 
   /**
    * Grand total (total + tax + shipping - discount)
    */
-  @Column({ name: 'grand_total', type: 'decimal', precision: 15, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'grand_total',
+    type: 'decimal',
+    precision: 15,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   grandTotal: number;
 
   /**
@@ -227,4 +262,3 @@ export class PurchaseOrder {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-

@@ -65,4 +65,3 @@ export class CustomValidationPipe implements PipeTransform {
     return formatted;
   }
 }
-

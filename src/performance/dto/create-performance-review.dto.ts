@@ -1,9 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ReviewType, ReviewStatus } from '../entities/performance-review.entity';
 

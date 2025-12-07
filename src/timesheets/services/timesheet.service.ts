@@ -10,12 +10,7 @@ import { TimesheetPeriodRepository } from '../repositories/timesheet-period.repo
 import { TimesheetEntryRepository } from '../repositories/timesheet-entry.repository';
 import { EmployeeRepository } from '../../employees/repositories/employee.repository';
 import { WorkflowService } from '../../workflows/services/workflow.service';
-import {
-  Timesheet,
-  TimesheetStatus,
-  TimesheetPeriod,
-  TimesheetEntry,
-} from '../entities';
+import { Timesheet, TimesheetStatus, TimesheetPeriod, TimesheetEntry } from '../entities';
 import {
   CreateTimesheetPeriodDto,
   UpdateTimesheetPeriodDto,
@@ -31,7 +26,7 @@ import {
 
 /**
  * Timesheet Service
- * 
+ *
  * Manages timesheets, periods, approvals, and exports.
  * Integrates with workflow engine for approval workflows.
  */
@@ -65,14 +60,14 @@ export class TimesheetService {
     const period = this.timesheetPeriodRepository.create({
       ...createDto,
       isActive: true,
-      createdBy,
     });
 
     const saved = await this.timesheetPeriodRepository.save(period);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created timesheet period: ${saved.id} (${saved.periodKey})`);
+    this.logger.log(`Created timesheet period: ${savedEntity.id} (${savedEntity.periodKey})`);
 
-    return this.mapToPeriodResponse(saved);
+    return this.mapToPeriodResponse(savedEntity);
   }
 
   /**
@@ -250,10 +245,14 @@ export class TimesheetService {
     await this.recalculateTimesheet(timesheetId);
     const updatedTimesheet = await this.timesheetRepository.findById(timesheetId);
 
+    if (!updatedTimesheet) {
+      throw new NotFoundException(`Timesheet with ID ${timesheetId} not found`);
+    }
+
     // Update timesheet status
     updatedTimesheet.status = TimesheetStatus.SUBMITTED;
     updatedTimesheet.submittedAt = new Date();
-    updatedTimesheet.submittedBy = submittedBy;
+    updatedTimesheet.submittedBy = submittedBy ?? null;
     updatedTimesheet.notes = submitDto.notes || updatedTimesheet.notes;
 
     // Start approval workflow if workflow key is provided
@@ -270,7 +269,7 @@ export class TimesheetService {
               periodId: updatedTimesheet.periodId,
               totalHours: updatedTimesheet.totalHours,
             },
-            organizationId: updatedTimesheet.organizationId,
+            organizationId: updatedTimesheet.organizationId ?? undefined,
           },
           submittedBy,
         );
@@ -283,11 +282,15 @@ export class TimesheetService {
     }
 
     const saved = await this.timesheetRepository.save(updatedTimesheet);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
     this.logger.log(`Timesheet submitted: id=${timesheetId}`);
 
     // Reload with relations
-    const reloaded = await this.timesheetRepository.findById(saved.id, true);
+    const reloaded = await this.timesheetRepository.findById(savedEntity.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Timesheet with ID ${savedEntity.id} not found after save`);
+    }
     return this.mapToTimesheetResponse(reloaded, reloaded.period, reloaded.employee);
   }
 
@@ -312,13 +315,13 @@ export class TimesheetService {
     // Update timesheet status
     timesheet.status = TimesheetStatus.APPROVED;
     timesheet.approvedAt = new Date();
-    timesheet.approvedBy = approvedBy;
+    timesheet.approvedBy = approvedBy ?? null;
     timesheet.notes = approveDto.notes || timesheet.notes;
 
     // Lock timesheet after approval
     timesheet.isLocked = true;
     timesheet.lockedAt = new Date();
-    timesheet.lockedBy = approvedBy;
+    timesheet.lockedBy = approvedBy ?? null;
     timesheet.lockReason = 'Approved';
 
     // Transition workflow if exists
@@ -338,11 +341,15 @@ export class TimesheetService {
     }
 
     const saved = await this.timesheetRepository.save(timesheet);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
     this.logger.log(`Timesheet approved: id=${timesheetId}`);
 
     // Reload with relations
-    const reloaded = await this.timesheetRepository.findById(saved.id, true);
+    const reloaded = await this.timesheetRepository.findById(savedEntity.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Timesheet with ID ${savedEntity.id} not found after save`);
+    }
     return this.mapToTimesheetResponse(reloaded, reloaded.period, reloaded.employee);
   }
 
@@ -367,7 +374,7 @@ export class TimesheetService {
     // Update timesheet status
     timesheet.status = TimesheetStatus.REJECTED;
     timesheet.rejectedAt = new Date();
-    timesheet.rejectedBy = rejectedBy;
+    timesheet.rejectedBy = rejectedBy ?? null;
     timesheet.rejectionReason = rejectDto.reason;
 
     // Transition workflow if exists
@@ -387,11 +394,15 @@ export class TimesheetService {
     }
 
     const saved = await this.timesheetRepository.save(timesheet);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
     this.logger.log(`Timesheet rejected: id=${timesheetId}`);
 
     // Reload with relations
-    const reloaded = await this.timesheetRepository.findById(saved.id, true);
+    const reloaded = await this.timesheetRepository.findById(savedEntity.id, true);
+    if (!reloaded) {
+      throw new NotFoundException(`Timesheet with ID ${savedEntity.id} not found after save`);
+    }
     return this.mapToTimesheetResponse(reloaded, reloaded.period, reloaded.employee);
   }
 
@@ -578,4 +589,3 @@ export class TimesheetService {
     };
   }
 }
-

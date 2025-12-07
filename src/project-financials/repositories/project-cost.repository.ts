@@ -4,7 +4,7 @@ import { ProjectCost, CostType, CostStatus } from '../entities/project-cost.enti
 
 /**
  * Project Cost Repository
- * 
+ *
  * Custom repository methods for cost queries with aggregation for financial reports.
  */
 @Injectable()
@@ -16,10 +16,7 @@ export class ProjectCostRepository extends Repository<ProjectCost> {
   /**
    * Find costs by project
    */
-  async findByProject(
-    projectId: number,
-    includeRelations = false,
-  ): Promise<ProjectCost[]> {
+  async findByProject(projectId: number, includeRelations = false): Promise<ProjectCost[]> {
     const query = this.createQueryBuilder('cost')
       .where('cost.projectId = :projectId', { projectId })
       .orderBy('cost.costDate', 'DESC')
@@ -54,10 +51,7 @@ export class ProjectCostRepository extends Repository<ProjectCost> {
   /**
    * Find costs by type
    */
-  async findByType(
-    costType: CostType,
-    projectId?: number,
-  ): Promise<ProjectCost[]> {
+  async findByType(costType: CostType, projectId?: number): Promise<ProjectCost[]> {
     const query = this.createQueryBuilder('cost')
       .where('cost.costType = :costType', { costType })
       .orderBy('cost.costDate', 'DESC');
@@ -72,10 +66,7 @@ export class ProjectCostRepository extends Repository<ProjectCost> {
   /**
    * Find costs by status
    */
-  async findByStatus(
-    status: CostStatus,
-    projectId?: number,
-  ): Promise<ProjectCost[]> {
+  async findByStatus(status: CostStatus, projectId?: number): Promise<ProjectCost[]> {
     const query = this.createQueryBuilder('cost')
       .where('cost.status = :status', { status })
       .orderBy('cost.costDate', 'DESC');
@@ -154,7 +145,10 @@ export class ProjectCostRepository extends Repository<ProjectCost> {
       }>,
     };
 
-    const typeMap = new Map<CostType, { totalCost: number; totalBillable: number; count: number }>();
+    const typeMap = new Map<
+      CostType,
+      { totalCost: number; totalBillable: number; count: number }
+    >();
     const statusMap = new Map<CostStatus, { totalCost: number; count: number }>();
 
     for (const cost of costs) {
@@ -213,10 +207,7 @@ export class ProjectCostRepository extends Repository<ProjectCost> {
   /**
    * Get costs by employee (for labor cost analysis)
    */
-  async findByEmployee(
-    employeeId: number,
-    projectId?: number,
-  ): Promise<ProjectCost[]> {
+  async findByEmployee(employeeId: number, projectId?: number): Promise<ProjectCost[]> {
     const query = this.createQueryBuilder('cost')
       .where('cost.employeeId = :employeeId', { employeeId })
       .andWhere('cost.costType = :costType', { costType: CostType.LABOR })
@@ -337,5 +328,4 @@ export class ProjectCostRepository extends Repository<ProjectCost> {
     return analysis;
   }
 }
-
 

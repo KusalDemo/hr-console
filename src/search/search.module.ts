@@ -10,7 +10,7 @@ import { DocumentsModule } from '../documents/documents.module';
 
 /**
  * Search Module
- * 
+ *
  * Provides advanced search capabilities:
  * - Full-text search across entities
  * - Faceted search

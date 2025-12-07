@@ -4,7 +4,7 @@ import { KPIDefinition, KPICalculationType, KPIStatus } from '../entities/kpi-de
 
 /**
  * KPI Definition Repository
- * 
+ *
  * Custom repository methods for KPI definition queries.
  */
 @Injectable()
@@ -47,10 +47,7 @@ export class KPIDefinitionRepository extends Repository<KPIDefinition> {
   /**
    * Find KPIs by category
    */
-  async findByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<KPIDefinition[]> {
+  async findByCategory(category: string, organizationId?: number): Promise<KPIDefinition[]> {
     const query = this.createQueryBuilder('kpi')
       .where('kpi.category = :category', { category })
       .andWhere('kpi.isActive = :isActive', { isActive: true })
@@ -66,10 +63,7 @@ export class KPIDefinitionRepository extends Repository<KPIDefinition> {
   /**
    * Find KPIs by status
    */
-  async findByStatus(
-    status: KPIStatus,
-    organizationId?: number,
-  ): Promise<KPIDefinition[]> {
+  async findByStatus(status: KPIStatus, organizationId?: number): Promise<KPIDefinition[]> {
     const query = this.createQueryBuilder('kpi')
       .where('kpi.status = :status', { status })
       .orderBy('kpi.kpiName', 'ASC');
@@ -84,10 +78,7 @@ export class KPIDefinitionRepository extends Repository<KPIDefinition> {
   /**
    * Find KPIs by calculation frequency
    */
-  async findByFrequency(
-    frequency: string,
-    organizationId?: number,
-  ): Promise<KPIDefinition[]> {
+  async findByFrequency(frequency: string, organizationId?: number): Promise<KPIDefinition[]> {
     const query = this.createQueryBuilder('kpi')
       .where('kpi.calculationFrequency = :frequency', { frequency })
       .andWhere('kpi.isActive = :isActive', { isActive: true })
@@ -111,10 +102,9 @@ export class KPIDefinitionRepository extends Repository<KPIDefinition> {
     const query = this.createQueryBuilder('kpi')
       .where('kpi.status = :status', { status: KPIStatus.ACTIVE })
       .andWhere('kpi.isActive = :isActive', { isActive: true })
-      .andWhere(
-        '(kpi.nextCalculationAt IS NULL OR kpi.nextCalculationAt <= :calculationDate)',
-        { calculationDate },
-      )
+      .andWhere('(kpi.nextCalculationAt IS NULL OR kpi.nextCalculationAt <= :calculationDate)', {
+        calculationDate,
+      })
       .orderBy('kpi.nextCalculationAt', 'ASC')
       .addOrderBy('kpi.kpiName', 'ASC');
 
@@ -157,8 +147,7 @@ export class KPIDefinitionRepository extends Repository<KPIDefinition> {
     organizationId?: number,
     includeInactive = false,
   ): Promise<KPIDefinition[]> {
-    const query = this.createQueryBuilder('kpi')
-      .orderBy('kpi.kpiName', 'ASC');
+    const query = this.createQueryBuilder('kpi').orderBy('kpi.kpiName', 'ASC');
 
     if (searchTerm) {
       query.andWhere(

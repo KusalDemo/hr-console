@@ -1,4 +1,12 @@
-import { IsOptional, IsEnum, IsNumber, IsArray, IsDateString, IsBoolean, IsString } from 'class-validator';
+import {
+  IsOptional,
+  IsEnum,
+  IsNumber,
+  IsArray,
+  IsDateString,
+  IsBoolean,
+  IsString,
+} from 'class-validator';
 import { AuditLevel, ActivityCategory } from '../entities/audit-log.entity';
 
 /**

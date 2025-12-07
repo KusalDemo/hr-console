@@ -21,7 +21,7 @@ export enum MfaType {
 
 /**
  * MFA Configuration Entity
- * 
+ *
  * Multi-factor authentication configuration and secrets.
  * Supports TOTP, SMS, and email-based MFA.
  */
@@ -62,7 +62,13 @@ export class MfaConfiguration {
   @Column({ name: 'totp_secret', type: 'varchar', length: 128, nullable: true })
   totpSecret: string | null;
 
-  @Column({ name: 'totp_issuer', type: 'varchar', length: 128, nullable: true, default: 'HR System' })
+  @Column({
+    name: 'totp_issuer',
+    type: 'varchar',
+    length: 128,
+    nullable: true,
+    default: 'HR System',
+  })
   totpIssuer: string | null;
 
   @Column({ name: 'backup_codes', type: 'jsonb', nullable: true })
@@ -109,3 +115,4 @@ export class MfaConfiguration {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: false })
   updatedAt: Date;
 }
+

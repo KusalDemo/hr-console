@@ -76,9 +76,7 @@ export class SubscriptionRepository extends Repository<Subscription> {
   /**
    * Find subscription by payment gateway subscription ID
    */
-  async findByPaymentGatewayId(
-    paymentGatewaySubscriptionId: string,
-  ): Promise<Subscription | null> {
+  async findByPaymentGatewayId(paymentGatewaySubscriptionId: string): Promise<Subscription | null> {
     return this.findOne({
       where: {
         paymentGatewaySubscriptionId,
@@ -498,5 +496,3 @@ export class SubscriptionRepository extends Repository<Subscription> {
     await this.update(id, updateData);
   }
 }
-
-

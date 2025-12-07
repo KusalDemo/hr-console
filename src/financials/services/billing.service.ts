@@ -6,7 +6,7 @@ import { InvoiceGenerationService } from './invoice-generation.service';
 
 /**
  * Billing Service
- * 
+ *
  * Manages billing rules and recurring invoices with:
  * - Billing rule management
  * - Recurring invoice schedule management
@@ -62,17 +62,15 @@ export class BillingService {
    * Get active billing rules
    */
   async getActiveBillingRules(): Promise<BillingRule[]> {
-    return this.dataSource
-      .getRepository(BillingRule)
-      .find({
-        where: {
-          isActive: true,
-          status: BillingRuleStatus.ACTIVE,
-        },
-        order: {
-          createdAt: 'DESC',
-        },
-      });
+    return this.dataSource.getRepository(BillingRule).find({
+      where: {
+        isActive: true,
+        status: BillingRuleStatus.ACTIVE,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 
   /**
@@ -118,17 +116,15 @@ export class BillingService {
    * Get active recurring invoices
    */
   async getActiveRecurringInvoices(): Promise<RecurringInvoice[]> {
-    return this.dataSource
-      .getRepository(RecurringInvoice)
-      .find({
-        where: {
-          isActive: true,
-          status: RecurringInvoiceStatus.ACTIVE,
-        },
-        order: {
-          nextInvoiceDate: 'ASC',
-        },
-      });
+    return this.dataSource.getRepository(RecurringInvoice).find({
+      where: {
+        isActive: true,
+        status: RecurringInvoiceStatus.ACTIVE,
+      },
+      order: {
+        nextInvoiceDate: 'ASC',
+      },
+    });
   }
 
   /**

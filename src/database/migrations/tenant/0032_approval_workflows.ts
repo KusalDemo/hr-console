@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Configurable Approval Workflows Migration
- * 
+ *
  * This migration creates:
  * - approval_delegations table (delegation of approval authority)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class ApprovalWorkflows0000000000032 implements MigrationInterface {

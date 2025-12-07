@@ -57,10 +57,9 @@ export class CustomFieldDefinitionRepository extends Repository<CustomFieldDefin
       .addOrderBy('field.fieldName', 'ASC');
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(field.organizationId = :organizationId OR field.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(field.organizationId = :organizationId OR field.organizationId IS NULL)', {
+        organizationId,
+      });
     }
 
     return query.getMany();
@@ -85,11 +84,7 @@ export class CustomFieldDefinitionRepository extends Repository<CustomFieldDefin
   /**
    * Check if field key exists for entity type
    */
-  async fieldKeyExists(
-    entityType: string,
-    fieldKey: string,
-    excludeId?: number,
-  ): Promise<boolean> {
+  async fieldKeyExists(entityType: string, fieldKey: string, excludeId?: number): Promise<boolean> {
     const query = this.createQueryBuilder('field')
       .where('field.entityType = :entityType', { entityType })
       .andWhere('field.fieldKey = :fieldKey', { fieldKey });
@@ -126,10 +121,9 @@ export class CustomFieldDefinitionRepository extends Repository<CustomFieldDefin
     }
 
     if (filters?.organizationId !== undefined) {
-      query.andWhere(
-        '(field.organizationId = :organizationId OR field.organizationId IS NULL)',
-        { organizationId: filters.organizationId },
-      );
+      query.andWhere('(field.organizationId = :organizationId OR field.organizationId IS NULL)', {
+        organizationId: filters.organizationId,
+      });
     }
 
     if (filters?.isActive !== undefined) {
@@ -156,14 +150,12 @@ export class CustomFieldDefinitionRepository extends Repository<CustomFieldDefin
       .andWhere('field.isActive = :isActive', { isActive: true });
 
     if (organizationId !== undefined) {
-      query.andWhere(
-        '(field.organizationId = :organizationId OR field.organizationId IS NULL)',
-        { organizationId },
-      );
+      query.andWhere('(field.organizationId = :organizationId OR field.organizationId IS NULL)', {
+        organizationId,
+      });
     }
 
     return query.getCount();
   }
 }
-
 

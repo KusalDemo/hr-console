@@ -1,16 +1,11 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { OrganizationSettingsRepository } from '../repositories/organization-settings.repository';
 import { OrganizationRepository } from '../repositories/organization.repository';
 import { OrganizationSettings, SettingType } from '../entities/organization-settings.entity';
 
 /**
  * Organization Settings Service
- * 
+ *
  * Provides business logic for organization settings management:
  * - Get setting values (with type conversion and defaults)
  * - Set/update settings
@@ -18,7 +13,7 @@ import { OrganizationSettings, SettingType } from '../entities/organization-sett
  * - Get all settings (as map or grouped by category)
  * - Settings validation
  * - Default settings management
- * 
+ *
  * This service handles all organization settings operations
  * within the current tenant context.
  */
@@ -33,7 +28,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get a setting value for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @param defaultValue - Default value if setting doesn't exist (optional)
@@ -44,10 +39,7 @@ export class OrganizationSettingsService {
     key: string,
     defaultValue?: string,
   ): Promise<string | null> {
-    const setting = await this.settingsRepository.findByOrganizationAndKey(
-      organizationId,
-      key,
-    );
+    const setting = await this.settingsRepository.findByOrganizationAndKey(organizationId, key);
 
     if (!setting) {
       return defaultValue !== undefined ? defaultValue : null;
@@ -58,7 +50,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get a boolean setting for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @param defaultValue - Default value if setting doesn't exist (default: false)
@@ -78,7 +70,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get a number setting for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @param defaultValue - Default value if setting doesn't exist (optional)
@@ -107,7 +99,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get a JSON setting for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @param defaultValue - Default value if setting doesn't exist (optional)
@@ -135,7 +127,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get all settings for an organization as a map
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Map of setting keys to values
    */
@@ -152,7 +144,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get all settings for an organization as a plain object
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Object with setting keys as properties
    */
@@ -169,7 +161,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get settings grouped by category
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Map of categories to settings arrays
    */
@@ -192,7 +184,7 @@ export class OrganizationSettingsService {
 
   /**
    * Set or update a setting for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @param value - Setting value
@@ -267,21 +259,16 @@ export class OrganizationSettingsService {
 
   /**
    * Delete a setting for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @throws NotFoundException if setting doesn't exist
    */
   async deleteSetting(organizationId: number, key: string): Promise<void> {
-    const setting = await this.settingsRepository.findByOrganizationAndKey(
-      organizationId,
-      key,
-    );
+    const setting = await this.settingsRepository.findByOrganizationAndKey(organizationId, key);
 
     if (!setting) {
-      throw new NotFoundException(
-        `Setting '${key}' not found for organization ${organizationId}`,
-      );
+      throw new NotFoundException(`Setting '${key}' not found for organization ${organizationId}`);
     }
 
     await this.settingsRepository.remove(setting);
@@ -291,7 +278,7 @@ export class OrganizationSettingsService {
 
   /**
    * Delete all settings for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    */
   async deleteAllSettings(organizationId: number): Promise<void> {
@@ -301,20 +288,18 @@ export class OrganizationSettingsService {
 
   /**
    * Delete all settings in a category for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param category - Category name
    */
   async deleteSettingsByCategory(organizationId: number, category: string): Promise<void> {
     await this.settingsRepository.deleteByOrganizationAndCategory(organizationId, category);
-    this.logger.log(
-      `Settings deleted: organization=${organizationId}, category=${category}`,
-    );
+    this.logger.log(`Settings deleted: organization=${organizationId}, category=${category}`);
   }
 
   /**
    * Get setting entity (for advanced operations)
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @returns Setting entity or null
@@ -328,7 +313,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get settings by category
-   * 
+   *
    * @param organizationId - Organization ID
    * @param category - Category name
    * @returns Array of settings
@@ -342,7 +327,7 @@ export class OrganizationSettingsService {
 
   /**
    * Get all categories for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @returns Array of category names
    */
@@ -352,7 +337,7 @@ export class OrganizationSettingsService {
 
   /**
    * Check if setting exists
-   * 
+   *
    * @param organizationId - Organization ID
    * @param key - Setting key
    * @returns True if setting exists
@@ -363,7 +348,7 @@ export class OrganizationSettingsService {
 
   /**
    * Initialize default settings for an organization
-   * 
+   *
    * @param organizationId - Organization ID
    * @param defaultSettings - Map of default settings (key -> { value, type, category?, description? })
    */
@@ -393,10 +378,6 @@ export class OrganizationSettingsService {
       }
     }
 
-    this.logger.log(
-      `Initialized default settings for organization ${organizationId}`,
-    );
+    this.logger.log(`Initialized default settings for organization ${organizationId}`);
   }
 }
-
-

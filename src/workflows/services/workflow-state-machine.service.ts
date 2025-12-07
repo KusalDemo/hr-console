@@ -4,7 +4,7 @@ import { WorkflowDefinition } from '../entities/workflow-definition.entity';
 
 /**
  * Workflow State Machine Service
- * 
+ *
  * Handles state machine logic for workflow transitions:
  * - State validation
  * - Transition validation
@@ -215,7 +215,10 @@ export class WorkflowStateMachineService {
   /**
    * Get state definition
    */
-  getStateDefinition(workflowDef: Record<string, any>, stateName: string): Record<string, any> | null {
+  getStateDefinition(
+    workflowDef: Record<string, any>,
+    stateName: string,
+  ): Record<string, any> | null {
     if (!workflowDef.states || !Array.isArray(workflowDef.states)) {
       return null;
     }
@@ -223,5 +226,4 @@ export class WorkflowStateMachineService {
     return workflowDef.states.find((s: any) => s.name === stateName) || null;
   }
 }
-
 

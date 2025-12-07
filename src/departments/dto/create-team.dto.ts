@@ -43,4 +43,3 @@ export class CreateTeamDto {
   @IsNumber()
   organizationId: number;
 }
-

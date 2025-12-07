@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Form Builder API Migration
- * 
+ *
  * This migration creates:
  * - form_definitions table for form schemas
  * - form_responses table for form submissions
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Forms0000000000048 implements MigrationInterface {

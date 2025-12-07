@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { DataSubjectRequest, RequestType, RequestStatus } from '../entities/data-subject-request.entity';
+import {
+  DataSubjectRequest,
+  RequestType,
+  RequestStatus,
+} from '../entities/data-subject-request.entity';
 
 /**
  * Data Subject Request Repository
@@ -54,3 +58,4 @@ export class DataSubjectRequestRepository extends Repository<DataSubjectRequest>
       .getMany();
   }
 }
+

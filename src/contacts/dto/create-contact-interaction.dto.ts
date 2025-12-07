@@ -8,10 +8,7 @@ import {
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  InteractionType,
-  InteractionDirection,
-} from '../entities/contact-interaction.entity';
+import { InteractionType, InteractionDirection } from '../entities/contact-interaction.entity';
 
 /**
  * Create Contact Interaction DTO
@@ -69,5 +66,4 @@ export class CreateContactInteractionDto {
   @IsObject()
   interactionMetadata?: Record<string, any>;
 }
-
 

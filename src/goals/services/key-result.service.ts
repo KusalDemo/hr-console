@@ -1,21 +1,12 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { KeyResultRepository } from '../repositories/key-result.repository';
 import { GoalRepository } from '../repositories/goal.repository';
 import { GoalService } from './goal.service';
-import {
-  KeyResult,
-  KeyResultStatus,
-  KeyResultType,
-} from '../entities/key-result.entity';
+import { KeyResult, KeyResultStatus, KeyResultType } from '../entities/key-result.entity';
 
 /**
  * Key Result Service
- * 
+ *
  * Manages key results with:
  * - Key result CRUD operations
  * - Progress tracking
@@ -63,9 +54,10 @@ export class KeyResultService {
     // Update goal progress
     await this.goalService.calculateGoalProgress(createDto.goalId);
 
-    this.logger.log(`Created key result: ${saved.id} for goal ${createDto.goalId}`);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Created key result: ${savedEntity.id} for goal ${createDto.goalId}`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -84,11 +76,7 @@ export class KeyResultService {
   /**
    * Update key result
    */
-  async updateKeyResult(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<KeyResult> {
+  async updateKeyResult(id: number, updateDto: any, updatedBy?: number): Promise<KeyResult> {
     const keyResult = await this.keyResultRepository.findById(id);
 
     if (!keyResult) {
@@ -180,7 +168,7 @@ export class KeyResultService {
     });
 
     keyResult.checkInHistory = checkInHistory;
-    keyResult.updatedBy = updatedBy;
+    keyResult.updatedBy = updatedBy ?? null;
 
     const saved = await this.keyResultRepository.save(keyResult);
 
@@ -218,10 +206,7 @@ export class KeyResultService {
   /**
    * Get key results by owner
    */
-  async getKeyResultsByOwner(
-    ownerId: number,
-    organizationId?: number,
-  ): Promise<KeyResult[]> {
+  async getKeyResultsByOwner(ownerId: number, organizationId?: number): Promise<KeyResult[]> {
     return this.keyResultRepository.findByOwner(ownerId, organizationId);
   }
 

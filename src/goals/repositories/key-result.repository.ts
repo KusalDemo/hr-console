@@ -4,7 +4,7 @@ import { KeyResult, KeyResultStatus } from '../entities/key-result.entity';
 
 /**
  * Key Result Repository
- * 
+ *
  * Custom repository methods for key result queries.
  */
 @Injectable()

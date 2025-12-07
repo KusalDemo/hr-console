@@ -9,7 +9,7 @@ import { AuditLog } from './entities';
 
 /**
  * Activities Module
- * 
+ *
  * Provides comprehensive audit logging:
  * - Automatic entity lifecycle event logging
  * - Before/after value tracking
@@ -25,16 +25,7 @@ import { AuditLog } from './entities';
     ScheduleModule.forRoot(), // For scheduled retention tasks
   ],
   controllers: [ActivitiesController],
-  providers: [
-    AuditLogService,
-    AuditRetentionService,
-    AuditLogRepository,
-    AuditLogSubscriber,
-  ],
-  exports: [
-    AuditLogService,
-    AuditRetentionService,
-    AuditLogRepository,
-  ],
+  providers: [AuditLogService, AuditRetentionService, AuditLogRepository, AuditLogSubscriber],
+  exports: [AuditLogService, AuditRetentionService, AuditLogRepository],
 })
 export class ActivitiesModule {}

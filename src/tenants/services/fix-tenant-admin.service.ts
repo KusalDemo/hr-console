@@ -24,7 +24,7 @@ export class FixTenantAdminService {
    * This will:
    * 1. Find the tenant admin user in the tenant schema
    * 2. Create a tenant admin record in admin schema if it doesn't exist
-   * 
+   *
    * @param tenantKey - Tenant key
    * @param tenantAdminEmail - Tenant admin email (must match the user in tenant schema)
    * @param tenantAdminPassword - Tenant admin password (will be re-hashed for admin record)
@@ -58,7 +58,7 @@ export class FixTenantAdminService {
     // Verify user exists in tenant schema
     const schemaName = this.multiTenantService.getTenantSchemaName(tenantKey);
     const schemaExists = await this.multiTenantService.schemaExists(schemaName);
-    
+
     if (!schemaExists) {
       this.logger.error(`Tenant schema does not exist: ${schemaName}`);
       return false;
@@ -111,7 +111,7 @@ export class FixTenantAdminService {
 
       // Hash password for admin record (will be different hash but same password)
       const passwordHash = await this.passwordService.hashPassword(tenantAdminPassword);
-      
+
       // DEBUG LOGGING - Remove in production
       this.logger.log(`[DEBUG] Generated hash for admin record: ${passwordHash}`);
 
@@ -140,7 +140,7 @@ export class FixTenantAdminService {
   /**
    * Fix all tenants that are missing tenant admin records
    * This will attempt to find the first admin user in each tenant schema and create the admin record
-   * 
+   *
    * WARNING: This is a best-effort approach and may not work for all tenants
    * It's better to use fixTenantAdmin with explicit credentials
    */
@@ -151,7 +151,7 @@ export class FixTenantAdminService {
       where: { isActive: true },
     });
 
-    let fixed = 0;
+    const fixed = 0;
     let failed = 0;
     let skipped = 0;
 
@@ -197,9 +197,7 @@ export class FixTenantAdminService {
         }
 
         const adminUser = adminUsers[0];
-        this.logger.log(
-          `Found admin user in tenant ${tenant.tenantKey}: ${adminUser.email}`,
-        );
+        this.logger.log(`Found admin user in tenant ${tenant.tenantKey}: ${adminUser.email}`);
 
         // Note: We can't verify the password without knowing it, so we'll use a placeholder
         // This method is not recommended - use fixTenantAdmin with explicit credentials instead
@@ -222,4 +220,3 @@ export class FixTenantAdminService {
     return { fixed, failed, skipped };
   }
 }
-

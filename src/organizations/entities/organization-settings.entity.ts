@@ -24,10 +24,10 @@ export enum SettingType {
 
 /**
  * Organization Settings Entity
- * 
+ *
  * Represents key-value configuration settings for organizations.
  * Each organization can have multiple settings, with unique keys per organization.
- * 
+ *
  * Settings support different types (STRING, NUMBER, BOOLEAN, JSON) and can be
  * organized by category for better management.
  */
@@ -160,6 +160,4 @@ export class OrganizationSettings {
     return this.settingValue !== null && this.settingValue !== undefined;
   }
 }
-
-
 

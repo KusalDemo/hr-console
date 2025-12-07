@@ -35,7 +35,7 @@ export enum VendorStatus {
 
 /**
  * Vendor Entity
- * 
+ *
  * Vendor relationship management with performance tracking, ratings, and certifications.
  */
 @Entity('vendors')
@@ -258,11 +258,6 @@ export class Vendor {
    * Check if vendor is currently active
    */
   isCurrentlyActive(): boolean {
-    return (
-      this.isActive &&
-      !this.isArchived &&
-      this.vendorStatus === VendorStatus.ACTIVE
-    );
+    return this.isActive && !this.isArchived && this.vendorStatus === VendorStatus.ACTIVE;
   }
 }
-

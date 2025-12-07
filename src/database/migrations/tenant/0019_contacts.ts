@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Contacts Migration
- * 
+ *
  * This migration creates:
  * - contacts table (unified contact management with types, relationships, segmentation)
  * - contact_relationships table (hierarchical relationships between contacts)
  * - contact_interactions table (interaction history and activity timeline)
  * - Full-text search indexes
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Contacts0000000000019 implements MigrationInterface {
@@ -282,5 +282,4 @@ export class Contacts0000000000019 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS contacts CASCADE`);
   }
 }
-
 

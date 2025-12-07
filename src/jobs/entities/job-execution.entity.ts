@@ -24,7 +24,7 @@ export enum ExecutionStatus {
 
 /**
  * Job Execution Entity
- * 
+ *
  * Job execution history:
  * - Execution tracking
  * - Start/end times
@@ -125,3 +125,4 @@ export class JobExecution {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: false })
   updatedAt: Date;
 }
+

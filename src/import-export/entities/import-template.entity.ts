@@ -14,7 +14,7 @@ import { ImportJob } from './import-job.entity';
 
 /**
  * Import Template Entity
- * 
+ *
  * Defines reusable import templates with:
  * - Field mappings
  * - Validation rules

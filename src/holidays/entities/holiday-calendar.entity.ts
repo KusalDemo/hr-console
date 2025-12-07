@@ -17,15 +17,15 @@ import { EmployeeHolidayCalendarAssignment } from './employee-holiday-calendar-a
  * Calendar Type Enum
  */
 export enum CalendarType {
-  COUNTRY = 'COUNTRY',     // Country-wide calendar
-  REGION = 'REGION',       // State/province-specific calendar
-  COMPANY = 'COMPANY',     // Company-specific calendar
-  CUSTOM = 'CUSTOM',       // Custom calendar
+  COUNTRY = 'COUNTRY', // Country-wide calendar
+  REGION = 'REGION', // State/province-specific calendar
+  COMPANY = 'COMPANY', // Company-specific calendar
+  CUSTOM = 'CUSTOM', // Custom calendar
 }
 
 /**
  * Holiday Calendar Entity
- * 
+ *
  * Country/region-specific holiday calendars with:
  * - Multi-region support
  * - Calendar assignment to employees/organizations
@@ -176,15 +176,13 @@ export class HolidayCalendar {
   /**
    * Employee assignments
    */
-  @OneToMany(
-    () => EmployeeHolidayCalendarAssignment,
-    (assignment) => assignment.holidayCalendar,
-    {
-      cascade: false,
-      lazy: true,
-    },
-  )
-  employeeAssignments: Promise<EmployeeHolidayCalendarAssignment[]> | EmployeeHolidayCalendarAssignment[];
+  @OneToMany(() => EmployeeHolidayCalendarAssignment, (assignment) => assignment.holidayCalendar, {
+    cascade: false,
+    lazy: true,
+  })
+  employeeAssignments:
+    | Promise<EmployeeHolidayCalendarAssignment[]>
+    | EmployeeHolidayCalendarAssignment[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;

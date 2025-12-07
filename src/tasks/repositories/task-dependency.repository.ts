@@ -14,10 +14,7 @@ export class TaskDependencyRepository extends Repository<TaskDependency> {
   /**
    * Find dependencies for a task (tasks this task depends on)
    */
-  async findDependencies(
-    taskId: number,
-    includeRelations = false,
-  ): Promise<TaskDependency[]> {
+  async findDependencies(taskId: number, includeRelations = false): Promise<TaskDependency[]> {
     const query = this.createQueryBuilder('dependency')
       .where('dependency.dependentTaskId = :taskId', { taskId })
       .orderBy('dependency.createdAt', 'ASC');
@@ -34,10 +31,7 @@ export class TaskDependencyRepository extends Repository<TaskDependency> {
   /**
    * Find dependents for a task (tasks that depend on this task)
    */
-  async findDependents(
-    taskId: number,
-    includeRelations = false,
-  ): Promise<TaskDependency[]> {
+  async findDependents(taskId: number, includeRelations = false): Promise<TaskDependency[]> {
     const query = this.createQueryBuilder('dependency')
       .where('dependency.dependsOnTaskId = :taskId', { taskId })
       .orderBy('dependency.createdAt', 'ASC');
@@ -67,10 +61,7 @@ export class TaskDependencyRepository extends Repository<TaskDependency> {
   /**
    * Find dependencies by type
    */
-  async findByType(
-    dependencyType: DependencyType,
-    taskId?: number,
-  ): Promise<TaskDependency[]> {
+  async findByType(dependencyType: DependencyType, taskId?: number): Promise<TaskDependency[]> {
     const query = this.createQueryBuilder('dependency')
       .where('dependency.dependencyType = :dependencyType', { dependencyType })
       .orderBy('dependency.createdAt', 'ASC');
@@ -111,5 +102,4 @@ export class TaskDependencyRepository extends Repository<TaskDependency> {
       .getMany();
   }
 }
-
 

@@ -34,7 +34,7 @@ export enum ImportFormat {
 
 /**
  * Import Job Entity
- * 
+ *
  * Tracks import jobs with:
  * - Job status and progress
  * - Error handling and rollback
@@ -155,7 +155,14 @@ export class ImportJob {
   /**
    * Progress percentage (0-100)
    */
-  @Column({ name: 'progress_percentage', type: 'decimal', precision: 5, scale: 2, nullable: false, default: 0 })
+  @Column({
+    name: 'progress_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   progressPercentage: number;
 
   /**

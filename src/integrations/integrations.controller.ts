@@ -29,7 +29,7 @@ import { IntegrationType } from './entities';
 
 /**
  * Integrations Controller
- * 
+ *
  * REST API endpoints for integration management:
  * - Integration CRUD operations
  * - OAuth2 flow management
@@ -65,9 +65,7 @@ export class IntegrationsController {
    * GET /integrations/:id
    */
   @Get(':id')
-  async getIntegration(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<IntegrationResponseDto> {
+  async getIntegration(@Param('id', ParseIntPipe) id: number): Promise<IntegrationResponseDto> {
     return this.integrationService.getIntegrationById(id);
   }
 
@@ -125,9 +123,7 @@ export class IntegrationsController {
    */
   @Get(':id/oauth2/authorize')
   @Roles('ADMIN', 'HR')
-  async getOAuth2AuthorizationUrl(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<{ url: string }> {
+  async getOAuth2AuthorizationUrl(@Param('id', ParseIntPipe) id: number): Promise<{ url: string }> {
     return this.integrationService.getOAuth2AuthorizationUrl(id);
   }
 
@@ -151,9 +147,7 @@ export class IntegrationsController {
    */
   @Post(':id/oauth2/refresh')
   @Roles('ADMIN', 'HR')
-  async refreshOAuth2Token(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<IntegrationResponseDto> {
+  async refreshOAuth2Token(@Param('id', ParseIntPipe) id: number): Promise<IntegrationResponseDto> {
     return this.integrationService.refreshOAuth2Token(id);
   }
 
@@ -251,9 +245,7 @@ export class IntegrationsController {
    */
   @Post(':id/webhooks/test')
   @Roles('ADMIN', 'HR')
-  async testWebhook(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<{
+  async testWebhook(@Param('id', ParseIntPipe) id: number): Promise<{
     success: boolean;
     responseTime: number;
     message: string;

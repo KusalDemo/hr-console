@@ -16,7 +16,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 
 /**
  * Search Controller
- * 
+ *
  * REST API endpoints for advanced search:
  * - Full-text search across entities
  * - Faceted search

@@ -4,7 +4,7 @@ import { Goal, GoalType, GoalStatus } from '../entities/goal.entity';
 
 /**
  * Goal Repository
- * 
+ *
  * Custom repository methods for goal queries with recursive queries for goal alignment.
  */
 @Injectable()
@@ -16,7 +16,11 @@ export class GoalRepository extends Repository<Goal> {
   /**
    * Find goal by ID
    */
-  async findById(id: number, includeKeyResults = false, includeChildren = false): Promise<Goal | null> {
+  async findById(
+    id: number,
+    includeKeyResults = false,
+    includeChildren = false,
+  ): Promise<Goal | null> {
     const query = this.createQueryBuilder('goal').where('goal.id = :id', { id });
 
     if (includeKeyResults) {
@@ -81,10 +85,7 @@ export class GoalRepository extends Repository<Goal> {
   /**
    * Find goals by status
    */
-  async findByStatus(
-    status: GoalStatus,
-    organizationId?: number,
-  ): Promise<Goal[]> {
+  async findByStatus(status: GoalStatus, organizationId?: number): Promise<Goal[]> {
     const query = this.createQueryBuilder('goal')
       .where('goal.status = :status', { status })
       .andWhere('goal.isArchived = :isArchived', { isArchived: false })
@@ -198,18 +199,14 @@ export class GoalRepository extends Repository<Goal> {
   /**
    * Find goals needing check-in
    */
-  async findGoalsNeedingCheckIn(
-    organizationId?: number,
-    beforeDate?: Date,
-  ): Promise<Goal[]> {
+  async findGoalsNeedingCheckIn(organizationId?: number, beforeDate?: Date): Promise<Goal[]> {
     const checkInDate = beforeDate || new Date();
     const query = this.createQueryBuilder('goal')
       .where('goal.status = :status', { status: GoalStatus.ACTIVE })
       .andWhere('goal.isArchived = :isArchived', { isArchived: false })
-      .andWhere(
-        '(goal.nextCheckInDate IS NULL OR goal.nextCheckInDate <= :checkInDate)',
-        { checkInDate },
-      )
+      .andWhere('(goal.nextCheckInDate IS NULL OR goal.nextCheckInDate <= :checkInDate)', {
+        checkInDate,
+      })
       .orderBy('goal.nextCheckInDate', 'ASC')
       .addOrderBy('goal.goalTitle', 'ASC');
 

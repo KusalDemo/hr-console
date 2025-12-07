@@ -8,15 +8,11 @@ import {
 import { EmployeeRepository } from '../repositories/employee.repository';
 import { OrganizationRepository } from '../../organizations/repositories/organization.repository';
 import { Employee, EmployeeType, EmploymentStatus } from '../entities/employee.entity';
-import {
-  CreateEmployeeDto,
-  UpdateEmployeeDto,
-  EmployeeResponseDto,
-} from '../dto';
+import { CreateEmployeeDto, UpdateEmployeeDto, EmployeeResponseDto } from '../dto';
 
 /**
  * Employees Service
- * 
+ *
  * Provides business logic for employee operations:
  * - Create employee
  * - Get employee by ID
@@ -24,7 +20,7 @@ import {
  * - Update employee
  * - Delete employee (soft delete)
  * - Search employees
- * 
+ *
  * This service handles all employee management operations
  * including validation and organization relationships.
  */
@@ -39,7 +35,7 @@ export class EmployeesService {
 
   /**
    * Create a new employee
-   * 
+   *
    * @param createDto - Employee creation data
    * @param createdBy - User ID who created the employee (optional)
    * @returns Created employee information
@@ -152,7 +148,7 @@ export class EmployeesService {
 
   /**
    * Get employee by ID
-   * 
+   *
    * @param id - Employee ID
    * @returns Employee information
    */
@@ -167,7 +163,7 @@ export class EmployeesService {
 
   /**
    * Get employees with pagination and filters
-   * 
+   *
    * @param page - Page number
    * @param limit - Items per page
    * @param filters - Optional filters
@@ -184,7 +180,13 @@ export class EmployeesService {
       employeeType?: string;
       active?: boolean;
     },
-  ): Promise<{ employees: EmployeeResponseDto[]; total: number; page: number; limit: number; totalPages: number }> {
+  ): Promise<{
+    employees: EmployeeResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const { employees, total } = await this.employeeRepository.findWithPagination(
       page,
       limit,
@@ -204,7 +206,7 @@ export class EmployeesService {
 
   /**
    * Get employees by organization ID
-   * 
+   *
    * @param organizationId - Organization ID
    * @param activeOnly - Only return active employees
    * @returns Array of employees
@@ -222,7 +224,7 @@ export class EmployeesService {
 
   /**
    * Update employee
-   * 
+   *
    * @param id - Employee ID
    * @param updateDto - Employee update data
    * @param updatedBy - User ID who updated the employee (optional)
@@ -421,7 +423,7 @@ export class EmployeesService {
 
   /**
    * Delete employee (soft delete)
-   * 
+   *
    * @param id - Employee ID
    * @param deletedBy - User ID who deleted the employee (optional)
    * @returns Deleted employee information
@@ -468,7 +470,7 @@ export class EmployeesService {
 
   /**
    * Search employees
-   * 
+   *
    * @param searchTerm - Search term (name, email, or employee number)
    * @param organizationId - Optional organization filter
    * @returns Array of matching employees
@@ -539,4 +541,3 @@ export class EmployeesService {
     };
   }
 }
-

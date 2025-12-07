@@ -4,7 +4,7 @@ import { InventoryItem, ItemType, ItemStatus } from '../entities/inventory-item.
 
 /**
  * Inventory Item Repository
- * 
+ *
  * Custom repository methods for inventory item queries with optimized stock calculations.
  */
 @Injectable()
@@ -30,18 +30,13 @@ export class InventoryItemRepository extends Repository<InventoryItem> {
    * Find item by SKU
    */
   async findBySKU(sku: string): Promise<InventoryItem | null> {
-    return this.createQueryBuilder('item')
-      .where('item.sku = :sku', { sku })
-      .getOne();
+    return this.createQueryBuilder('item').where('item.sku = :sku', { sku }).getOne();
   }
 
   /**
    * Find items by category
    */
-  async findByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<InventoryItem[]> {
+  async findByCategory(category: string, organizationId?: number): Promise<InventoryItem[]> {
     const query = this.createQueryBuilder('item')
       .where('item.category = :category', { category })
       .andWhere('item.itemStatus = :status', { status: ItemStatus.ACTIVE })
@@ -57,10 +52,7 @@ export class InventoryItemRepository extends Repository<InventoryItem> {
   /**
    * Find items by location
    */
-  async findByLocation(
-    locationId: number,
-    organizationId?: number,
-  ): Promise<InventoryItem[]> {
+  async findByLocation(locationId: number, organizationId?: number): Promise<InventoryItem[]> {
     const query = this.createQueryBuilder('item')
       .where('item.locationId = :locationId', { locationId })
       .andWhere('item.itemStatus = :status', { status: ItemStatus.ACTIVE })

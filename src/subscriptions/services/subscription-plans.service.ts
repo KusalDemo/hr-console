@@ -1,12 +1,13 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { SubscriptionPlanRepository } from '../repositories/subscription-plan.repository';
 import { SubscriptionRepository } from '../repositories/subscription.repository';
-import { SubscriptionPlan, BillingCycle, SubscriptionPlanFeatures } from '../entities/subscription-plan.entity';
-import { Subscription, SubscriptionStatus } from '../entities/subscription.entity';
 import {
-  BusinessException,
-  ErrorCode,
-} from '../../common/exceptions/business.exception';
+  SubscriptionPlan,
+  BillingCycle,
+  SubscriptionPlanFeatures,
+} from '../entities/subscription-plan.entity';
+import { Subscription, SubscriptionStatus } from '../entities/subscription.entity';
+import { BusinessException, ErrorCode } from '../../common/exceptions/business.exception';
 import { CreatePlanDto } from '../dto/create-plan.dto';
 import { UpdatePlanDto } from '../dto/update-plan.dto';
 
@@ -30,7 +31,11 @@ export interface PlanComparisonResult {
   };
   limitChanges: {
     users: { old: number | null; new: number | null; change: 'increase' | 'decrease' | 'same' };
-    organizations: { old: number | null; new: number | null; change: 'increase' | 'decrease' | 'same' };
+    organizations: {
+      old: number | null;
+      new: number | null;
+      change: 'increase' | 'decrease' | 'same';
+    };
     storage: { old: number | null; new: number | null; change: 'increase' | 'decrease' | 'same' };
   };
   proratedAmount?: number;
@@ -52,7 +57,7 @@ export interface PlanChangeResult {
 
 /**
  * Subscription Plan Service
- * 
+ *
  * Provides business logic for subscription plan operations:
  * - List available plans
  * - Get plan details
@@ -70,7 +75,7 @@ export class SubscriptionPlansService {
 
   /**
    * List all available plans
-   * 
+   *
    * @param includeInactive - Include inactive plans (default: false)
    * @param billingCycle - Filter by billing cycle (optional)
    * @returns List of subscription plans
@@ -80,10 +85,7 @@ export class SubscriptionPlansService {
     billingCycle?: BillingCycle,
   ): Promise<SubscriptionPlan[]> {
     if (billingCycle) {
-      return this.subscriptionPlanRepository.findByBillingCycle(
-        billingCycle,
-        includeInactive,
-      );
+      return this.subscriptionPlanRepository.findByBillingCycle(billingCycle, includeInactive);
     }
 
     return includeInactive
@@ -93,15 +95,12 @@ export class SubscriptionPlansService {
 
   /**
    * Get plan by ID
-   * 
+   *
    * @param id - Plan ID
    * @param includeInactive - Include inactive plans (default: false)
    * @returns Plan details
    */
-  async getPlanById(
-    id: number,
-    includeInactive: boolean = false,
-  ): Promise<SubscriptionPlan> {
+  async getPlanById(id: number, includeInactive: boolean = false): Promise<SubscriptionPlan> {
     const plan = includeInactive
       ? await this.subscriptionPlanRepository.findByIdIncludeInactive(id)
       : await this.subscriptionPlanRepository.findById(id);
@@ -115,19 +114,13 @@ export class SubscriptionPlansService {
 
   /**
    * Get plan by plan key
-   * 
+   *
    * @param planKey - Plan key
    * @param includeInactive - Include inactive plans (default: false)
    * @returns Plan details
    */
-  async getPlanByKey(
-    planKey: string,
-    includeInactive: boolean = false,
-  ): Promise<SubscriptionPlan> {
-    const plan = await this.subscriptionPlanRepository.findByPlanKey(
-      planKey,
-      includeInactive,
-    );
+  async getPlanByKey(planKey: string, includeInactive: boolean = false): Promise<SubscriptionPlan> {
+    const plan = await this.subscriptionPlanRepository.findByPlanKey(planKey, includeInactive);
 
     if (!plan) {
       throw new NotFoundException('Subscription Plan', planKey);
@@ -138,7 +131,7 @@ export class SubscriptionPlansService {
 
   /**
    * Get default plan
-   * 
+   *
    * @returns Default plan or null
    */
   async getDefaultPlan(): Promise<SubscriptionPlan | null> {
@@ -147,15 +140,12 @@ export class SubscriptionPlansService {
 
   /**
    * Compare two plans
-   * 
+   *
    * @param currentPlanId - Current plan ID
    * @param targetPlanId - Target plan ID
    * @returns Plan comparison result
    */
-  async comparePlans(
-    currentPlanId: number,
-    targetPlanId: number,
-  ): Promise<PlanComparisonResult> {
+  async comparePlans(currentPlanId: number, targetPlanId: number): Promise<PlanComparisonResult> {
     const currentPlan = await this.getPlanById(currentPlanId);
     const targetPlan = await this.getPlanById(targetPlanId);
 
@@ -168,25 +158,13 @@ export class SubscriptionPlansService {
     const isDowngrade = priceDifference < 0;
 
     // Compare features
-    const featureChanges = this.compareFeatures(
-      currentPlan.features,
-      targetPlan.features,
-    );
+    const featureChanges = this.compareFeatures(currentPlan.features, targetPlan.features);
 
     // Compare limits
     const limitChanges = {
-      users: this.compareLimit(
-        currentPlan.maxUsers,
-        targetPlan.maxUsers,
-      ),
-      organizations: this.compareLimit(
-        currentPlan.maxOrganizations,
-        targetPlan.maxOrganizations,
-      ),
-      storage: this.compareLimit(
-        currentPlan.maxStorageGb,
-        targetPlan.maxStorageGb,
-      ),
+      users: this.compareLimit(currentPlan.maxUsers, targetPlan.maxUsers),
+      organizations: this.compareLimit(currentPlan.maxOrganizations, targetPlan.maxOrganizations),
+      storage: this.compareLimit(currentPlan.maxStorageGb, targetPlan.maxStorageGb),
     };
 
     return {
@@ -202,7 +180,7 @@ export class SubscriptionPlansService {
 
   /**
    * Compare current subscription plan with target plan
-   * 
+   *
    * @param subscriptionId - Subscription ID
    * @param targetPlanId - Target plan ID
    * @returns Plan comparison result
@@ -230,7 +208,10 @@ export class SubscriptionPlansService {
     const comparison = await this.comparePlans(currentPlan.id, targetPlan.id);
 
     // Calculate prorated amount if applicable
-    if (subscription.status === SubscriptionStatus.ACTIVE || subscription.status === SubscriptionStatus.TRIAL) {
+    if (
+      subscription.status === SubscriptionStatus.ACTIVE ||
+      subscription.status === SubscriptionStatus.TRIAL
+    ) {
       comparison.proratedAmount = this.calculateProratedAmount(
         subscription,
         currentPlan,
@@ -244,7 +225,7 @@ export class SubscriptionPlansService {
 
   /**
    * Upgrade subscription to a new plan
-   * 
+   *
    * @param subscriptionId - Subscription ID
    * @param newPlanId - New plan ID
    * @param immediate - Whether to change immediately or at period end (default: true)
@@ -260,7 +241,7 @@ export class SubscriptionPlansService {
 
   /**
    * Downgrade subscription to a new plan
-   * 
+   *
    * @param subscriptionId - Subscription ID
    * @param newPlanId - New plan ID
    * @param immediate - Whether to change immediately or at period end (default: false)
@@ -276,7 +257,7 @@ export class SubscriptionPlansService {
 
   /**
    * Change subscription plan
-   * 
+   *
    * @param subscriptionId - Subscription ID
    * @param newPlanId - New plan ID
    * @param immediate - Whether to change immediately or at period end
@@ -299,9 +280,7 @@ export class SubscriptionPlansService {
     }
 
     if (!subscription.isActive() && !subscription.isTrial()) {
-      throw new BadRequestException(
-        'Subscription must be active or in trial to change plan',
-      );
+      throw new BadRequestException('Subscription must be active or in trial to change plan');
     }
 
     const currentPlan = subscription.plan;
@@ -390,10 +369,7 @@ export class SubscriptionPlansService {
         error instanceof Error ? error.stack : String(error),
       );
 
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
 
@@ -427,10 +403,7 @@ export class SubscriptionPlansService {
     const target = targetFeatures || {};
 
     // Get all feature keys
-    const allKeys = new Set([
-      ...Object.keys(current),
-      ...Object.keys(target),
-    ]);
+    const allKeys = new Set([...Object.keys(current), ...Object.keys(target)]);
 
     for (const key of allKeys) {
       const currentValue = current[key];
@@ -499,9 +472,7 @@ export class SubscriptionPlansService {
     const totalDays = Math.ceil(
       (periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24),
     );
-    const daysUsed = Math.ceil(
-      (now.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    const daysUsed = Math.ceil((now.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24));
     const daysRemaining = totalDays - daysUsed;
 
     // Calculate prorated amounts
@@ -547,7 +518,7 @@ export class SubscriptionPlansService {
 
   /**
    * Get plans suitable for upgrade from current plan
-   * 
+   *
    * @param currentPlanId - Current plan ID
    * @returns List of upgrade plans
    */
@@ -560,7 +531,7 @@ export class SubscriptionPlansService {
 
   /**
    * Get plans suitable for downgrade from current plan
-   * 
+   *
    * @param currentPlanId - Current plan ID
    * @returns List of downgrade plans
    */
@@ -573,15 +544,12 @@ export class SubscriptionPlansService {
 
   /**
    * Create a new subscription plan
-   * 
+   *
    * @param createDto - Plan creation data
    * @param userId - User ID creating the plan
    * @returns Created plan
    */
-  async createPlan(
-    createDto: CreatePlanDto,
-    userId: number,
-  ): Promise<SubscriptionPlan> {
+  async createPlan(createDto: CreatePlanDto, userId: number): Promise<SubscriptionPlan> {
     // Check if plan key already exists
     const existingPlan = await this.subscriptionPlanRepository.findByPlanKey(
       createDto.planKey,
@@ -624,7 +592,7 @@ export class SubscriptionPlansService {
 
   /**
    * Update a subscription plan
-   * 
+   *
    * @param id - Plan ID
    * @param updateDto - Plan update data
    * @param userId - User ID updating the plan
@@ -693,7 +661,7 @@ export class SubscriptionPlansService {
 
   /**
    * Deactivate a subscription plan (soft delete)
-   * 
+   *
    * @param id - Plan ID
    * @param userId - User ID deactivating the plan
    * @returns Deactivated plan
@@ -714,7 +682,9 @@ export class SubscriptionPlansService {
     plan.updatedBy = userId;
 
     const deactivatedPlan = await this.subscriptionPlanRepository.save(plan);
-    this.logger.log(`Deactivated subscription plan: ${deactivatedPlan.planKey} (ID: ${deactivatedPlan.id})`);
+    this.logger.log(
+      `Deactivated subscription plan: ${deactivatedPlan.planKey} (ID: ${deactivatedPlan.id})`,
+    );
 
     return deactivatedPlan;
   }
@@ -734,4 +704,3 @@ export class SubscriptionPlansService {
     }
   }
 }
-

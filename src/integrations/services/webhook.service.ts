@@ -4,7 +4,7 @@ import { Integration, IntegrationType } from '../entities';
 
 /**
  * Webhook Service
- * 
+ *
  * Handles webhook operations:
  * - Webhook event publishing
  * - Webhook delivery with retry logic
@@ -80,6 +80,9 @@ export class WebhookService {
         `Delivering webhook to ${integration.webhookUrl} (attempt ${retryCount + 1}/${this.maxRetries + 1})`,
       );
 
+      if (!integration.webhookUrl) {
+        throw new Error('Webhook URL is not configured');
+      }
       const response = await fetch(integration.webhookUrl, {
         method: 'POST',
         headers,

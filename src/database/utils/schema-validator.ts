@@ -25,7 +25,7 @@ export interface MigrationStatus {
 
 /**
  * Database Schema Validator
- * 
+ *
  * Provides utilities for validating database schemas:
  * - Validate schema exists
  * - Check schema has required tables
@@ -106,9 +106,7 @@ export class SchemaValidator {
       );
       const requiredTablesLower = requiredTables.map((t) => t.toLowerCase());
 
-      const missingTables = requiredTablesLower.filter(
-        (table) => !existingTables.includes(table),
-      );
+      const missingTables = requiredTablesLower.filter((table) => !existingTables.includes(table));
 
       return {
         hasAllTables: missingTables.length === 0,
@@ -116,10 +114,7 @@ export class SchemaValidator {
         missingTables,
       };
     } catch (error) {
-      this.logger.error(
-        `Error checking schema tables: ${schemaName}`,
-        error,
-      );
+      this.logger.error(`Error checking schema tables: ${schemaName}`, error);
       return {
         hasAllTables: false,
         existingTables: [],
@@ -156,10 +151,7 @@ export class SchemaValidator {
     }
 
     // Check required tables
-    const tablesCheck = await this.checkSchemaTables(
-      schemaName,
-      this.ADMIN_REQUIRED_TABLES,
-    );
+    const tablesCheck = await this.checkSchemaTables(schemaName, this.ADMIN_REQUIRED_TABLES);
 
     if (!tablesCheck.hasAllTables) {
       errors.push(
@@ -211,10 +203,7 @@ export class SchemaValidator {
     }
 
     // Check required tables
-    const tablesCheck = await this.checkSchemaTables(
-      schemaName,
-      this.TENANT_REQUIRED_TABLES,
-    );
+    const tablesCheck = await this.checkSchemaTables(schemaName, this.TENANT_REQUIRED_TABLES);
 
     if (!tablesCheck.hasAllTables) {
       errors.push(
@@ -246,10 +235,7 @@ export class SchemaValidator {
   async getMigrationStatus(schemaName: string): Promise<MigrationStatus> {
     try {
       // Check if migrations table exists
-      const migrationsTableExists = await this.checkTableExists(
-        schemaName,
-        'migrations',
-      );
+      const migrationsTableExists = await this.checkTableExists(schemaName, 'migrations');
 
       if (!migrationsTableExists) {
         return {
@@ -267,13 +253,12 @@ export class SchemaValidator {
          ORDER BY timestamp ASC`,
       );
 
-      const appliedMigrations = appliedMigrationsResult.map(
-        (row: { name: string }) => row.name,
-      );
+      const appliedMigrations = appliedMigrationsResult.map((row: { name: string }) => row.name);
 
-      const lastMigration = appliedMigrationsResult.length > 0
-        ? appliedMigrationsResult[appliedMigrationsResult.length - 1]
-        : null;
+      const lastMigration =
+        appliedMigrationsResult.length > 0
+          ? appliedMigrationsResult[appliedMigrationsResult.length - 1]
+          : null;
 
       // Note: Pending migrations would need to be determined by comparing
       // applied migrations with available migration files
@@ -284,15 +269,10 @@ export class SchemaValidator {
         migrationsTableExists: true,
         appliedMigrations,
         pendingMigrations,
-        lastMigrationTimestamp: lastMigration
-          ? parseInt(lastMigration.timestamp, 10)
-          : null,
+        lastMigrationTimestamp: lastMigration ? parseInt(lastMigration.timestamp, 10) : null,
       };
     } catch (error) {
-      this.logger.error(
-        `Error getting migration status for schema: ${schemaName}`,
-        error,
-      );
+      this.logger.error(`Error getting migration status for schema: ${schemaName}`, error);
       return {
         migrationsTableExists: false,
         appliedMigrations: [],
@@ -320,10 +300,7 @@ export class SchemaValidator {
       );
       return result.length > 0;
     } catch (error) {
-      this.logger.error(
-        `Error checking table existence: ${schemaName}.${tableName}`,
-        error,
-      );
+      this.logger.error(`Error checking table existence: ${schemaName}.${tableName}`, error);
       return false;
     }
   }
@@ -399,4 +376,3 @@ export class SchemaValidator {
     return `"${identifier.replace(/"/g, '""')}"`;
   }
 }
-

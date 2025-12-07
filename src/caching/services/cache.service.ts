@@ -1,14 +1,9 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleInit,
-  OnModuleDestroy,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import Redis from 'ioredis';
 
 /**
  * Cache Service
- * 
+ *
  * Provides distributed caching with Redis:
  * - Get, set, delete operations
  * - TTL management
@@ -34,11 +29,10 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit() {
     // Initialize Redis connection if configured
-    const redisHost = process.env.REDIS_HOST || process.env.REDIS_HOSTS?.split('://')[1]?.split(':')[0];
+    const redisHost =
+      process.env.REDIS_HOST || process.env.REDIS_HOSTS?.split('://')[1]?.split(':')[0];
     const redisPort = parseInt(
-      process.env.REDIS_PORT ||
-        process.env.REDIS_HOSTS?.split(':').pop() ||
-        '6379',
+      process.env.REDIS_PORT || process.env.REDIS_HOSTS?.split(':').pop() || '6379',
       10,
     );
     const redisPassword = process.env.REDIS_PASSWORD;
@@ -46,8 +40,10 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
 
     if (redisUrl || redisHost) {
       try {
-        this.redis = new Redis(
-          redisUrl || {
+        if (redisUrl) {
+          this.redis = new Redis(redisUrl);
+        } else {
+          this.redis = new Redis({
             host: redisHost,
             port: redisPort,
             password: redisPassword,
@@ -58,8 +54,8 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
             maxRetriesPerRequest: 3,
             enableReadyCheck: true,
             enableOfflineQueue: false,
-          },
-        );
+          });
+        }
 
         this.redis.on('error', (error) => {
           this.logger.error('Redis connection error:', error);
@@ -77,10 +73,7 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
         await this.redis.ping();
         this.logger.log('Redis caching enabled');
       } catch (error) {
-        this.logger.warn(
-          'Redis not available, falling back to in-memory caching only',
-          error,
-        );
+        this.logger.warn('Redis not available, falling back to in-memory caching only', error);
         this.redis = null;
       }
     } else {
@@ -153,12 +146,7 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
   /**
    * Set value in cache
    */
-  async set(
-    key: string,
-    value: any,
-    ttlSeconds?: number,
-    namespace?: string,
-  ): Promise<void> {
+  async set(key: string, value: any, ttlSeconds?: number, namespace?: string): Promise<void> {
     const cacheKey = this.buildKey(key, namespace);
     const ttl = ttlSeconds || this.defaultTTL;
 
@@ -288,9 +276,7 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
    * Clear all cache (use with caution)
    */
   async clear(namespace?: string): Promise<void> {
-    const cachePattern = namespace
-      ? this.buildKey('*', namespace)
-      : `${this.namespace}:*`;
+    const cachePattern = namespace ? this.buildKey('*', namespace) : `${this.namespace}:*`;
 
     await this.deletePattern('*', namespace);
   }
@@ -339,9 +325,7 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
    * Match pattern (simple glob matching)
    */
   private matchPattern(key: string, pattern: string): boolean {
-    const regex = new RegExp(
-      '^' + pattern.replace(/\*/g, '.*').replace(/\?/g, '.') + '$',
-    );
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*').replace(/\?/g, '.') + '$');
     return regex.test(key);
   }
 

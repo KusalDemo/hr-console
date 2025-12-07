@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, IsNull } from 'typeorm';
 import { IpWhitelist } from '../entities/ip-whitelist.entity';
 
 /**
@@ -24,8 +24,8 @@ export class IpWhitelistRepository extends Repository<IpWhitelist> {
       where: {
         ipAddress,
         isActive: true,
-        organizationId: null,
-        userId: null,
+        organizationId: IsNull(),
+        userId: IsNull(),
       },
     });
 
@@ -40,7 +40,7 @@ export class IpWhitelistRepository extends Repository<IpWhitelist> {
           ipAddress,
           organizationId,
           isActive: true,
-          userId: null,
+          userId: IsNull(),
         },
       });
 
@@ -102,8 +102,6 @@ export class IpWhitelistRepository extends Repository<IpWhitelist> {
   }
 
   private ipToNumber(ip: string): number {
-    return ip
-      .split('.')
-      .reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+    return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
   }
 }

@@ -18,10 +18,7 @@ export class ContactInteractionRepository extends Repository<ContactInteraction>
   /**
    * Find interactions for a contact
    */
-  async findByContact(
-    contactId: number,
-    includeRelations = false,
-  ): Promise<ContactInteraction[]> {
+  async findByContact(contactId: number, includeRelations = false): Promise<ContactInteraction[]> {
     const query = this.createQueryBuilder('interaction')
       .where('interaction.contactId = :contactId', { contactId })
       .orderBy('interaction.interactionDate', 'DESC');
@@ -70,10 +67,7 @@ export class ContactInteractionRepository extends Repository<ContactInteraction>
   /**
    * Find recent interactions
    */
-  async findRecent(
-    contactId: number,
-    limit = 10,
-  ): Promise<ContactInteraction[]> {
+  async findRecent(contactId: number, limit = 10): Promise<ContactInteraction[]> {
     return this.createQueryBuilder('interaction')
       .where('interaction.contactId = :contactId', { contactId })
       .orderBy('interaction.interactionDate', 'DESC')
@@ -81,5 +75,4 @@ export class ContactInteractionRepository extends Repository<ContactInteraction>
       .getMany();
   }
 }
-
 

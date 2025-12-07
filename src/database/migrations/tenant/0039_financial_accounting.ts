@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Financial Accounting Module Migration
- * 
+ *
  * This migration creates:
  * - accounts table (chart of accounts with account types, categories, hierarchy)
  * - financial_transactions table (journal entries with double-entry bookkeeping)
@@ -13,7 +13,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - payment_allocations table (allocate payments to invoices)
  * - account_balances table (cached account balances)
  * - Indexes and functions for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class FinancialAccounting0000000000039 implements MigrationInterface {

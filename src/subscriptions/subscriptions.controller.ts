@@ -36,7 +36,7 @@ import { SubscriptionStatus } from './entities/subscription.entity';
 
 /**
  * Subscription Management Controller
- * 
+ *
  * Handles subscription management operations (super admin only):
  * - POST /admin/subscriptions - Create subscription
  * - GET /admin/subscriptions - List subscriptions
@@ -54,10 +54,10 @@ export class SubscriptionsController {
 
   /**
    * Create a new subscription
-   * 
+   *
    * Creates a subscription for a tenant with the specified plan.
    * Supports trial periods, custom amounts, and payment gateway integration.
-   * 
+   *
    * @param createDto - Subscription creation data
    * @param user - Current user (super admin)
    * @returns Created subscription information
@@ -73,10 +73,10 @@ export class SubscriptionsController {
 
   /**
    * Create subscription with plan selection (simplified)
-   * 
+   *
    * Simplified endpoint for creating a subscription by selecting a plan.
    * Automatically handles billing period calculation and trial setup.
-   * 
+   *
    * @param createDto - Simplified subscription creation data
    * @param user - Current user (super admin)
    * @returns Created subscription information
@@ -92,9 +92,9 @@ export class SubscriptionsController {
 
   /**
    * List all subscriptions
-   * 
+   *
    * Returns a paginated list of subscriptions with optional filtering.
-   * 
+   *
    * @param page - Page number (default: 1)
    * @param limit - Items per page (default: 10, max: 100)
    * @param status - Filter by subscription status (optional)
@@ -154,10 +154,10 @@ export class SubscriptionsController {
 
   /**
    * Get subscription details by ID
-   * 
+   *
    * Returns detailed information about a specific subscription,
    * including computed fields like days remaining and access status.
-   * 
+   *
    * @param id - Subscription ID
    * @returns Subscription details
    */
@@ -171,10 +171,10 @@ export class SubscriptionsController {
 
   /**
    * Update subscription
-   * 
+   *
    * Updates subscription information. Only provided fields will be updated.
    * Supports updating plan, status, billing period, payment information, etc.
-   * 
+   *
    * @param id - Subscription ID
    * @param updateDto - Subscription update data
    * @param user - Current user (super admin)
@@ -192,9 +192,9 @@ export class SubscriptionsController {
 
   /**
    * Cancel subscription
-   * 
+   *
    * Cancels a subscription. Can be set to cancel immediately or at period end.
-   * 
+   *
    * @param id - Subscription ID
    * @param cancelDto - Cancellation data
    * @param user - Current user (super admin)
@@ -212,10 +212,10 @@ export class SubscriptionsController {
 
   /**
    * Renew subscription
-   * 
+   *
    * Renews a subscription, optionally changing the plan.
    * Calculates new billing period and updates subscription status.
-   * 
+   *
    * @param id - Subscription ID
    * @param renewDto - Renewal data
    * @param user - Current user (super admin)
@@ -233,9 +233,9 @@ export class SubscriptionsController {
 
   /**
    * Get active subscription for a tenant
-   * 
+   *
    * Returns the active subscription for a specific tenant.
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns Active subscription or null
    */
@@ -249,9 +249,9 @@ export class SubscriptionsController {
 
   /**
    * Get all subscriptions for a tenant
-   * 
+   *
    * Returns all subscriptions (active and historical) for a specific tenant.
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns List of subscriptions
    */
@@ -263,4 +263,3 @@ export class SubscriptionsController {
     return this.subscriptionsService.getSubscriptionsByTenantId(tenantId);
   }
 }
-

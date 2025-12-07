@@ -4,4 +4,3 @@ export * from './business-rule-response.dto';
 export * from './execute-rule.dto';
 export * from './rule-execution-result.dto';
 
-

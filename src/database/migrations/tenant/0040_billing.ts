@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Billing & Invoicing Engine Migration
- * 
+ *
  * This migration creates:
  * - billing_rules table (subscription-based and usage-based billing rules)
  * - recurring_invoices table (recurring invoice schedules)
  * - Indexes for performance optimization
  * - Updates invoices table with billing-related fields
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Billing0000000000040 implements MigrationInterface {

@@ -8,7 +8,7 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, NotFoundException } from '@nestjs/common';
 import { EmployeesService } from '../../employees/services/employees.service';
 import { EmployeeRepository } from '../../employees/repositories/employee.repository';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -20,11 +20,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
 import { EmployeeDataLoader } from '../dataloaders/employee.dataloader';
 import { OrganizationDataLoader } from '../dataloaders/organization.dataloader';
-import {
-  CreateEmployeeDto,
-  UpdateEmployeeDto,
-  EmployeeResponseDto,
-} from '../../employees/dto';
+import { CreateEmployeeDto, UpdateEmployeeDto, EmployeeResponseDto } from '../../employees/dto';
 
 /**
  * Employee GraphQL Object Type
@@ -57,9 +53,7 @@ export class EmployeesResolver {
     }
 
     // Check if user has admin/HR role
-    const hasAdminRole = user.roles?.some((role) =>
-      ['ROLE_ADMIN', 'ROLE_HR'].includes(role),
-    );
+    const hasAdminRole = user.roles?.some((role) => ['ROLE_ADMIN', 'ROLE_HR'].includes(role));
     if (!hasAdminRole) {
       throw new Error('Insufficient permissions to view this employee');
     }
@@ -80,13 +74,14 @@ export class EmployeesResolver {
     @Args('search', { type: () => String, nullable: true }) search?: string,
     @Args('status', { type: () => String, nullable: true }) status?: string,
   ): Promise<Employee[]> {
-    const employees = await this.employeeRepository.findAll({
-      skip,
-      take: Math.min(take, 100), // Limit to 100 max
-      search,
-      status: status as any,
-    });
-    return employees;
+    const result = await this.employeeRepository.findWithPagination(
+      Math.floor(skip / Math.min(take, 100)) + 1,
+      Math.min(take, 100),
+      {
+        employmentStatus: status as any,
+      },
+    );
+    return result.employees;
   }
 
   /**
@@ -98,12 +93,13 @@ export class EmployeesResolver {
     @Args('input') input: CreateEmployeeDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<Employee> {
-    const employeeResponse = await this.employeesService.createEmployee(
-      input,
-      user.userId,
-    );
+    const employeeResponse = await this.employeesService.createEmployee(input, user.userId);
     // Fetch full entity for GraphQL response
-    return this.employeeRepository.findById(employeeResponse.id);
+    const employee = await this.employeeRepository.findById(employeeResponse.id);
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${employeeResponse.id} not found`);
+    }
+    return employee;
   }
 
   /**
@@ -117,7 +113,11 @@ export class EmployeesResolver {
     @CurrentUser() user: JwtPayload,
   ): Promise<Employee> {
     await this.employeesService.updateEmployee(id, input, user.userId);
-    return this.employeeRepository.findById(id);
+    const employee = await this.employeeRepository.findById(id);
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID ${id} not found`);
+    }
+    return employee;
   }
 
   /**

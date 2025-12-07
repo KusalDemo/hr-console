@@ -266,4 +266,3 @@ export class CreateSubscriptionTables0000000000002 implements MigrationInterface
     await queryRunner.query(`DROP TABLE IF EXISTS admin.subscription_plans CASCADE`);
   }
 }
-

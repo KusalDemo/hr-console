@@ -1,21 +1,12 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DashboardRepository } from '../repositories/dashboard.repository';
 import { DashboardWidgetRepository } from '../repositories/dashboard-widget.repository';
-import {
-  Dashboard,
-  DashboardType,
-  DashboardLayoutType,
-} from '../entities/dashboard.entity';
+import { Dashboard, DashboardType, DashboardLayoutType } from '../entities/dashboard.entity';
 import { DashboardWidget } from '../entities/dashboard-widget.entity';
 
 /**
  * Dashboard Service
- * 
+ *
  * Manages dashboards with:
  * - Dashboard CRUD operations
  * - Dashboard templates and cloning
@@ -47,19 +38,17 @@ export class DashboardService {
     });
 
     const saved = await this.dashboardRepository.save(dashboard);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created dashboard: ${saved.id} (${saved.dashboardName})`);
+    this.logger.log(`Created dashboard: ${savedEntity.id} (${savedEntity.dashboardName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
    * Get dashboard by ID
    */
-  async getDashboardById(
-    id: number,
-    includeWidgets = false,
-  ): Promise<Dashboard> {
+  async getDashboardById(id: number, includeWidgets = false): Promise<Dashboard> {
     const dashboard = await this.dashboardRepository.findById(id, includeWidgets);
 
     if (!dashboard) {
@@ -72,11 +61,7 @@ export class DashboardService {
   /**
    * Update dashboard
    */
-  async updateDashboard(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<Dashboard> {
+  async updateDashboard(id: number, updateDto: any, updatedBy?: number): Promise<Dashboard> {
     const dashboard = await this.dashboardRepository.findById(id);
 
     if (!dashboard) {
@@ -126,9 +111,7 @@ export class DashboardService {
     );
 
     if (!sourceDashboard) {
-      throw new NotFoundException(
-        `Source dashboard with ID ${sourceDashboardId} not found`,
-      );
+      throw new NotFoundException(`Source dashboard with ID ${sourceDashboardId} not found`);
     }
 
     // Create new dashboard
@@ -173,9 +156,7 @@ export class DashboardService {
           dataSourceConfig: widget.dataSourceConfig
             ? JSON.parse(JSON.stringify(widget.dataSourceConfig))
             : null,
-          position: widget.position
-            ? JSON.parse(JSON.stringify(widget.position))
-            : null,
+          position: widget.position ? JSON.parse(JSON.stringify(widget.position)) : null,
           size: widget.size ? JSON.parse(JSON.stringify(widget.size)) : null,
           widgetSettings: widget.widgetSettings
             ? JSON.parse(JSON.stringify(widget.widgetSettings))
@@ -208,33 +189,21 @@ export class DashboardService {
     organizationId: number,
     includeInactive = false,
   ): Promise<Dashboard[]> {
-    return this.dashboardRepository.findByOrganization(
-      organizationId,
-      includeInactive,
-    );
+    return this.dashboardRepository.findByOrganization(organizationId, includeInactive);
   }
 
   /**
    * Get personal dashboards for user
    */
-  async getPersonalDashboards(
-    ownerId: number,
-    organizationId: number,
-  ): Promise<Dashboard[]> {
+  async getPersonalDashboards(ownerId: number, organizationId: number): Promise<Dashboard[]> {
     return this.dashboardRepository.findPersonalDashboards(ownerId, organizationId);
   }
 
   /**
    * Get shared dashboards
    */
-  async getSharedDashboards(
-    organizationId: number,
-    includeInactive = false,
-  ): Promise<Dashboard[]> {
-    return this.dashboardRepository.findSharedDashboards(
-      organizationId,
-      includeInactive,
-    );
+  async getSharedDashboards(organizationId: number, includeInactive = false): Promise<Dashboard[]> {
+    return this.dashboardRepository.findSharedDashboards(organizationId, includeInactive);
   }
 
   /**
@@ -295,13 +264,9 @@ export class DashboardService {
     }
 
     // Get current max order
-    const existingWidgets = await this.dashboardWidgetRepository.findByDashboard(
-      dashboardId,
-    );
+    const existingWidgets = await this.dashboardWidgetRepository.findByDashboard(dashboardId);
     const maxOrder =
-      existingWidgets.length > 0
-        ? Math.max(...existingWidgets.map((w) => w.widgetOrder))
-        : -1;
+      existingWidgets.length > 0 ? Math.max(...existingWidgets.map((w) => w.widgetOrder)) : -1;
 
     const widget = this.dashboardWidgetRepository.create({
       ...widgetData,
@@ -314,11 +279,10 @@ export class DashboardService {
 
     const saved = await this.dashboardWidgetRepository.save(widget);
 
-    this.logger.log(
-      `Added widget ${saved.id} to dashboard ${dashboardId}`,
-    );
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Added widget ${savedEntity.id} to dashboard ${dashboardId}`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -375,10 +339,7 @@ export class DashboardService {
       throw new NotFoundException(`Dashboard with ID ${dashboardId} not found`);
     }
 
-    await this.dashboardWidgetRepository.updateWidgetOrder(
-      dashboardId,
-      widgetOrders,
-    );
+    await this.dashboardWidgetRepository.updateWidgetOrder(dashboardId, widgetOrders);
 
     this.logger.log(`Updated widget order for dashboard: ${dashboardId}`);
   }
@@ -396,9 +357,6 @@ export class DashboardService {
       throw new NotFoundException(`Dashboard with ID ${dashboardId} not found`);
     }
 
-    return this.dashboardWidgetRepository.findByDashboard(
-      dashboardId,
-      includeInactive,
-    );
+    return this.dashboardWidgetRepository.findByDashboard(dashboardId, includeInactive);
   }
 }

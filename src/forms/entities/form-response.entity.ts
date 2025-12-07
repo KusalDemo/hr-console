@@ -23,7 +23,7 @@ export enum FormResponseStatus {
 
 /**
  * Form Response Entity
- * 
+ *
  * Form submissions with:
  * - Response data
  * - Submission tracking

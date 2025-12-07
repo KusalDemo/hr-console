@@ -12,7 +12,7 @@ import { KPIDefinition } from './kpi-definition.entity';
 
 /**
  * KPI Measurement Entity
- * 
+ *
  * Time-series KPI values for tracking KPI measurements over time.
  */
 @Entity('kpi_measurements')

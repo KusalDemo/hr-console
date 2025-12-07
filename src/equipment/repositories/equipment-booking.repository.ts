@@ -4,7 +4,7 @@ import { EquipmentBooking, BookingStatus } from '../entities/equipment-booking.e
 
 /**
  * Equipment Booking Repository
- * 
+ *
  * Custom repository methods for equipment booking queries.
  */
 @Injectable()
@@ -50,10 +50,7 @@ export class EquipmentBookingRepository extends Repository<EquipmentBooking> {
   /**
    * Find bookings by employee
    */
-  async findByEmployee(
-    employeeId: number,
-    includeCompleted = false,
-  ): Promise<EquipmentBooking[]> {
+  async findByEmployee(employeeId: number, includeCompleted = false): Promise<EquipmentBooking[]> {
     const query = this.createQueryBuilder('booking')
       .leftJoinAndSelect('booking.equipment', 'equipment')
       .leftJoinAndSelect('booking.workflowInstance', 'workflowInstance')
@@ -83,11 +80,7 @@ export class EquipmentBookingRepository extends Repository<EquipmentBooking> {
       .leftJoinAndSelect('booking.employee', 'employee')
       .where('booking.equipmentId = :equipmentId', { equipmentId })
       .andWhere('booking.bookingStatus IN (:...statuses)', {
-        statuses: [
-          BookingStatus.PENDING,
-          BookingStatus.APPROVED,
-          BookingStatus.ACTIVE,
-        ],
+        statuses: [BookingStatus.PENDING, BookingStatus.APPROVED, BookingStatus.ACTIVE],
       })
       .andWhere(
         `(
@@ -109,10 +102,7 @@ export class EquipmentBookingRepository extends Repository<EquipmentBooking> {
   /**
    * Find bookings by status
    */
-  async findByStatus(
-    status: BookingStatus,
-    organizationId?: number,
-  ): Promise<EquipmentBooking[]> {
+  async findByStatus(status: BookingStatus, organizationId?: number): Promise<EquipmentBooking[]> {
     const query = this.createQueryBuilder('booking')
       .leftJoinAndSelect('booking.equipment', 'equipment')
       .leftJoinAndSelect('booking.employee', 'employee')
@@ -197,8 +187,9 @@ export class EquipmentBookingRepository extends Repository<EquipmentBooking> {
     totalUsageHours: number;
     averageBookingDuration: number;
   }> {
-    const query = this.createQueryBuilder('booking')
-      .where('booking.equipmentId = :equipmentId', { equipmentId });
+    const query = this.createQueryBuilder('booking').where('booking.equipmentId = :equipmentId', {
+      equipmentId,
+    });
 
     if (startDate) {
       query.andWhere('booking.startDate >= :startDate', { startDate });
@@ -211,9 +202,7 @@ export class EquipmentBookingRepository extends Repository<EquipmentBooking> {
     const bookings = await query.getMany();
 
     const totalBookings = bookings.length;
-    const activeBookings = bookings.filter(
-      (b) => b.bookingStatus === BookingStatus.ACTIVE,
-    ).length;
+    const activeBookings = bookings.filter((b) => b.bookingStatus === BookingStatus.ACTIVE).length;
     const completedBookings = bookings.filter(
       (b) => b.bookingStatus === BookingStatus.COMPLETED,
     ).length;
@@ -224,9 +213,7 @@ export class EquipmentBookingRepository extends Repository<EquipmentBooking> {
     const totalUsageHours =
       completedWithUsage.reduce((sum, b) => sum + (b.usageHours || 0), 0) || 0;
     const averageBookingDuration =
-      completedWithUsage.length > 0
-        ? totalUsageHours / completedWithUsage.length
-        : 0;
+      completedWithUsage.length > 0 ? totalUsageHours / completedWithUsage.length : 0;
 
     return {
       totalBookings,

@@ -22,7 +22,7 @@ export enum DeviceType {
 
 /**
  * Session Entity
- * 
+ *
  * Active session management with device tracking.
  * Tracks user sessions with IP, device, and location information.
  */
@@ -79,7 +79,12 @@ export class Session {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;
 
-  @Column({ name: 'last_accessed_at', type: 'timestamptz', nullable: false, default: () => 'now()' })
+  @Column({
+    name: 'last_accessed_at',
+    type: 'timestamptz',
+    nullable: false,
+    default: () => 'now()',
+  })
   lastAccessedAt: Date;
 
   @Column({ name: 'expires_at', type: 'timestamptz', nullable: false })
@@ -105,3 +110,4 @@ export class Session {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any> | null;
 }
+

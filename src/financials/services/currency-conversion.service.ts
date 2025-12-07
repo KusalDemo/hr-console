@@ -1,16 +1,11 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CurrencyRepository, ExchangeRateRepository } from '../repositories';
 import { Currency } from '../entities/currency.entity';
 import { ExchangeRate } from '../entities/exchange-rate.entity';
 
 /**
  * Currency Conversion Service
- * 
+ *
  * Provides currency conversion capabilities with:
  * - Real-time conversions using current exchange rates
  * - Historical conversions using historical rates
@@ -244,14 +239,16 @@ export class CurrencyConversionService {
       date?: Date;
     }>,
     organizationId?: number | null,
-  ): Promise<Array<{
-    amount: number;
-    fromCurrency: Currency;
-    toCurrency: Currency;
-    rate: number;
-    convertedAmount: number;
-    date: Date;
-  }>> {
+  ): Promise<
+    Array<{
+      amount: number;
+      fromCurrency: Currency;
+      toCurrency: Currency;
+      rate: number;
+      convertedAmount: number;
+      date: Date;
+    }>
+  > {
     const results = await Promise.all(
       conversions.map((conv) =>
         this.convert(

@@ -10,7 +10,11 @@ import {
   IsObject,
 } from 'class-validator';
 import { BillingCycle } from '../entities/subscription-plan.entity';
-import { SubscriptionStatus, PaymentGateway, SubscriptionMetadata } from '../entities/subscription.entity';
+import {
+  SubscriptionStatus,
+  PaymentGateway,
+  SubscriptionMetadata,
+} from '../entities/subscription.entity';
 
 /**
  * Update Subscription Request DTO
@@ -158,5 +162,3 @@ export class RenewSubscriptionDto {
   @Min(0, { message: 'Amount must be greater than or equal to 0' })
   amount?: number;
 }
-
-

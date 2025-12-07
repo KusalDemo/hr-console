@@ -1,23 +1,13 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { JobQueueRepository } from '../repositories/job-queue.repository';
 import { JobExecutionRepository } from '../repositories/job-execution.repository';
 import { JobProcessorService } from './job-processor.service';
-import {
-  JobQueue,
-  JobStatus,
-  JobType,
-  JobPriority,
-} from '../entities/job-queue.entity';
+import { JobQueue, JobStatus, JobType, JobPriority } from '../entities/job-queue.entity';
 import { JobExecution } from '../entities/job-execution.entity';
 
 /**
  * Job Service
- * 
+ *
  * Manages jobs with:
  * - Job CRUD operations
  * - Job scheduling
@@ -39,7 +29,7 @@ export class JobService {
    * Create a new job
    */
   async createJob(createDto: any, createdBy?: number): Promise<JobQueue> {
-    const job = this.jobQueueRepository.create({
+    const jobData = {
       ...createDto,
       status: JobStatus.PENDING,
       priority: createDto.priority || JobPriority.NORMAL,
@@ -47,28 +37,29 @@ export class JobService {
       retryCount: 0,
       retryDelay: createDto.retryDelay || 60,
       isRecurring: createDto.isRecurring || false,
+      cronExpression: createDto.cronExpression || null,
       createdBy,
-    });
+    };
+    const job = this.jobQueueRepository.create(jobData);
+    const jobEntity = Array.isArray(job) ? job[0] : job;
 
     // Calculate next execution for recurring jobs
-    if (job.isRecurring && job.cronExpression) {
-      job.nextExecutionAt = this.calculateNextExecution(job);
+    if (jobEntity.isRecurring && jobEntity.cronExpression) {
+      jobEntity.nextExecutionAt = this.calculateNextExecution(jobEntity);
     }
 
-    const saved = await this.jobQueueRepository.save(job);
+    const saved = await this.jobQueueRepository.save(jobEntity);
+    const savedJob = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created job: ${saved.id} (${saved.jobName})`);
+    this.logger.log(`Created job: ${savedJob.id} (${savedJob.jobName})`);
 
-    return saved;
+    return savedJob;
   }
 
   /**
    * Get job by ID
    */
-  async getJobById(
-    id: number,
-    includeExecutions = false,
-  ): Promise<JobQueue> {
+  async getJobById(id: number, includeExecutions = false): Promise<JobQueue> {
     const job = await this.jobQueueRepository.findById(id, includeExecutions);
 
     if (!job) {
@@ -81,11 +72,7 @@ export class JobService {
   /**
    * Update job
    */
-  async updateJob(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<JobQueue> {
+  async updateJob(id: number, updateDto: any, updatedBy?: number): Promise<JobQueue> {
     const job = await this.jobQueueRepository.findById(id);
 
     if (!job) {
@@ -163,9 +150,7 @@ export class JobService {
 
     job.status = JobStatus.RETRYING;
     job.retryCount += 1;
-    job.scheduledAt = new Date(
-      Date.now() + job.retryDelay * 1000 * job.retryCount,
-    );
+    job.scheduledAt = new Date(Date.now() + job.retryDelay * 1000 * job.retryCount);
 
     const saved = await this.jobQueueRepository.save(job);
 
@@ -177,30 +162,21 @@ export class JobService {
   /**
    * Get jobs by status
    */
-  async getJobsByStatus(
-    status: JobStatus,
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async getJobsByStatus(status: JobStatus, organizationId?: number): Promise<JobQueue[]> {
     return this.jobQueueRepository.findByStatus(status, organizationId);
   }
 
   /**
    * Get pending jobs
    */
-  async getPendingJobs(
-    organizationId?: number,
-    beforeDate?: Date,
-  ): Promise<JobQueue[]> {
+  async getPendingJobs(organizationId?: number, beforeDate?: Date): Promise<JobQueue[]> {
     return this.jobQueueRepository.findPendingJobs(organizationId, beforeDate);
   }
 
   /**
    * Get jobs due for execution
    */
-  async getJobsDueForExecution(
-    beforeDate?: Date,
-    organizationId?: number,
-  ): Promise<JobQueue[]> {
+  async getJobsDueForExecution(beforeDate?: Date, organizationId?: number): Promise<JobQueue[]> {
     return this.jobQueueRepository.findJobsDueForExecution(beforeDate, organizationId);
   }
 
@@ -214,10 +190,7 @@ export class JobService {
   /**
    * Get job executions
    */
-  async getJobExecutions(
-    jobId: number,
-    limit?: number,
-  ): Promise<JobExecution[]> {
+  async getJobExecutions(jobId: number, limit?: number): Promise<JobExecution[]> {
     const job = await this.jobQueueRepository.findById(jobId);
 
     if (!job) {
@@ -230,22 +203,14 @@ export class JobService {
   /**
    * Get job execution statistics
    */
-  async getJobStatistics(
-    jobId: number,
-    startDate?: Date,
-    endDate?: Date,
-  ): Promise<any> {
+  async getJobStatistics(jobId: number, startDate?: Date, endDate?: Date): Promise<any> {
     const job = await this.jobQueueRepository.findById(jobId);
 
     if (!job) {
       throw new NotFoundException(`Job with ID ${jobId} not found`);
     }
 
-    const statistics = await this.jobExecutionRepository.getStatistics(
-      jobId,
-      startDate,
-      endDate,
-    );
+    const statistics = await this.jobExecutionRepository.getStatistics(jobId, startDate, endDate);
 
     return {
       jobId: job.id,

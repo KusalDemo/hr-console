@@ -121,9 +121,8 @@ export class CreateAdminSchema0000000000001 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS admin.tenant_admin CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS admin.super_admin CASCADE`);
     await queryRunner.query(`DROP TABLE IF EXISTS admin.tenants CASCADE`);
-    
+
     // Drop schema (only if empty)
     await queryRunner.query(`DROP SCHEMA IF EXISTS admin CASCADE`);
   }
 }
-

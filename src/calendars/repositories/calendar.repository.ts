@@ -4,7 +4,7 @@ import { Calendar, CalendarType, CalendarVisibility } from '../entities/calendar
 
 /**
  * Calendar Repository
- * 
+ *
  * Custom repository methods for calendar queries.
  */
 @Injectable()
@@ -92,10 +92,7 @@ export class CalendarRepository extends Repository<Calendar> {
   /**
    * Find visible calendars for user
    */
-  async findVisibleCalendars(
-    userId: number,
-    organizationId?: number,
-  ): Promise<Calendar[]> {
+  async findVisibleCalendars(userId: number, organizationId?: number): Promise<Calendar[]> {
     const query = this.createQueryBuilder('calendar')
       .where(
         `(
@@ -115,4 +112,3 @@ export class CalendarRepository extends Repository<Calendar> {
     return query.getMany();
   }
 }
-

@@ -8,7 +8,7 @@ import { Document } from '../../documents/entities/document.entity';
 
 /**
  * Search Index Service
- * 
+ *
  * Manages search indexes:
  * - Creating/updating search vectors
  * - Index maintenance
@@ -29,31 +29,41 @@ export class SearchIndexService {
     try {
       totalUpdated += await this.updateEmployeeIndexes();
     } catch (error) {
-      this.logger.error(`Failed to update employee indexes: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to update employee indexes: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     try {
       totalUpdated += await this.updateProjectIndexes();
     } catch (error) {
-      this.logger.error(`Failed to update project indexes: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to update project indexes: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     try {
       totalUpdated += await this.updateTaskIndexes();
     } catch (error) {
-      this.logger.error(`Failed to update task indexes: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to update task indexes: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     try {
       totalUpdated += await this.updateContactIndexes();
     } catch (error) {
-      this.logger.error(`Failed to update contact indexes: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to update contact indexes: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     try {
       totalUpdated += await this.updateDocumentIndexes();
     } catch (error) {
-      this.logger.error(`Failed to update document indexes: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to update document indexes: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     this.logger.log(`Updated ${totalUpdated} search indexes`);

@@ -178,8 +178,10 @@ export class EmployeeRepository extends Repository<Employee> {
       active?: boolean;
     },
   ): Promise<{ employees: Employee[]; total: number }> {
-    const query = this.createQueryBuilder('employee')
-      .leftJoinAndSelect('employee.organization', 'organization');
+    const query = this.createQueryBuilder('employee').leftJoinAndSelect(
+      'employee.organization',
+      'organization',
+    );
 
     if (filters?.organizationId) {
       query.andWhere('employee.organizationId = :organizationId', {
@@ -274,8 +276,10 @@ export class EmployeeRepository extends Repository<Employee> {
    * Check if employee number exists
    */
   async employeeNumberExists(employeeNumber: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('employee')
-      .where('employee.employeeNumber = :employeeNumber', { employeeNumber });
+    const query = this.createQueryBuilder('employee').where(
+      'employee.employeeNumber = :employeeNumber',
+      { employeeNumber },
+    );
 
     if (excludeId) {
       query.andWhere('employee.id != :excludeId', { excludeId });
@@ -289,8 +293,10 @@ export class EmployeeRepository extends Repository<Employee> {
    * Check if email exists
    */
   async emailExists(email: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('employee')
-      .where('LOWER(employee.email) = LOWER(:email)', { email: email.trim().toLowerCase() });
+    const query = this.createQueryBuilder('employee').where(
+      'LOWER(employee.email) = LOWER(:email)',
+      { email: email.trim().toLowerCase() },
+    );
 
     if (excludeId) {
       query.andWhere('employee.id != :excludeId', { excludeId });
@@ -300,4 +306,3 @@ export class EmployeeRepository extends Repository<Employee> {
     return count > 0;
   }
 }
-

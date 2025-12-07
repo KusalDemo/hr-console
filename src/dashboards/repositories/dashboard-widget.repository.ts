@@ -4,7 +4,7 @@ import { DashboardWidget, WidgetType } from '../entities/dashboard-widget.entity
 
 /**
  * Dashboard Widget Repository
- * 
+ *
  * Custom repository methods for dashboard widget queries.
  */
 @Injectable()
@@ -17,18 +17,13 @@ export class DashboardWidgetRepository extends Repository<DashboardWidget> {
    * Find widget by ID
    */
   async findById(id: number): Promise<DashboardWidget | null> {
-    return this.createQueryBuilder('widget')
-      .where('widget.id = :id', { id })
-      .getOne();
+    return this.createQueryBuilder('widget').where('widget.id = :id', { id }).getOne();
   }
 
   /**
    * Find widgets by dashboard
    */
-  async findByDashboard(
-    dashboardId: number,
-    includeInactive = false,
-  ): Promise<DashboardWidget[]> {
+  async findByDashboard(dashboardId: number, includeInactive = false): Promise<DashboardWidget[]> {
     const query = this.createQueryBuilder('widget')
       .where('widget.dashboardId = :dashboardId', { dashboardId })
       .orderBy('widget.widgetOrder', 'ASC')
@@ -44,9 +39,7 @@ export class DashboardWidgetRepository extends Repository<DashboardWidget> {
   /**
    * Find visible widgets by dashboard
    */
-  async findVisibleWidgetsByDashboard(
-    dashboardId: number,
-  ): Promise<DashboardWidget[]> {
+  async findVisibleWidgetsByDashboard(dashboardId: number): Promise<DashboardWidget[]> {
     return this.createQueryBuilder('widget')
       .where('widget.dashboardId = :dashboardId', { dashboardId })
       .andWhere('widget.isActive = :isActive', { isActive: true })
@@ -59,10 +52,7 @@ export class DashboardWidgetRepository extends Repository<DashboardWidget> {
   /**
    * Find widgets by type
    */
-  async findByType(
-    widgetType: WidgetType,
-    dashboardId?: number,
-  ): Promise<DashboardWidget[]> {
+  async findByType(widgetType: WidgetType, dashboardId?: number): Promise<DashboardWidget[]> {
     const query = this.createQueryBuilder('widget')
       .where('widget.widgetType = :widgetType', { widgetType })
       .andWhere('widget.isActive = :isActive', { isActive: true })
@@ -78,9 +68,7 @@ export class DashboardWidgetRepository extends Repository<DashboardWidget> {
   /**
    * Find widgets by KPI definition
    */
-  async findByKPIDefinition(
-    kpiDefinitionId: number,
-  ): Promise<DashboardWidget[]> {
+  async findByKPIDefinition(kpiDefinitionId: number): Promise<DashboardWidget[]> {
     return this.createQueryBuilder('widget')
       .where('widget.kpiDefinitionId = :kpiDefinitionId', { kpiDefinitionId })
       .andWhere('widget.isActive = :isActive', { isActive: true })

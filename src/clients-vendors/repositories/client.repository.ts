@@ -4,7 +4,7 @@ import { Client, ClientStatus, ClientTier } from '../entities/client.entity';
 
 /**
  * Client Repository
- * 
+ *
  * Custom repository methods for client queries.
  */
 @Injectable()
@@ -142,8 +142,9 @@ export class ClientRepository extends Repository<Client> {
    * Check if client number exists
    */
   async clientNumberExists(clientNumber: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('client')
-      .where('client.clientNumber = :clientNumber', { clientNumber });
+    const query = this.createQueryBuilder('client').where('client.clientNumber = :clientNumber', {
+      clientNumber,
+    });
 
     if (excludeId) {
       query.andWhere('client.id != :excludeId', { excludeId });
@@ -153,4 +154,3 @@ export class ClientRepository extends Repository<Client> {
     return count > 0;
   }
 }
-

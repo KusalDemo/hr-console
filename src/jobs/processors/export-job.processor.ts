@@ -4,7 +4,7 @@ import { JobQueue } from '../entities/job-queue.entity';
 
 /**
  * Export Job Processor
- * 
+ *
  * Processes data export jobs.
  */
 @Injectable()
@@ -13,10 +13,7 @@ export class ExportJobProcessor extends BaseJobProcessor {
     super(ExportJobProcessor.name);
   }
 
-  async process(
-    jobData: Record<string, any>,
-    job: JobQueue,
-  ): Promise<any> {
+  async process(jobData: Record<string, any>, job: JobQueue): Promise<any> {
     this.validateJobData(jobData, ['exportType', 'data']);
 
     this.logger.log(`Processing export job: ${job.id}`);
@@ -32,3 +29,4 @@ export class ExportJobProcessor extends BaseJobProcessor {
     };
   }
 }
+

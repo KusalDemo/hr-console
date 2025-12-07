@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository, LessThan } from 'typeorm';
+import { DataSource, Repository, LessThan, IsNull } from 'typeorm';
 import { SupportTicket, TicketStatus, TicketPriority } from '../entities/support-ticket.entity';
 
 /**
@@ -16,8 +16,7 @@ export class SupportTicketRepository extends Repository<SupportTicket> {
    * Find ticket by ID
    */
   async findById(id: number, includeRelations = false): Promise<SupportTicket | null> {
-    const query = this.createQueryBuilder('ticket')
-      .where('ticket.id = :id', { id });
+    const query = this.createQueryBuilder('ticket').where('ticket.id = :id', { id });
 
     if (includeRelations) {
       query
@@ -153,7 +152,7 @@ export class SupportTicketRepository extends Repository<SupportTicket> {
       where: [
         {
           firstResponseDueAt: LessThan(now),
-          firstResponseAt: null,
+          firstResponseAt: IsNull(),
           status: In([
             TicketStatus.OPEN,
             TicketStatus.ASSIGNED,
@@ -163,7 +162,7 @@ export class SupportTicketRepository extends Repository<SupportTicket> {
         },
         {
           resolutionDueAt: LessThan(now),
-          resolvedAt: null,
+          resolvedAt: IsNull(),
           status: In([
             TicketStatus.OPEN,
             TicketStatus.ASSIGNED,

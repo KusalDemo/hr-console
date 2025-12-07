@@ -7,7 +7,7 @@ import { SupportTicket, TicketStatus } from '../entities/support-ticket.entity';
 
 /**
  * SLA Tracking Service
- * 
+ *
  * Manages SLA tracking and alerts:
  * - Calculate SLA due dates
  * - Monitor SLA compliance
@@ -105,7 +105,7 @@ export class SLATrackingService {
 
       this.logger.log(`Processed ${overdueTickets.length} overdue tickets`);
     } catch (error) {
-      this.logger.error(`Failed to check SLA violations: ${error.message}`, error);
+      this.logger.error(`Failed to check SLA violations: ${error instanceof Error ? error.message : String(error)}`, error);
     }
   }
 
@@ -122,7 +122,7 @@ export class SLATrackingService {
       // Apply escalation rules if SLA has them
       if (ticket.slaId) {
         const slaRepo = this.dataSource.getRepository(TicketSLA);
-        const sla = await slaRepo.findById(ticket.slaId);
+        const sla = await slaRepo.findOne({ where: { id: ticket.slaId } });
         if (sla?.escalationRules) {
           // TODO: Implement escalation logic based on rules
           // This could include notifying managers, reassigning tickets, etc.
@@ -187,8 +187,7 @@ export class SLATrackingService {
           firstResponseCompliant++;
         }
         if (ticket.firstResponseAt && ticket.createdAt) {
-          totalFirstResponseTime +=
-            ticket.firstResponseAt.getTime() - ticket.createdAt.getTime();
+          totalFirstResponseTime += ticket.firstResponseAt.getTime() - ticket.createdAt.getTime();
         }
       }
 
@@ -215,9 +214,7 @@ export class SLATrackingService {
           ? totalFirstResponseTime / firstResponseCompliant / (1000 * 60 * 60)
           : 0, // Hours
       averageResolutionTime:
-        resolutionCompliant > 0
-          ? totalResolutionTime / resolutionCompliant / (1000 * 60 * 60)
-          : 0, // Hours
+        resolutionCompliant > 0 ? totalResolutionTime / resolutionCompliant / (1000 * 60 * 60) : 0, // Hours
       overdueCount: overdueTickets.length,
     };
   }

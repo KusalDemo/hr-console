@@ -31,10 +31,7 @@ export class ProjectTeamRepository extends Repository<ProjectTeam> {
   /**
    * Find active team members by project
    */
-  async findActiveByProject(
-    projectId: number,
-    includeRelations = false,
-  ): Promise<ProjectTeam[]> {
+  async findActiveByProject(projectId: number, includeRelations = false): Promise<ProjectTeam[]> {
     const query = this.createQueryBuilder('team')
       .where('team.projectId = :projectId', { projectId })
       .andWhere('team.isActive = :isActive', { isActive: true })
@@ -140,4 +137,3 @@ export class ProjectTeamRepository extends Repository<ProjectTeam> {
     return query.getOne();
   }
 }
-

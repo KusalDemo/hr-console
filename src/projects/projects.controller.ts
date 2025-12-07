@@ -34,7 +34,7 @@ import { ProjectStatus, ProjectHealth } from './entities/project.entity';
 
 /**
  * Projects Controller
- * 
+ *
  * REST API endpoints for project management:
  * - Projects (CRUD, templates, cloning, archiving)
  * - Project phases (CRUD)
@@ -148,9 +148,7 @@ export class ProjectsController {
    */
   @Get('dashboard/stats')
   @Roles('ADMIN', 'HR', 'PROJECT_MANAGER')
-  async getDashboardStats(
-    @Query('organizationId', ParseIntPipe) organizationId: number,
-  ) {
+  async getDashboardStats(@Query('organizationId', ParseIntPipe) organizationId: number) {
     return this.projectService.getDashboardStats(organizationId);
   }
 
@@ -216,9 +214,7 @@ export class ProjectsController {
    */
   @Post(':id/unarchive')
   @Roles('ADMIN', 'HR', 'PROJECT_MANAGER')
-  async unarchiveProject(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ProjectResponseDto> {
+  async unarchiveProject(@Param('id', ParseIntPipe) id: number): Promise<ProjectResponseDto> {
     return this.projectService.unarchiveProject(id);
   }
 
@@ -318,5 +314,4 @@ export class ProjectsController {
     return this.projectService.removeTeamMember(id);
   }
 }
-
 

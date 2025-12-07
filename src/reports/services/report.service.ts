@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ReportDefinitionRepository } from '../repositories/report-definition.repository';
 import { ReportScheduleRepository } from '../repositories/report-schedule.repository';
 import {
@@ -21,7 +16,7 @@ import { ReportQueryBuilderService } from './report-query-builder.service';
 
 /**
  * Report Service
- * 
+ *
  * Manages reports with:
  * - Report CRUD operations
  * - Report templates and cloning
@@ -58,19 +53,17 @@ export class ReportService {
     });
 
     const saved = await this.reportDefinitionRepository.save(report);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created report definition: ${saved.id} (${saved.reportName})`);
+    this.logger.log(`Created report definition: ${savedEntity.id} (${savedEntity.reportName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
    * Get report definition by ID
    */
-  async getReportDefinitionById(
-    id: number,
-    includeSchedules = false,
-  ): Promise<ReportDefinition> {
+  async getReportDefinitionById(id: number, includeSchedules = false): Promise<ReportDefinition> {
     const report = await this.reportDefinitionRepository.findById(id, includeSchedules);
 
     if (!report) {
@@ -255,10 +248,11 @@ export class ReportService {
     });
 
     const saved = await this.reportScheduleRepository.save(schedule);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created schedule: ${saved.id} for report ${reportDefinitionId}`);
+    this.logger.log(`Created schedule: ${savedEntity.id} for report ${reportDefinitionId}`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -391,10 +385,7 @@ export class ReportService {
     organizationId: number,
     includeInactive = false,
   ): Promise<ReportDefinition[]> {
-    return this.reportDefinitionRepository.findByOrganization(
-      organizationId,
-      includeInactive,
-    );
+    return this.reportDefinitionRepository.findByOrganization(organizationId, includeInactive);
   }
 
   /**

@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImportExportController } from './import-export.controller';
-import { ImportService, ImportProcessorService, ExportService, ReportBuilderService } from './services';
+import {
+  ImportService,
+  ImportProcessorService,
+  ExportService,
+  ReportBuilderService,
+} from './services';
 import {
   ImportJobRepository,
   ImportTemplateRepository,
   ExportJobRepository,
   ExportTemplateRepository,
 } from './repositories';
-import {
-  ImportJob,
-  ImportTemplate,
-  ExportJob,
-  ExportTemplate,
-} from './entities';
+import { ImportJob, ImportTemplate, ExportJob, ExportTemplate } from './entities';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { EmailModule } from '../email/email.module';
 
 /**
  * Import Export Module
- * 
+ *
  * Provides comprehensive import capabilities:
  * - Import template management
  * - Import job tracking

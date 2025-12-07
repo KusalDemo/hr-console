@@ -63,7 +63,7 @@ export enum RecurrencePattern {
 
 /**
  * Task Entity
- * 
+ *
  * Hierarchical task management with:
  * - Parent-child relationships (sub-tasks)
  * - Dependencies (FS, SS, FF, SF)
@@ -445,5 +445,4 @@ export class Task {
     return Array.isArray(subTasks) && subTasks.length > 0;
   }
 }
-
 

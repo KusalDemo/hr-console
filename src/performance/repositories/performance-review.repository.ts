@@ -4,7 +4,7 @@ import { PerformanceReview, ReviewStatus, ReviewType } from '../entities/perform
 
 /**
  * Performance Review Repository
- * 
+ *
  * Custom repository methods for performance review queries.
  */
 @Injectable()
@@ -29,10 +29,7 @@ export class PerformanceReviewRepository extends Repository<PerformanceReview> {
   /**
    * Find reviews by employee
    */
-  async findByEmployee(
-    employeeId: number,
-    organizationId?: number,
-  ): Promise<PerformanceReview[]> {
+  async findByEmployee(employeeId: number, organizationId?: number): Promise<PerformanceReview[]> {
     const query = this.createQueryBuilder('review')
       .where('review.employeeId = :employeeId', { employeeId })
       .orderBy('review.createdAt', 'DESC');
@@ -47,10 +44,7 @@ export class PerformanceReviewRepository extends Repository<PerformanceReview> {
   /**
    * Find reviews by reviewer
    */
-  async findByReviewer(
-    reviewerId: number,
-    organizationId?: number,
-  ): Promise<PerformanceReview[]> {
+  async findByReviewer(reviewerId: number, organizationId?: number): Promise<PerformanceReview[]> {
     const query = this.createQueryBuilder('review')
       .where('review.reviewerId = :reviewerId', { reviewerId })
       .orderBy('review.createdAt', 'DESC');
@@ -65,10 +59,7 @@ export class PerformanceReviewRepository extends Repository<PerformanceReview> {
   /**
    * Find reviews by cycle
    */
-  async findByCycle(
-    reviewCycleId: number,
-    includeCompleted = true,
-  ): Promise<PerformanceReview[]> {
+  async findByCycle(reviewCycleId: number, includeCompleted = true): Promise<PerformanceReview[]> {
     const query = this.createQueryBuilder('review')
       .where('review.reviewCycleId = :reviewCycleId', { reviewCycleId })
       .orderBy('review.createdAt', 'ASC');
@@ -83,10 +74,7 @@ export class PerformanceReviewRepository extends Repository<PerformanceReview> {
   /**
    * Find reviews by status
    */
-  async findByStatus(
-    status: ReviewStatus,
-    organizationId?: number,
-  ): Promise<PerformanceReview[]> {
+  async findByStatus(status: ReviewStatus, organizationId?: number): Promise<PerformanceReview[]> {
     const query = this.createQueryBuilder('review')
       .where('review.status = :status', { status })
       .orderBy('review.createdAt', 'DESC');
@@ -101,10 +89,7 @@ export class PerformanceReviewRepository extends Repository<PerformanceReview> {
   /**
    * Find reviews by type
    */
-  async findByType(
-    reviewType: ReviewType,
-    organizationId?: number,
-  ): Promise<PerformanceReview[]> {
+  async findByType(reviewType: ReviewType, organizationId?: number): Promise<PerformanceReview[]> {
     const query = this.createQueryBuilder('review')
       .where('review.reviewType = :reviewType', { reviewType })
       .orderBy('review.createdAt', 'DESC');
@@ -128,18 +113,12 @@ export class PerformanceReviewRepository extends Repository<PerformanceReview> {
   }> {
     const result = await this.createQueryBuilder('review')
       .select('COUNT(*)', 'total')
-      .addSelect(
-        `COUNT(CASE WHEN status = 'COMPLETED' THEN 1 END)`,
-        'completed',
-      )
+      .addSelect(`COUNT(CASE WHEN status = 'COMPLETED' THEN 1 END)`, 'completed')
       .addSelect(
         `COUNT(CASE WHEN status IN ('SELF_ASSESSMENT', 'MANAGER_REVIEW', 'PEER_REVIEW') THEN 1 END)`,
         'inProgress',
       )
-      .addSelect(
-        `COUNT(CASE WHEN status = 'NOT_STARTED' THEN 1 END)`,
-        'notStarted',
-      )
+      .addSelect(`COUNT(CASE WHEN status = 'NOT_STARTED' THEN 1 END)`, 'notStarted')
       .addSelect('AVG(overall_score)', 'averageScore')
       .where('review.reviewCycleId = :reviewCycleId', { reviewCycleId })
       .getRawOne();

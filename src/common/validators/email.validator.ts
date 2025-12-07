@@ -38,4 +38,3 @@ export function IsValidEmail(validationOptions?: ValidationOptions) {
     });
   };
 }
-

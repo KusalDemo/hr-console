@@ -19,7 +19,7 @@ export interface TenantContext {
 /**
  * Tenant Context Service
  * Manages tenant context using AsyncLocalStorage for request-scoped isolation
- * 
+ *
  * This service provides:
  * - Tenant context management per request
  * - Current tenant resolution from JWT
@@ -277,4 +277,3 @@ export class TenantContextService {
     return context;
   }
 }
-

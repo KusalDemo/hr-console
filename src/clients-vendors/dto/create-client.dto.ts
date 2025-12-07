@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsDateString,
-  IsObject,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsDateString, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ClientStatus, ClientTier } from '../entities/client.entity';
 
@@ -115,4 +108,3 @@ export class CreateClientDto {
   @IsObject()
   clientMetadata?: Record<string, any>;
 }
-

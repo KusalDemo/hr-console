@@ -117,10 +117,12 @@ export class PermissionRepository extends Repository<Permission> {
    * Check if permission key exists
    */
   async keyExists(permissionKey: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('permission')
-      .where('LOWER(permission.permissionKey) = LOWER(:key)', {
+    const query = this.createQueryBuilder('permission').where(
+      'LOWER(permission.permissionKey) = LOWER(:key)',
+      {
         key: permissionKey.toLowerCase(),
-      });
+      },
+    );
 
     if (excludeId) {
       query.andWhere('permission.id != :excludeId', { excludeId });
@@ -185,4 +187,3 @@ export class PermissionRepository extends Repository<Permission> {
     return results.map((r) => r.action).filter((a) => a !== null);
   }
 }
-

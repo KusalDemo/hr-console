@@ -1,8 +1,4 @@
-import {
-  ProjectBudget,
-  BudgetCategory,
-  BudgetStatus,
-} from '../entities/project-budget.entity';
+import { ProjectBudget, BudgetCategory, BudgetStatus } from '../entities/project-budget.entity';
 
 /**
  * Project Budget Response DTO
@@ -63,5 +59,4 @@ export class ProjectBudgetResponseDto {
     return dto;
   }
 }
-
 

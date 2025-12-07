@@ -4,7 +4,7 @@ import { JobQueue } from '../entities/job-queue.entity';
 
 /**
  * Email Job Processor
- * 
+ *
  * Processes email sending jobs.
  */
 @Injectable()
@@ -13,10 +13,7 @@ export class EmailJobProcessor extends BaseJobProcessor {
     super(EmailJobProcessor.name);
   }
 
-  async process(
-    jobData: Record<string, any>,
-    job: JobQueue,
-  ): Promise<any> {
+  async process(jobData: Record<string, any>, job: JobQueue): Promise<any> {
     this.validateJobData(jobData, ['to', 'subject']);
 
     this.logger.log(`Processing email job: ${job.id}`);
@@ -32,3 +29,4 @@ export class EmailJobProcessor extends BaseJobProcessor {
     };
   }
 }
+

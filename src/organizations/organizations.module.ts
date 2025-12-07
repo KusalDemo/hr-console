@@ -25,14 +25,14 @@ import { User } from '../users/entities/user.entity';
 
 /**
  * Organizations Module
- * 
+ *
  * Wires up all organization management components:
  * - Organization management controller
  * - Organization services (CRUD, context, membership, settings)
  * - Organization guards (access validation)
  * - Organization selection middleware
  * - Organization repositories
- * 
+ *
  * This module provides:
  * - Organization creation and management within tenants
  * - Organization context management for multi-organization support
@@ -98,7 +98,7 @@ export class OrganizationsModule implements NestModule {
    * Configure middleware
    * Apply organization selection middleware to all routes (except public routes)
    * This middleware extracts organization from headers/query and sets organization context
-   * 
+   *
    * Note: This middleware should run AFTER TenantContextMiddleware
    */
   configure(consumer: MiddlewareConsumer) {
@@ -113,4 +113,3 @@ export class OrganizationsModule implements NestModule {
       .forRoutes('*'); // Apply to all routes
   }
 }
-

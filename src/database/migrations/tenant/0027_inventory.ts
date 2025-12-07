@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Inventory Management Migration
- * 
+ *
  * This migration creates:
  * - inventory_locations table (multi-location inventory with warehouse, bin tracking)
  * - inventory_items table (inventory items with SKU, categories, stock levels, locations)
  * - inventory_transactions table (stock movements: in, out, transfer, adjustment)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Inventory0000000000027 implements MigrationInterface {

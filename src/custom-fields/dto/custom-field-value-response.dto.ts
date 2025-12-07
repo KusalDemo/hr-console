@@ -26,4 +26,3 @@ export class CustomFieldValueResponseDto {
   updatedBy: number | null;
 }
 
-

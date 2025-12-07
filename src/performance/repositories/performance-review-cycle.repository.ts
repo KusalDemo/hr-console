@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { PerformanceReviewCycle, ReviewCycleStatus } from '../entities/performance-review-cycle.entity';
+import {
+  PerformanceReviewCycle,
+  ReviewCycleStatus,
+} from '../entities/performance-review-cycle.entity';
 
 /**
  * Performance Review Cycle Repository
- * 
+ *
  * Custom repository methods for review cycle queries.
  */
 @Injectable()

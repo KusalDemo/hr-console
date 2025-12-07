@@ -1,9 +1,4 @@
-import {
-  IsString,
-  IsNotEmpty,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import { IsValidEmail } from '../../common/validators/email.validator';
 import { IsValidTenantKey } from '../../common/validators/tenant-key.validator';
 import { IsStrongPassword } from '../../common/validators/password.validator';
@@ -46,4 +41,3 @@ export class CreateTenantDto {
   @MaxLength(255, { message: 'Tenant admin full name must not exceed 255 characters' })
   tenantAdminFullName: string;
 }
-

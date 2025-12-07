@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Help Center & Ticketing Migration
- * 
+ *
  * This migration creates:
  * - ticket_categories table (categories for organizing tickets)
  * - ticket_slas table (Service Level Agreements with response/resolution times)
@@ -11,7 +11,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - ticket_attachments table (file attachments)
  * - ticket_time_entries table (time tracking for tickets)
  * - Indexes for performance optimization
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class HelpCenter0000000000037 implements MigrationInterface {

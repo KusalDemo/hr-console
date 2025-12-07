@@ -22,7 +22,7 @@ export enum ExecutionStatus {
 
 /**
  * Rule Execution Log Entity
- * 
+ *
  * Audit trail of rule executions.
  * Tracks when rules were executed, their results, and any errors.
  */
@@ -128,5 +128,4 @@ export class RuleExecutionLog {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;
 }
-
 

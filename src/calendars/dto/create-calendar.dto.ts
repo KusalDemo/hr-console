@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsBoolean,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CalendarType, CalendarVisibility } from '../entities/calendar.entity';
 
@@ -52,4 +46,3 @@ export class CreateCalendarDto {
   @IsBoolean()
   isDefault?: boolean;
 }
-

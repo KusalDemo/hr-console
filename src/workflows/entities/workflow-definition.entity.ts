@@ -11,10 +11,10 @@ import { WorkflowInstance } from './workflow-instance.entity';
 
 /**
  * Workflow Definition Entity
- * 
+ *
  * Defines the states, transitions, and rules for a workflow.
  * Supports approval chains, parallel approvals, delegation, and auto-approval.
- * 
+ *
  * The workflowDefinition field contains JSON with:
  * - states: Array of state definitions
  * - initialState: Initial state name
@@ -112,5 +112,4 @@ export class WorkflowDefinition {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-
 

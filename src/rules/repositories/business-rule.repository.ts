@@ -141,4 +141,3 @@ export class BusinessRuleRepository extends Repository<BusinessRule> {
     return count > 0;
   }
 }
-

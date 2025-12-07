@@ -45,7 +45,7 @@ export enum CheckResult {
 
 /**
  * Compliance Automated Check Entity
- * 
+ *
  * Automated compliance checks and validations.
  */
 @Entity('compliance_automated_checks')
@@ -87,7 +87,13 @@ export class ComplianceAutomatedCheck {
   @Column({ name: 'check_configuration', type: 'jsonb', nullable: true })
   checkConfiguration: Record<string, any> | null;
 
-  @Column({ name: 'execution_frequency', type: 'varchar', length: 64, nullable: false, default: ExecutionFrequency.DAILY })
+  @Column({
+    name: 'execution_frequency',
+    type: 'varchar',
+    length: 64,
+    nullable: false,
+    default: ExecutionFrequency.DAILY,
+  })
   executionFrequency: ExecutionFrequency;
 
   @Column({ name: 'last_executed_at', type: 'timestamptz', nullable: true })
@@ -160,3 +166,4 @@ export class ComplianceAutomatedCheck {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any> | null;
 }
+

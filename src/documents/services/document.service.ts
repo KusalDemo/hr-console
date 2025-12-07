@@ -33,7 +33,7 @@ import {
 
 /**
  * Document Service
- * 
+ *
  * Manages document operations:
  * - Document CRUD
  * - Version management
@@ -277,10 +277,7 @@ export class DocumentService {
     );
 
     // Mark previous versions as not current
-    await this.versionRepository.update(
-      { documentId, isCurrent: true },
-      { isCurrent: false },
-    );
+    await this.versionRepository.update({ documentId, isCurrent: true }, { isCurrent: false });
 
     // Create version record
     const version = this.versionRepository.create({
@@ -331,9 +328,7 @@ export class DocumentService {
       versionNumber,
     );
     if (!version) {
-      throw new NotFoundException(
-        `Version ${versionNumber} not found for document ${documentId}`,
-      );
+      throw new NotFoundException(`Version ${versionNumber} not found for document ${documentId}`);
     }
     return DocumentVersionResponseDto.fromEntity(version);
   }
@@ -425,9 +420,7 @@ export class DocumentService {
 
     // Check shares
     const shares = await this.shareRepository.findByDocument(document.id);
-    const userShare = shares.find(
-      (s) => s.sharedWithId === userId && s.isActive && !s.isExpired(),
-    );
+    const userShare = shares.find((s) => s.sharedWithId === userId && s.isActive && !s.isExpired());
     if (userShare) {
       return true;
     }

@@ -34,7 +34,7 @@ export enum DashboardLayoutType {
 
 /**
  * Dashboard Entity
- * 
+ *
  * Configurable dashboards with:
  * - Layout and widget configurations
  * - Drag-drop layouts

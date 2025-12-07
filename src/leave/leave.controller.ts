@@ -30,7 +30,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Leave Controller
- * 
+ *
  * REST API endpoints for leave policy management:
  * - Leave policies (CRUD, templates, cloning)
  * - Employee policy assignments
@@ -53,17 +53,20 @@ export class LeaveController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR')
-  async createPolicy(
-    @Body() createDto: CreateLeavePolicyDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createPolicy(@Body() createDto: CreateLeavePolicyDto, @CurrentUser() user: JwtPayload) {
     const policy = await this.policyService.createPolicy(
       {
         ...createDto,
         effectiveStartDate: new Date(createDto.effectiveStartDate),
-        effectiveEndDate: createDto.effectiveEndDate ? new Date(createDto.effectiveEndDate) : undefined,
-        accrualStartDate: createDto.accrualStartDate ? new Date(createDto.accrualStartDate) : undefined,
-        carryOverExpiryDate: createDto.carryOverExpiryDate ? new Date(createDto.carryOverExpiryDate) : undefined,
+        effectiveEndDate: createDto.effectiveEndDate
+          ? new Date(createDto.effectiveEndDate)
+          : undefined,
+        accrualStartDate: createDto.accrualStartDate
+          ? new Date(createDto.accrualStartDate)
+          : undefined,
+        carryOverExpiryDate: createDto.carryOverExpiryDate
+          ? new Date(createDto.carryOverExpiryDate)
+          : undefined,
       },
       user.userId,
     );
@@ -105,10 +108,18 @@ export class LeaveController {
       id,
       {
         ...updateDto,
-        effectiveStartDate: updateDto.effectiveStartDate ? new Date(updateDto.effectiveStartDate) : undefined,
-        effectiveEndDate: updateDto.effectiveEndDate ? new Date(updateDto.effectiveEndDate) : undefined,
-        accrualStartDate: updateDto.accrualStartDate ? new Date(updateDto.accrualStartDate) : undefined,
-        carryOverExpiryDate: updateDto.carryOverExpiryDate ? new Date(updateDto.carryOverExpiryDate) : undefined,
+        effectiveStartDate: updateDto.effectiveStartDate
+          ? new Date(updateDto.effectiveStartDate)
+          : undefined,
+        effectiveEndDate: updateDto.effectiveEndDate
+          ? new Date(updateDto.effectiveEndDate)
+          : undefined,
+        accrualStartDate: updateDto.accrualStartDate
+          ? new Date(updateDto.accrualStartDate)
+          : undefined,
+        carryOverExpiryDate: updateDto.carryOverExpiryDate
+          ? new Date(updateDto.carryOverExpiryDate)
+          : undefined,
       },
       user.userId,
     );
@@ -132,7 +143,9 @@ export class LeaveController {
       {
         ...cloneDto,
         effectiveStartDate: new Date(cloneDto.effectiveStartDate),
-        effectiveEndDate: cloneDto.effectiveEndDate ? new Date(cloneDto.effectiveEndDate) : undefined,
+        effectiveEndDate: cloneDto.effectiveEndDate
+          ? new Date(cloneDto.effectiveEndDate)
+          : undefined,
       },
       user.userId,
     );
@@ -200,7 +213,9 @@ export class LeaveController {
       {
         priority: assignDto.priority,
         effectiveStartDate: new Date(assignDto.effectiveStartDate),
-        effectiveEndDate: assignDto.effectiveEndDate ? new Date(assignDto.effectiveEndDate) : undefined,
+        effectiveEndDate: assignDto.effectiveEndDate
+          ? new Date(assignDto.effectiveEndDate)
+          : undefined,
         assignmentNotes: assignDto.assignmentNotes,
       },
       user.userId,
@@ -250,10 +265,7 @@ export class LeaveController {
   @Delete('assignments/:id')
   @Roles('ADMIN', 'HR')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeAssignment(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async removeAssignment(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     await this.policyService.removeAssignment(id, user.userId);
   }
 }

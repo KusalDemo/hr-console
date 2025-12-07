@@ -13,7 +13,7 @@ import { Invoice } from './invoice.entity';
 
 /**
  * Payment Allocation Entity
- * 
+ *
  * Allocate payments to invoices for payment tracking.
  */
 @Entity('payment_allocations')

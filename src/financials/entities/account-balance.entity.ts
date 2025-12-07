@@ -13,7 +13,7 @@ import { FinancialTransaction } from './financial-transaction.entity';
 
 /**
  * Account Balance Entity
- * 
+ *
  * Cached account balances for performance and reporting.
  */
 @Entity('account_balances')

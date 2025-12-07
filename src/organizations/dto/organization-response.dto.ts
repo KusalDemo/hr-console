@@ -127,4 +127,3 @@ export class OrganizationListResponseDto {
   limit: number;
   totalPages: number;
 }
-

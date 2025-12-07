@@ -32,7 +32,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Timesheets Controller
- * 
+ *
  * REST API endpoints for timesheet management:
  * - Timesheet periods (CRUD)
  * - Timesheets (create, get, submit, approve, reject)
@@ -134,9 +134,7 @@ export class TimesheetsController {
    * POST /timesheets/:id/recalculate
    */
   @Post(':id/recalculate')
-  async recalculateTimesheet(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<TimesheetResponseDto> {
+  async recalculateTimesheet(@Param('id', ParseIntPipe) id: number): Promise<TimesheetResponseDto> {
     return this.timesheetService.recalculateTimesheet(id);
   }
 
@@ -195,4 +193,3 @@ export class TimesheetsController {
     return this.timesheetService.createTimesheetEntry(timesheetId, createDto, user.userId);
   }
 }
-

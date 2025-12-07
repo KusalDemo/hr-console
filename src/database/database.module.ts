@@ -22,4 +22,3 @@ import { QueryPerformanceService } from './services/query-performance.service';
   exports: [TypeOrmModule, QueryPerformanceService],
 })
 export class DatabaseModule {}
-

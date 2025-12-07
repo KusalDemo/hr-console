@@ -50,7 +50,7 @@ export enum WidgetDataSourceType {
 
 /**
  * Dashboard Widget Entity
- * 
+ *
  * Reusable widget definitions for dashboards:
  * - Widget types (charts, tables, KPIs, lists)
  * - Data source configuration

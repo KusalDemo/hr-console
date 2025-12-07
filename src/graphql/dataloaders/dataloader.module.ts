@@ -12,17 +12,15 @@ import { OrganizationDataLoader } from './organization.dataloader';
 
 /**
  * DataLoader Module
- * 
+ *
  * Provides DataLoader instances for batch loading entities
  * to prevent N+1 query problems in GraphQL resolvers.
- * 
+ *
  * DataLoaders are request-scoped and cached per request.
  */
 @Global()
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Employee, Project, Organization]),
-  ],
+  imports: [TypeOrmModule.forFeature([Employee, Project, Organization])],
   providers: [
     EmployeeDataLoader,
     ProjectDataLoader,
@@ -31,10 +29,6 @@ import { OrganizationDataLoader } from './organization.dataloader';
     ProjectRepository,
     OrganizationRepository,
   ],
-  exports: [
-    EmployeeDataLoader,
-    ProjectDataLoader,
-    OrganizationDataLoader,
-  ],
+  exports: [EmployeeDataLoader, ProjectDataLoader, OrganizationDataLoader],
 })
 export class DataLoaderModule {}

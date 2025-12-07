@@ -16,8 +16,7 @@ export class RoleRepository extends Repository<Role> {
    * Find role by ID with permissions
    */
   async findById(id: number, includePermissions = false): Promise<Role | null> {
-    const query = this.createQueryBuilder('role')
-      .where('role.id = :id', { id });
+    const query = this.createQueryBuilder('role').where('role.id = :id', { id });
 
     if (includePermissions) {
       query
@@ -33,8 +32,9 @@ export class RoleRepository extends Repository<Role> {
    * Find role by name
    */
   async findByName(name: string, includePermissions = false): Promise<Role | null> {
-    const query = this.createQueryBuilder('role')
-      .where('LOWER(role.name) = LOWER(:name)', { name });
+    const query = this.createQueryBuilder('role').where('LOWER(role.name) = LOWER(:name)', {
+      name,
+    });
 
     if (includePermissions) {
       query
@@ -66,8 +66,9 @@ export class RoleRepository extends Repository<Role> {
    * Find system roles
    */
   async findSystemRoles(includePermissions = false): Promise<Role[]> {
-    const query = this.createQueryBuilder('role')
-      .where('role.isSystemRole = :isSystem', { isSystem: true });
+    const query = this.createQueryBuilder('role').where('role.isSystemRole = :isSystem', {
+      isSystem: true,
+    });
 
     if (includePermissions) {
       query
@@ -83,8 +84,9 @@ export class RoleRepository extends Repository<Role> {
    * Find custom (non-system) roles
    */
   async findCustomRoles(includePermissions = false): Promise<Role[]> {
-    const query = this.createQueryBuilder('role')
-      .where('role.isSystemRole = :isSystem', { isSystem: false });
+    const query = this.createQueryBuilder('role').where('role.isSystemRole = :isSystem', {
+      isSystem: false,
+    });
 
     if (includePermissions) {
       query
@@ -100,8 +102,7 @@ export class RoleRepository extends Repository<Role> {
    * Find root roles (roles without parent)
    */
   async findRootRoles(includePermissions = false): Promise<Role[]> {
-    const query = this.createQueryBuilder('role')
-      .where('role.parentRoleId IS NULL');
+    const query = this.createQueryBuilder('role').where('role.parentRoleId IS NULL');
 
     if (includePermissions) {
       query
@@ -117,8 +118,9 @@ export class RoleRepository extends Repository<Role> {
    * Find child roles of a parent role
    */
   async findChildRoles(parentRoleId: number, includePermissions = false): Promise<Role[]> {
-    const query = this.createQueryBuilder('role')
-      .where('role.parentRoleId = :parentRoleId', { parentRoleId });
+    const query = this.createQueryBuilder('role').where('role.parentRoleId = :parentRoleId', {
+      parentRoleId,
+    });
 
     if (includePermissions) {
       query
@@ -145,8 +147,9 @@ export class RoleRepository extends Repository<Role> {
    * Check if role name exists
    */
   async nameExists(name: string, excludeId?: number): Promise<boolean> {
-    const query = this.createQueryBuilder('role')
-      .where('LOWER(role.name) = LOWER(:name)', { name });
+    const query = this.createQueryBuilder('role').where('LOWER(role.name) = LOWER(:name)', {
+      name,
+    });
 
     if (excludeId) {
       query.andWhere('role.id != :excludeId', { excludeId });
@@ -185,4 +188,3 @@ export class RoleRepository extends Repository<Role> {
     });
   }
 }
-

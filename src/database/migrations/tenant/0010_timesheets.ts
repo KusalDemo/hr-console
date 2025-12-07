@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Timesheets Migration
- * 
+ *
  * This migration creates:
  * - timesheet_periods table (period definitions: weekly, bi-weekly, monthly, custom)
  * - timesheets table (timesheet instances linking employee, period, status, totals)
  * - timesheet_entries table (manual time entries within timesheets)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Timesheets0000000000010 implements MigrationInterface {
@@ -173,5 +173,4 @@ export class Timesheets0000000000010 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS timesheet_periods CASCADE`);
   }
 }
-
 

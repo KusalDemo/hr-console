@@ -7,4 +7,3 @@ import { CreateDepartmentDto } from './create-department.dto';
  * All fields are optional
  */
 export class UpdateDepartmentDto extends PartialType(CreateDepartmentDto) {}
-

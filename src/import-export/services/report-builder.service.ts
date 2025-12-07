@@ -1,14 +1,10 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { DataSource, SelectQueryBuilder } from 'typeorm';
 import { ExportTemplate } from '../entities/export-template.entity';
 
 /**
  * Report Builder Service
- * 
+ *
  * Builds queries for exports based on:
  * - Entity type
  * - Filters

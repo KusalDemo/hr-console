@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Leads Migration
- * 
+ *
  * This migration creates:
  * - leads table (lead pipeline and conversion tracking with scoring, source attribution, campaign tracking)
  * - lead_scoring_rules table (automated scoring rules for leads)
  * - Full-text search indexes
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Leads0000000000020 implements MigrationInterface {
@@ -285,5 +285,3 @@ export class Leads0000000000020 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS leads CASCADE`);
   }
 }
-
-

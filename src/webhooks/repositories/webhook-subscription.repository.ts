@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { WebhookSubscription, WebhookSubscriptionStatus, WebhookEventType } from '../entities/webhook-subscription.entity';
+import {
+  WebhookSubscription,
+  WebhookSubscriptionStatus,
+  WebhookEventType,
+} from '../entities/webhook-subscription.entity';
 
 /**
  * Webhook Subscription Repository
- * 
+ *
  * Provides custom queries for webhook subscription operations
  */
 @Injectable()

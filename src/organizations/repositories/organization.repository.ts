@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository, Not } from 'typeorm';
-import { Organization, OrganizationType, OrganizationStatus } from '../entities/organization.entity';
+import {
+  Organization,
+  OrganizationType,
+  OrganizationStatus,
+} from '../entities/organization.entity';
 
 /**
  * Organization Repository
  * Provides custom queries for organization operations with tenant filtering
- * 
+ *
  * Note: Organizations are stored in tenant schemas, so all queries
  * are automatically scoped to the current tenant context.
  */
@@ -19,10 +23,7 @@ export class OrganizationRepository extends Repository<Organization> {
    * Find organization by organization key (case-insensitive)
    * Only returns active organizations by default
    */
-  async findByKey(
-    organizationKey: string,
-    includeInactive = false,
-  ): Promise<Organization | null> {
+  async findByKey(organizationKey: string, includeInactive = false): Promise<Organization | null> {
     const where: any = {
       organizationKey: organizationKey.trim().toLowerCase(),
     };
@@ -122,10 +123,7 @@ export class OrganizationRepository extends Repository<Organization> {
    * Find organizations by parent organization ID
    * Only returns active organizations by default
    */
-  async findByParentId(
-    parentId: number,
-    includeInactive = false,
-  ): Promise<Organization[]> {
+  async findByParentId(parentId: number, includeInactive = false): Promise<Organization[]> {
     const where: any = {
       parentOrganizationId: parentId,
     };
@@ -146,10 +144,7 @@ export class OrganizationRepository extends Repository<Organization> {
    * Find organizations by type
    * Only returns active organizations by default
    */
-  async findByType(
-    type: OrganizationType,
-    includeInactive = false,
-  ): Promise<Organization[]> {
+  async findByType(type: OrganizationType, includeInactive = false): Promise<Organization[]> {
     const where: any = {
       organizationType: type,
     };
@@ -204,10 +199,7 @@ export class OrganizationRepository extends Repository<Organization> {
   /**
    * Check if organization key already exists
    */
-  async organizationKeyExists(
-    organizationKey: string,
-    excludeId?: number,
-  ): Promise<boolean> {
+  async organizationKeyExists(organizationKey: string, excludeId?: number): Promise<boolean> {
     const where: any = {
       organizationKey: organizationKey.trim().toLowerCase(),
     };
@@ -237,8 +229,10 @@ export class OrganizationRepository extends Repository<Organization> {
       search?: string;
     },
   ): Promise<{ organizations: Organization[]; total: number }> {
-    const queryBuilder = this.createQueryBuilder('organization')
-      .leftJoinAndSelect('organization.parentOrganization', 'parent');
+    const queryBuilder = this.createQueryBuilder('organization').leftJoinAndSelect(
+      'organization.parentOrganization',
+      'parent',
+    );
 
     if (!includeInactive) {
       queryBuilder.where('organization.status = :status', {
@@ -290,10 +284,7 @@ export class OrganizationRepository extends Repository<Organization> {
   /**
    * Search organizations by name or key
    */
-  async search(
-    searchTerm: string,
-    includeInactive = false,
-  ): Promise<Organization[]> {
+  async search(searchTerm: string, includeInactive = false): Promise<Organization[]> {
     const queryBuilder = this.createQueryBuilder('organization')
       .leftJoinAndSelect('organization.parentOrganization', 'parent')
       .where(
@@ -425,4 +416,3 @@ export class OrganizationRepository extends Repository<Organization> {
     return ancestors.length;
   }
 }
-

@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Dashboard Builder Framework Migration
- * 
+ *
  * This migration creates:
  * - dashboards table for configurable dashboards
  * - dashboard_widgets table for reusable widget definitions
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Dashboards0000000000047 implements MigrationInterface {

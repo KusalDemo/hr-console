@@ -35,7 +35,7 @@ import { DocumentType } from './entities';
 
 /**
  * Documents Controller
- * 
+ *
  * REST API endpoints for document management:
  * - Document CRUD operations
  * - File upload/download
@@ -177,7 +177,12 @@ export class DocumentsController {
     @Body('changeDescription') changeDescription: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<DocumentVersionResponseDto> {
-    return this.documentService.createVersion(id, file, changeDescription || 'New version', user.userId);
+    return this.documentService.createVersion(
+      id,
+      file,
+      changeDescription || 'New version',
+      user.userId,
+    );
   }
 
   /**

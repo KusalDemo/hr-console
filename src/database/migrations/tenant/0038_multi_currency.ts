@@ -2,12 +2,12 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Multi-Currency Support Migration
- * 
+ *
  * This migration creates:
  * - currencies table (currency definitions with ISO codes, symbols, decimal places)
  * - exchange_rates table (historical exchange rates with effective dates, bid/ask rates)
  * - Indexes for performance optimization
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class MultiCurrency0000000000038 implements MigrationInterface {

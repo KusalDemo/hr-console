@@ -13,7 +13,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Employee Leave Policy Assignment Entity
- * 
+ *
  * Links employees to leave policies with:
  * - Multiple policies per employee support
  * - Policy priorities (lower number = higher priority)
@@ -24,7 +24,10 @@ import { Employee } from '../../employees/entities/employee.entity';
 @Index('idx_employee_leave_policy_assignments_employee', ['employeeId'])
 @Index('idx_employee_leave_policy_assignments_policy', ['leavePolicyId'])
 @Index('idx_employee_leave_policy_assignments_active', ['employeeId', 'isActive', 'priority'])
-@Index('idx_employee_leave_policy_assignments_effective', ['effectiveStartDate', 'effectiveEndDate'])
+@Index('idx_employee_leave_policy_assignments_effective', [
+  'effectiveStartDate',
+  'effectiveEndDate',
+])
 export class EmployeeLeavePolicyAssignment {
   @PrimaryGeneratedColumn('increment')
   id: number;

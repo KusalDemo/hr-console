@@ -31,20 +31,20 @@ export interface SubscriptionPlanFeatures {
   sso?: boolean;
   prioritySupport?: boolean;
   customIntegrations?: boolean;
-  
+
   // Limits (null means unlimited)
   maxApiCallsPerMonth?: number | null;
   maxWebhooks?: number | null;
   maxCustomFields?: number | null;
   maxReports?: number | null;
-  
+
   // Additional feature metadata
   [key: string]: any;
 }
 
 /**
  * Subscription Plan Entity - Represents available subscription plans in the admin schema
- * 
+ *
  * Subscription plans define pricing, billing cycles, and feature sets
  * Plans can be active/inactive and have a default plan for new tenants
  * Features are stored as JSONB for flexibility
@@ -199,4 +199,3 @@ export class SubscriptionPlan {
     return this.maxStorageGb === null;
   }
 }
-

@@ -5,10 +5,7 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import {
-  CalendarRepository,
-  CalendarEventRepository,
-} from '../repositories';
+import { CalendarRepository, CalendarEventRepository } from '../repositories';
 import { CalendarConflictService } from './calendar-conflict.service';
 import {
   Calendar,
@@ -26,7 +23,7 @@ import {
 
 /**
  * Calendar Service
- * 
+ *
  * Manages calendars and events with:
  * - Calendar CRUD operations
  * - Event management
@@ -49,10 +46,7 @@ export class CalendarService {
   /**
    * Create a new calendar
    */
-  async createCalendar(
-    createDto: any,
-    createdBy?: number,
-  ): Promise<Calendar> {
+  async createCalendar(createDto: any, createdBy?: number): Promise<Calendar> {
     // Check if default calendar already exists for owner
     if (createDto.isDefault) {
       const existingDefault = await this.calendarRepository.findDefaultCalendar(
@@ -77,10 +71,11 @@ export class CalendarService {
     });
 
     const saved = await this.calendarRepository.save(calendar);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created calendar: ${saved.id} (${saved.calendarName})`);
+    this.logger.log(`Created calendar: ${savedEntity.id} (${savedEntity.calendarName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -99,11 +94,7 @@ export class CalendarService {
   /**
    * Update calendar
    */
-  async updateCalendar(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<Calendar> {
+  async updateCalendar(id: number, updateDto: any, updatedBy?: number): Promise<Calendar> {
     const calendar = await this.calendarRepository.findById(id);
 
     if (!calendar) {
@@ -140,10 +131,7 @@ export class CalendarService {
   /**
    * Create a new calendar event
    */
-  async createEvent(
-    createDto: any,
-    createdBy?: number,
-  ): Promise<CalendarEvent> {
+  async createEvent(createDto: any, createdBy?: number): Promise<CalendarEvent> {
     const calendar = await this.calendarRepository.findById(createDto.calendarId);
 
     if (!calendar) {
@@ -192,9 +180,10 @@ export class CalendarService {
       // Attendees will be saved via cascade
     }
 
-    this.logger.log(`Created calendar event: ${saved.id} (${saved.eventTitle})`);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
+    this.logger.log(`Created calendar event: ${savedEntity.id} (${savedEntity.eventTitle})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -213,11 +202,7 @@ export class CalendarService {
   /**
    * Update event
    */
-  async updateEvent(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<CalendarEvent> {
+  async updateEvent(id: number, updateDto: any, updatedBy?: number): Promise<CalendarEvent> {
     const event = await this.calendarEventRepository.findById(id);
 
     if (!event) {
@@ -278,12 +263,7 @@ export class CalendarService {
     userId?: number,
     calendarIds?: number[],
   ): Promise<CalendarEvent[]> {
-    return this.calendarEventRepository.findByDateRange(
-      startDate,
-      endDate,
-      calendarIds,
-      userId,
-    );
+    return this.calendarEventRepository.findByDateRange(startDate, endDate, calendarIds, userId);
   }
 
   /**
@@ -308,7 +288,7 @@ export class CalendarService {
     }
 
     event.eventStatus = EventStatus.CANCELLED;
-    event.updatedBy = updatedBy;
+    event.updatedBy = updatedBy ?? null;
 
     const saved = await this.calendarEventRepository.save(event);
 
@@ -337,4 +317,3 @@ export class CalendarService {
     return this.calendarConflictService.getConflictDetails(event, userId);
   }
 }
-

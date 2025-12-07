@@ -12,11 +12,11 @@ import { Permission } from './permission.entity';
 
 /**
  * Role Permission Entity - Join table for role-permission relationships
- * 
+ *
  * This entity represents the many-to-many relationship between roles and permissions
  * with additional attributes:
  * - granted: true = grant permission, false = deny permission (explicit denial)
- * 
+ *
  * This allows for fine-grained control where a role can explicitly deny a permission
  * even if it might be inherited from a parent role.
  */
@@ -75,4 +75,3 @@ export class RolePermission {
     return !this.granted;
   }
 }
-

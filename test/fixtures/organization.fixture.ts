@@ -48,3 +48,4 @@ export class OrganizationFixture {
     return organizations;
   }
 }
+

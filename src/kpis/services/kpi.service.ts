@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { KPIDefinitionRepository } from '../repositories/kpi-definition.repository';
 import { KPIMeasurementRepository } from '../repositories/kpi-measurement.repository';
 import {
@@ -17,7 +12,7 @@ import { KPIMeasurement } from '../entities/kpi-measurement.entity';
 
 /**
  * KPI Service
- * 
+ *
  * Manages KPIs with:
  * - KPI CRUD operations
  * - KPI dashboards
@@ -37,7 +32,7 @@ export class KPIService {
    * Create a new KPI definition
    */
   async createKPIDefinition(createDto: any, createdBy?: number): Promise<KPIDefinition> {
-    const kpi = this.kpiDefinitionRepository.create({
+    const kpiData = {
       ...createDto,
       calculationType: createDto.calculationType || KPICalculationType.AVERAGE,
       dataSourceType: createDto.dataSourceType || KPIDataSourceType.DATABASE,
@@ -45,27 +40,27 @@ export class KPIService {
       status: createDto.status || KPIStatus.ACTIVE,
       isActive: true,
       createdBy,
-    });
+    };
+    const kpi = this.kpiDefinitionRepository.create(kpiData);
+    const kpiEntity = Array.isArray(kpi) ? kpi[0] : kpi;
 
     // Calculate next calculation date based on frequency
-    if (kpi.calculationFrequency !== KPIFrequency.REAL_TIME) {
-      kpi.nextCalculationAt = this.calculateNextCalculationDate(kpi.calculationFrequency);
+    if (kpiEntity.calculationFrequency !== KPIFrequency.REAL_TIME) {
+      kpiEntity.nextCalculationAt = this.calculateNextCalculationDate(kpiEntity.calculationFrequency);
     }
 
-    const saved = await this.kpiDefinitionRepository.save(kpi);
+    const saved = await this.kpiDefinitionRepository.save(kpiEntity);
+    const savedKpi = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created KPI definition: ${saved.id} (${saved.kpiName})`);
+    this.logger.log(`Created KPI definition: ${savedKpi.id} (${savedKpi.kpiName})`);
 
-    return saved;
+    return savedKpi;
   }
 
   /**
    * Get KPI definition by ID
    */
-  async getKPIDefinitionById(
-    id: number,
-    includeMeasurements = false,
-  ): Promise<KPIDefinition> {
+  async getKPIDefinitionById(id: number, includeMeasurements = false): Promise<KPIDefinition> {
     const kpi = await this.kpiDefinitionRepository.findById(id, includeMeasurements);
 
     if (!kpi) {
@@ -118,7 +113,7 @@ export class KPIService {
 
     kpi.isActive = false;
     kpi.status = KPIStatus.ARCHIVED;
-    kpi.updatedBy = updatedBy;
+    kpi.updatedBy = updatedBy ?? null;
 
     await this.kpiDefinitionRepository.save(kpi);
 
@@ -138,10 +133,7 @@ export class KPIService {
   /**
    * Get KPIs by category
    */
-  async getKPIsByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<KPIDefinition[]> {
+  async getKPIsByCategory(category: string, organizationId?: number): Promise<KPIDefinition[]> {
     return this.kpiDefinitionRepository.findByCategory(category, organizationId);
   }
 

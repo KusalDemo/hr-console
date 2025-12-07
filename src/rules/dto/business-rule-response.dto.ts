@@ -1,4 +1,9 @@
-import { RuleType, RuleTriggerType, TenantScope, ExecutionMode } from '../entities/business-rule.entity';
+import {
+  RuleType,
+  RuleTriggerType,
+  TenantScope,
+  ExecutionMode,
+} from '../entities/business-rule.entity';
 
 /**
  * Business Rule Response DTO
@@ -28,5 +33,4 @@ export class BusinessRuleResponseDto {
   createdBy: number | null;
   updatedBy: number | null;
 }
-
 

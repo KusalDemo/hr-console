@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Data Import Framework Migration
- * 
+ *
  * This migration creates:
  * - import_templates table (reusable import templates with field mappings, validation rules, transformation rules)
  * - import_jobs table (import job tracking with status, progress, error handling)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class DataImport0000000000033 implements MigrationInterface {

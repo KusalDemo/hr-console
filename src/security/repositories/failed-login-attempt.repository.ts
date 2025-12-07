@@ -14,10 +14,7 @@ export class FailedLoginAttemptRepository extends Repository<FailedLoginAttempt>
   /**
    * Count recent failed attempts for user
    */
-  async countRecentByUser(
-    userId: number,
-    minutes: number = 30,
-  ): Promise<number> {
+  async countRecentByUser(userId: number, minutes: number = 30): Promise<number> {
     const since = new Date(Date.now() - minutes * 60 * 1000);
     return this.count({
       where: {
@@ -30,10 +27,7 @@ export class FailedLoginAttemptRepository extends Repository<FailedLoginAttempt>
   /**
    * Count recent failed attempts by email
    */
-  async countRecentByEmail(
-    email: string,
-    minutes: number = 30,
-  ): Promise<number> {
+  async countRecentByEmail(email: string, minutes: number = 30): Promise<number> {
     const since = new Date(Date.now() - minutes * 60 * 1000);
     return this.count({
       where: {
@@ -46,10 +40,7 @@ export class FailedLoginAttemptRepository extends Repository<FailedLoginAttempt>
   /**
    * Count recent failed attempts by IP
    */
-  async countRecentByIp(
-    ipAddress: string,
-    minutes: number = 30,
-  ): Promise<number> {
+  async countRecentByIp(ipAddress: string, minutes: number = 30): Promise<number> {
     const since = new Date(Date.now() - minutes * 60 * 1000);
     return this.count({
       where: {
@@ -73,3 +64,4 @@ export class FailedLoginAttemptRepository extends Repository<FailedLoginAttempt>
     return result.affected || 0;
   }
 }
+

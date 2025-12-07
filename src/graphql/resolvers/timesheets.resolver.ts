@@ -1,15 +1,8 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  Int,
-  ResolveField,
-  Parent,
-} from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
+import { UseGuards, NotFoundException, BadRequestException } from '@nestjs/common';
 import { TimesheetService } from '../../timesheets/services/timesheet.service';
 import { TimesheetRepository } from '../../timesheets/repositories/timesheet.repository';
+import { TimesheetEntryRepository } from '../../timesheets/repositories/timesheet-entry.repository';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
@@ -55,9 +48,7 @@ export class TimesheetsResolver {
 
     // Check permissions - users can only view their own timesheets unless they have admin/HR role
     if (timesheet.employeeId !== user.userId) {
-      const hasAdminRole = user.roles?.some((role) =>
-        ['ROLE_ADMIN', 'ROLE_HR'].includes(role),
-      );
+      const hasAdminRole = user.roles?.some((role) => ['ROLE_ADMIN', 'ROLE_HR'].includes(role));
       if (!hasAdminRole) {
         throw new Error('Insufficient permissions to view this timesheet');
       }
@@ -72,34 +63,26 @@ export class TimesheetsResolver {
   @Query(() => [Timesheet], { name: 'timesheets' })
   @Roles('ROLE_USER', 'ROLE_ADMIN', 'ROLE_HR')
   async getTimesheets(
+    @CurrentUser() user: JwtPayload,
     @Args('employeeId', { type: () => Int, nullable: true }) employeeId?: number,
     @Args('skip', { type: () => Int, nullable: true, defaultValue: 0 })
-    skip: number,
+    skip: number = 0,
     @Args('take', { type: () => Int, nullable: true, defaultValue: 20 })
-    take: number,
-    @CurrentUser() user: JwtPayload,
+    take: number = 20,
   ): Promise<Timesheet[]> {
     // If no employeeId specified, default to current user's employee record
     const targetEmployeeId = employeeId || user.userId;
 
     // Check permissions - users can only view their own timesheets unless they have admin/HR role
     if (targetEmployeeId !== user.userId) {
-      const hasAdminRole = user.roles?.some((role) =>
-        ['ROLE_ADMIN', 'ROLE_HR'].includes(role),
-      );
+      const hasAdminRole = user.roles?.some((role) => ['ROLE_ADMIN', 'ROLE_HR'].includes(role));
       if (!hasAdminRole) {
         throw new Error('Insufficient permissions to view these timesheets');
       }
     }
 
-    const timesheets = await this.timesheetRepository.findByEmployee(
-      targetEmployeeId,
-      {
-        skip,
-        take: Math.min(take, 100), // Limit to 100 max
-      },
-    );
-    return timesheets;
+    const timesheets = await this.timesheetRepository.findByEmployee(targetEmployeeId);
+    return timesheets.slice(skip, skip + Math.min(take, 100));
   }
 
   /**
@@ -111,12 +94,18 @@ export class TimesheetsResolver {
     @Args('input') input: CreateTimesheetDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<Timesheet> {
-    const timesheetResponse = await this.timesheetService.createTimesheet(
-      input,
+    const timesheetResponse = await this.timesheetService.getOrCreateTimesheet(
+      input.employeeId,
+      input.periodId,
+      new Date(input.date),
       user.userId,
     );
     // Fetch full entity for GraphQL response
-    return this.timesheetRepository.findById(timesheetResponse.id);
+    const timesheet = await this.timesheetRepository.findById(timesheetResponse.id);
+    if (!timesheet) {
+      throw new NotFoundException(`Timesheet with ID ${timesheetResponse.id} not found`);
+    }
+    return timesheet;
   }
 
   /**
@@ -130,7 +119,11 @@ export class TimesheetsResolver {
     @CurrentUser() user: JwtPayload,
   ): Promise<Timesheet> {
     await this.timesheetService.submitTimesheet(id, input, user.userId);
-    return this.timesheetRepository.findById(id);
+    const timesheet = await this.timesheetRepository.findById(id);
+    if (!timesheet) {
+      throw new NotFoundException(`Timesheet with ID ${id} not found`);
+    }
+    return timesheet;
   }
 
   /**
@@ -144,7 +137,11 @@ export class TimesheetsResolver {
     @CurrentUser() user: JwtPayload,
   ): Promise<Timesheet> {
     await this.timesheetService.approveTimesheet(id, input, user.userId);
-    return this.timesheetRepository.findById(id);
+    const timesheet = await this.timesheetRepository.findById(id);
+    if (!timesheet) {
+      throw new NotFoundException(`Timesheet with ID ${id} not found`);
+    }
+    return timesheet;
   }
 
   /**
@@ -158,15 +155,19 @@ export class TimesheetsResolver {
     @CurrentUser() user: JwtPayload,
   ): Promise<Timesheet> {
     await this.timesheetService.rejectTimesheet(id, input, user.userId);
-    return this.timesheetRepository.findById(id);
+    const timesheet = await this.timesheetRepository.findById(id);
+    if (!timesheet) {
+      throw new NotFoundException(`Timesheet with ID ${id} not found`);
+    }
+    return timesheet;
   }
 
   /**
    * Resolve field: employee
    * Uses DataLoader to batch load employees
    */
-  @ResolveField(() => Employee)
-  async employee(@Parent() timesheet: Timesheet): Promise<Employee> {
+  @ResolveField(() => Employee, { nullable: true })
+  async employee(@Parent() timesheet: Timesheet): Promise<Employee | null> {
     return this.employeeDataLoader.load(timesheet.employeeId);
   }
 }
@@ -180,6 +181,7 @@ export class TimesheetsResolver {
 export class TimesheetEntriesResolver {
   constructor(
     private readonly timesheetService: TimesheetService,
+    private readonly timesheetEntryRepository: TimesheetEntryRepository,
     private readonly employeeDataLoader: EmployeeDataLoader,
   ) {}
 
@@ -192,12 +194,22 @@ export class TimesheetEntriesResolver {
     @Args('input') input: CreateTimesheetEntryDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<TimesheetEntry> {
+    if (!input.timesheetId) {
+      throw new BadRequestException('timesheetId is required');
+    }
     const entryResponse = await this.timesheetService.createTimesheetEntry(
+      input.timesheetId,
       input,
       user.userId,
     );
-    // Return the created entry (would need to fetch from repository)
-    // For now, return a partial response
-    return entryResponse as any;
+    // Fetch the entry from repository
+    const entry = await this.timesheetEntryRepository.findOne({
+      where: { id: entryResponse.id },
+      relations: ['timesheet'],
+    });
+    if (!entry) {
+      throw new NotFoundException(`Timesheet entry with ID ${entryResponse.id} not found`);
+    }
+    return entry;
   }
 }

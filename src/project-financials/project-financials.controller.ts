@@ -29,7 +29,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Project Financials Controller
- * 
+ *
  * REST API endpoints for project financial management:
  * - Budget management (CRUD, summaries, alerts)
  * - Cost tracking (CRUD, summaries, profitability)
@@ -217,5 +217,4 @@ export class ProjectFinancialsController {
     return this.projectFinancialService.getVarianceReport(projectId);
   }
 }
-
 

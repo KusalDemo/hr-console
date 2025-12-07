@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Rule Engine Migration
- * 
+ *
  * This migration creates:
  * - business_rules table (rule definitions with conditions and actions)
  * - rule_execution_logs table (audit trail of rule executions)
  * - Indexes for performance
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class RuleEngine0000000000009 implements MigrationInterface {
@@ -161,5 +161,4 @@ export class RuleEngine0000000000009 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE IF EXISTS business_rules CASCADE`);
   }
 }
-
 

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PerformanceReviewCycleRepository } from '../repositories/performance-review-cycle.repository';
 import { PerformanceReviewRepository } from '../repositories/performance-review.repository';
 import { PerformanceReviewFormRepository } from '../repositories/performance-review-form.repository';
@@ -25,7 +20,7 @@ import {
 
 /**
  * Performance Service
- * 
+ *
  * Manages performance reviews with:
  * - Review cycle management
  * - Review workflows
@@ -62,19 +57,17 @@ export class PerformanceService {
     });
 
     const saved = await this.reviewCycleRepository.save(cycle);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created review cycle: ${saved.id} (${saved.cycleName})`);
+    this.logger.log(`Created review cycle: ${savedEntity.id} (${savedEntity.cycleName})`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
    * Get review cycle by ID
    */
-  async getReviewCycleById(
-    id: number,
-    includeReviews = false,
-  ): Promise<PerformanceReviewCycle> {
+  async getReviewCycleById(id: number, includeReviews = false): Promise<PerformanceReviewCycle> {
     const cycle = await this.reviewCycleRepository.findById(id, includeReviews);
 
     if (!cycle) {
@@ -125,7 +118,7 @@ export class PerformanceService {
     }
 
     cycle.status = ReviewCycleStatus.ACTIVE;
-    cycle.updatedBy = updatedBy;
+    cycle.updatedBy = updatedBy ?? null;
 
     return this.reviewCycleRepository.save(cycle);
   }
@@ -151,19 +144,17 @@ export class PerformanceService {
     });
 
     const saved = await this.reviewRepository.save(review);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created performance review: ${saved.id} for employee ${createDto.employeeId}`);
+    this.logger.log(`Created performance review: ${savedEntity.id} for employee ${createDto.employeeId}`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
    * Get performance review by ID
    */
-  async getPerformanceReviewById(
-    id: number,
-    includeForms = false,
-  ): Promise<PerformanceReview> {
+  async getPerformanceReviewById(id: number, includeForms = false): Promise<PerformanceReview> {
     const review = await this.reviewRepository.findById(id, includeForms);
 
     if (!review) {
@@ -202,10 +193,7 @@ export class PerformanceService {
   /**
    * Complete self-assessment
    */
-  async completeSelfAssessment(
-    reviewId: number,
-    updatedBy?: number,
-  ): Promise<PerformanceReview> {
+  async completeSelfAssessment(reviewId: number, updatedBy?: number): Promise<PerformanceReview> {
     const review = await this.reviewRepository.findById(reviewId, true);
 
     if (!review) {
@@ -218,7 +206,7 @@ export class PerformanceService {
 
     review.status = ReviewStatus.MANAGER_REVIEW;
     review.selfAssessmentCompletedAt = new Date();
-    review.updatedBy = updatedBy;
+    review.updatedBy = updatedBy ?? null;
 
     return this.reviewRepository.save(review);
   }
@@ -258,7 +246,7 @@ export class PerformanceService {
     review.managerReviewCompletedAt = new Date();
     review.overallRating = overallRating || review.overallRating;
     review.overallScore = overallScore || review.overallScore;
-    review.updatedBy = updatedBy;
+    review.updatedBy = updatedBy ?? null;
 
     return this.reviewRepository.save(review);
   }
@@ -266,10 +254,7 @@ export class PerformanceService {
   /**
    * Complete review
    */
-  async completeReview(
-    reviewId: number,
-    updatedBy?: number,
-  ): Promise<PerformanceReview> {
+  async completeReview(reviewId: number, updatedBy?: number): Promise<PerformanceReview> {
     const review = await this.reviewRepository.findById(reviewId);
 
     if (!review) {
@@ -282,7 +267,7 @@ export class PerformanceService {
 
     review.status = ReviewStatus.COMPLETED;
     review.reviewCompletedAt = new Date();
-    review.updatedBy = updatedBy;
+    review.updatedBy = updatedBy ?? null;
 
     return this.reviewRepository.save(review);
   }
@@ -290,10 +275,7 @@ export class PerformanceService {
   /**
    * Acknowledge review
    */
-  async acknowledgeReview(
-    reviewId: number,
-    updatedBy?: number,
-  ): Promise<PerformanceReview> {
+  async acknowledgeReview(reviewId: number, updatedBy?: number): Promise<PerformanceReview> {
     const review = await this.reviewRepository.findById(reviewId);
 
     if (!review) {
@@ -305,7 +287,7 @@ export class PerformanceService {
     }
 
     review.employeeAcknowledgedAt = new Date();
-    review.updatedBy = updatedBy;
+    review.updatedBy = updatedBy ?? null;
 
     return this.reviewRepository.save(review);
   }
@@ -325,7 +307,7 @@ export class PerformanceService {
     }
 
     review.improvementPlan = improvementPlan;
-    review.updatedBy = updatedBy;
+    review.updatedBy = updatedBy ?? null;
 
     return this.reviewRepository.save(review);
   }
@@ -344,10 +326,11 @@ export class PerformanceService {
     });
 
     const saved = await this.reviewFormRepository.save(form);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created review form: ${saved.id} for review ${createDto.performanceReviewId}`);
+    this.logger.log(`Created review form: ${savedEntity.id} for review ${createDto.performanceReviewId}`);
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -379,10 +362,7 @@ export class PerformanceService {
   /**
    * Submit review form
    */
-  async submitReviewForm(
-    id: number,
-    updatedBy?: number,
-  ): Promise<PerformanceReviewForm> {
+  async submitReviewForm(id: number, updatedBy?: number): Promise<PerformanceReviewForm> {
     const form = await this.reviewFormRepository.findById(id);
 
     if (!form) {
@@ -395,7 +375,7 @@ export class PerformanceService {
 
     form.formStatus = FormStatus.SUBMITTED;
     form.submittedAt = new Date();
-    form.updatedBy = updatedBy;
+    form.updatedBy = updatedBy ?? null;
 
     const saved = await this.reviewFormRepository.save(form);
 

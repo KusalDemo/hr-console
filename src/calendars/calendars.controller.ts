@@ -23,7 +23,7 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 /**
  * Calendars Controller
- * 
+ *
  * REST API endpoints for calendar and event management:
  * - Calendars (CRUD, visibility management)
  * - Calendar events (CRUD, recurrence, attendees)
@@ -44,10 +44,7 @@ export class CalendarsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async createCalendar(
-    @Body() createDto: CreateCalendarDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createCalendar(@Body() createDto: CreateCalendarDto, @CurrentUser() user: JwtPayload) {
     return this.calendarService.createCalendar(createDto, user.userId);
   }
 
@@ -91,10 +88,7 @@ export class CalendarsController {
     @Body() createDto: CreateCalendarEventDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.calendarService.createEvent(
-      { ...createDto, calendarId },
-      user.userId,
-    );
+    return this.calendarService.createEvent({ ...createDto, calendarId }, user.userId);
   }
 
   /**
@@ -129,10 +123,7 @@ export class CalendarsController {
    */
   @Delete('events/:id')
   @Roles('ADMIN', 'HR', 'EMPLOYEE')
-  async cancelEvent(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async cancelEvent(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     return this.calendarService.cancelEvent(id, user.userId);
   }
 
@@ -186,4 +177,3 @@ export class CalendarsController {
     return this.calendarService.checkEventConflicts(id, userId);
   }
 }
-

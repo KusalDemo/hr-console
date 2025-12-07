@@ -6,7 +6,7 @@ import { Project } from '../../projects/entities/project.entity';
 
 /**
  * Project DataLoader
- * 
+ *
  * Batch loads projects by ID to prevent N+1 queries.
  * Caches results per request.
  */
@@ -21,13 +21,13 @@ export class ProjectDataLoader {
         const projects = await this.projectRepository.find({
           where: { id: In([...ids]) },
         });
-        
+
         // Create a map for quick lookup
         const projectMap = new Map<number, Project>();
         projects.forEach((project) => {
           projectMap.set(project.id, project);
         });
-        
+
         // Return projects in the same order as requested IDs
         return ids.map((id) => projectMap.get(id) || null);
       },
@@ -49,6 +49,7 @@ export class ProjectDataLoader {
    * Load multiple projects by IDs
    */
   async loadMany(ids: number[]): Promise<(Project | null)[]> {
-    return this.loader.loadMany(ids);
+    const results = await this.loader.loadMany(ids);
+    return results.map((result) => (result instanceof Error ? null : result));
   }
 }

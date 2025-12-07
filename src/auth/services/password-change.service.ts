@@ -25,7 +25,7 @@ export class PasswordChangeService {
   /**
    * Change password for tenant admin user
    * Updates password in both tenant schema and admin.tenant_admin table
-   * 
+   *
    * @param tenantKey - Tenant key
    * @param email - User email
    * @param currentPassword - Current password
@@ -41,7 +41,9 @@ export class PasswordChangeService {
     const normalizedTenantKey = tenantKey.trim().toLowerCase();
     const normalizedEmail = email.trim().toLowerCase();
 
-    this.logger.log(`Changing password for tenant admin: ${normalizedEmail} in tenant ${normalizedTenantKey}`);
+    this.logger.log(
+      `Changing password for tenant admin: ${normalizedEmail} in tenant ${normalizedTenantKey}`,
+    );
 
     // Step 1: Find tenant admin in admin schema
     const tenantAdmin = await this.tenantAdminRepository.findByEmailAndTenant(
@@ -87,10 +89,9 @@ export class PasswordChangeService {
       const tenantManager = await this.multiTenantService.getEntityManagerForSchema(schemaName);
 
       // Find user in tenant schema
-      const userResult = await tenantManager.query(
-        `SELECT id FROM users WHERE email = $1`,
-        [normalizedEmail],
-      );
+      const userResult = await tenantManager.query(`SELECT id FROM users WHERE email = $1`, [
+        normalizedEmail,
+      ]);
 
       if (userResult.length > 0) {
         const userId = userResult[0].id;
@@ -119,7 +120,7 @@ export class PasswordChangeService {
 
   /**
    * Change password for regular user (in tenant schema only)
-   * 
+   *
    * @param tenantKey - Tenant key
    * @param email - User email
    * @param currentPassword - Current password
@@ -135,7 +136,9 @@ export class PasswordChangeService {
     const normalizedTenantKey = tenantKey.trim().toLowerCase();
     const normalizedEmail = email.trim().toLowerCase();
 
-    this.logger.log(`Changing password for user: ${normalizedEmail} in tenant ${normalizedTenantKey}`);
+    this.logger.log(
+      `Changing password for user: ${normalizedEmail} in tenant ${normalizedTenantKey}`,
+    );
 
     const schemaName = this.multiTenantService.getTenantSchemaName(normalizedTenantKey);
     const schemaExists = await this.multiTenantService.schemaExists(schemaName);
@@ -195,4 +198,3 @@ export class PasswordChangeService {
     };
   }
 }
-

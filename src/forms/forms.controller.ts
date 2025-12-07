@@ -34,7 +34,7 @@ import { Request } from 'express';
 
 /**
  * Forms Controller
- * 
+ *
  * REST API endpoints for form management:
  * - Form definition CRUD operations
  * - Form templates and cloning
@@ -85,7 +85,7 @@ export class FormsController {
   @Get(':id/public')
   async getPublishedForm(@Param('id', ParseIntPipe) id: number) {
     const form = await this.formService.getFormDefinitionById(id);
-    
+
     if (form.status !== FormStatus.PUBLISHED) {
       throw new ForbiddenException('Form is not published');
     }
@@ -131,10 +131,7 @@ export class FormsController {
   @Post(':id/publish')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'HR', 'MANAGER')
-  async publishForm(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async publishForm(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     return this.formService.publishForm(id, user.userId);
   }
 
@@ -145,10 +142,7 @@ export class FormsController {
   @Post(':id/archive')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'HR', 'MANAGER')
-  async archiveForm(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async archiveForm(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     return this.formService.archiveForm(id, user.userId);
   }
 

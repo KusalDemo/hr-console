@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { LeaveRequestRepository } from '../repositories/leave-request.repository';
 import { LeaveRequest, LeaveRequestStatus } from '../entities/leave-request.entity';
 import { WorkflowService } from '../../workflows/services/workflow.service';
@@ -11,7 +6,7 @@ import { Employee } from '../../employees/entities/employee.entity';
 
 /**
  * Leave Request Service
- * 
+ *
  * Manages leave requests with:
  * - Leave request CRUD operations
  * - Workflow integration for approvals
@@ -61,7 +56,7 @@ export class LeaveRequestService {
           workflowKey: 'leave_request_approval',
           entityType: 'leave_request',
           entityId: saved.id,
-          workflowData: {
+          initialData: {
             employeeId: createDto.employeeId,
             startDate: createDto.startDate.toISOString(),
             endDate: createDto.endDate.toISOString(),
@@ -84,7 +79,7 @@ export class LeaveRequestService {
       await this.leaveRequestRepository.save(saved);
     } catch (error) {
       this.logger.warn(
-        `Failed to start approval workflow for leave request ${saved.id}: ${error.message}`,
+        `Failed to start approval workflow for leave request ${saved.id}: ${error instanceof Error ? error.message : String(error)}`,
       );
       // Continue without workflow
     }
@@ -146,7 +141,7 @@ export class LeaveRequestService {
       leaveRequest.notes = updateDto.notes;
     }
 
-    leaveRequest.updatedBy = updatedBy;
+    leaveRequest.updatedBy = updatedBy ?? null;
 
     const saved = await this.leaveRequestRepository.save(leaveRequest);
 
@@ -170,7 +165,7 @@ export class LeaveRequestService {
     }
 
     leaveRequest.status = LeaveRequestStatus.CANCELLED;
-    leaveRequest.updatedBy = cancelledBy;
+    leaveRequest.updatedBy = cancelledBy ?? null;
 
     // Cancel workflow if exists
     if (leaveRequest.requestMetadata?.workflowInstanceId) {
@@ -181,7 +176,7 @@ export class LeaveRequestService {
           cancelledBy,
         );
       } catch (error) {
-        this.logger.warn(`Failed to cancel workflow: ${error.message}`);
+        this.logger.warn(`Failed to cancel workflow: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
 

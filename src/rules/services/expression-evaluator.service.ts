@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 /**
  * Expression Evaluator Service
- * 
+ *
  * Evaluates JSONPath-like expressions for rule conditions.
  * Supports field path access, operators, and logical operations.
  */
@@ -211,5 +211,4 @@ export class ExpressionEvaluatorService {
     return 0;
   }
 }
-
 

@@ -24,3 +24,4 @@ export class CreateDataSubjectRequestDto {
   @IsString()
   description?: string;
 }
+

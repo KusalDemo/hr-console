@@ -8,10 +8,7 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  DashboardType,
-  DashboardLayoutType,
-} from '../entities/dashboard.entity';
+import { DashboardType, DashboardLayoutType } from '../entities/dashboard.entity';
 
 /**
  * Create Dashboard DTO

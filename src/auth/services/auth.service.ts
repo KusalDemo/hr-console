@@ -134,12 +134,7 @@ export class AuthService {
 
     // Try regular user authentication
     try {
-      const result = await this.userAuthService.login(
-        tenantKey,
-        loginDto,
-        ipAddress,
-        userAgent,
-      );
+      const result = await this.userAuthService.login(tenantKey, loginDto, ipAddress, userAgent);
 
       this.logger.log(
         `Regular user login successful: tenant=${tenantKey}, email=${loginDto.email}, userId=${result.user.userId}, ip=${ipAddress || 'unknown'}`,
@@ -172,7 +167,11 @@ export class AuthService {
 
     // Try tenant admin MFA first
     try {
-      return await this.tenantAdminAuthService.verifyMfa(tenantKey.trim().toLowerCase(), email, mfaCode);
+      return await this.tenantAdminAuthService.verifyMfa(
+        tenantKey.trim().toLowerCase(),
+        email,
+        mfaCode,
+      );
     } catch (error) {
       // If tenant admin MFA fails, try regular user MFA
       // Note: Regular user MFA verification would need to be implemented in UserAuthService
@@ -227,4 +226,3 @@ export class AuthService {
     }
   }
 }
-

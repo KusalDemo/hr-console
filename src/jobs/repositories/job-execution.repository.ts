@@ -4,7 +4,7 @@ import { JobExecution, ExecutionStatus } from '../entities/job-execution.entity'
 
 /**
  * Job Execution Repository
- * 
+ *
  * Custom repository methods for job execution queries.
  */
 @Injectable()
@@ -26,10 +26,7 @@ export class JobExecutionRepository extends Repository<JobExecution> {
   /**
    * Find executions by job queue
    */
-  async findByJobQueue(
-    jobQueueId: number,
-    limit?: number,
-  ): Promise<JobExecution[]> {
+  async findByJobQueue(jobQueueId: number, limit?: number): Promise<JobExecution[]> {
     const query = this.createQueryBuilder('execution')
       .where('execution.jobQueueId = :jobQueueId', { jobQueueId })
       .orderBy('execution.startedAt', 'DESC');
@@ -44,10 +41,7 @@ export class JobExecutionRepository extends Repository<JobExecution> {
   /**
    * Find executions by status
    */
-  async findByStatus(
-    status: ExecutionStatus,
-    jobQueueId?: number,
-  ): Promise<JobExecution[]> {
+  async findByStatus(status: ExecutionStatus, jobQueueId?: number): Promise<JobExecution[]> {
     const query = this.createQueryBuilder('execution')
       .where('execution.status = :status', { status })
       .orderBy('execution.startedAt', 'DESC');
@@ -127,8 +121,7 @@ export class JobExecutionRepository extends Repository<JobExecution> {
 
     executions.forEach((execution) => {
       // Count by status
-      statistics.byStatus[execution.status] =
-        (statistics.byStatus[execution.status] || 0) + 1;
+      statistics.byStatus[execution.status] = (statistics.byStatus[execution.status] || 0) + 1;
 
       // Calculate average duration
       if (execution.durationMs) {
@@ -149,3 +142,4 @@ export class JobExecutionRepository extends Repository<JobExecution> {
     return statistics;
   }
 }
+

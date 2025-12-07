@@ -1,14 +1,6 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import {
-  IntegrationRepository,
-  IntegrationHealthRepository,
-} from '../repositories';
+import { IntegrationRepository, IntegrationHealthRepository } from '../repositories';
 import {
   Integration,
   IntegrationType,
@@ -27,7 +19,7 @@ import {
 
 /**
  * Integration Service
- * 
+ *
  * Manages external system integrations:
  * - OAuth2 integrations (Slack, Google, etc.)
  * - API key integrations
@@ -268,7 +260,10 @@ export class IntegrationService {
   /**
    * Test integration connection
    */
-  async testIntegration(id: number, testDto?: TestIntegrationDto): Promise<{
+  async testIntegration(
+    id: number,
+    testDto?: TestIntegrationDto,
+  ): Promise<{
     success: boolean;
     responseTime: number;
     message: string;
@@ -282,7 +277,7 @@ export class IntegrationService {
     const startTime = Date.now();
     let success = false;
     let message = 'Connection test completed';
-    let httpStatusCode: number | null = null;
+    const httpStatusCode: number | null = null;
     let errorMessage: string | null = null;
 
     try {

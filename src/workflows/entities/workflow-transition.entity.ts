@@ -21,7 +21,7 @@ export enum TriggerType {
 
 /**
  * Workflow Transition Entity
- * 
+ *
  * Tracks all state transitions in a workflow instance.
  * Provides audit trail of workflow state changes.
  */
@@ -96,5 +96,4 @@ export class WorkflowTransition {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;
 }
-
 

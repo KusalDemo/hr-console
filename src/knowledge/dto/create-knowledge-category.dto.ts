@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  MinLength,
-  MaxLength,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, MinLength, MaxLength, IsObject } from 'class-validator';
 
 /**
  * Create Knowledge Category DTO

@@ -32,7 +32,7 @@ export enum ResourceStatus {
 
 /**
  * Resource Entity
- * 
+ *
  * Bookable resources (rooms, equipment, vehicles) with capacity, availability, and location mapping.
  */
 @Entity('resources')

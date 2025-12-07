@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 
 /**
  * Query Performance Service
- * 
+ *
  * Provides functionality to monitor and analyze database query performance:
  * - Index usage statistics
  * - Slow query detection
@@ -21,13 +21,15 @@ export class QueryPerformanceService {
    * Get index usage statistics
    * Returns information about index usage, including unused indexes
    */
-  async getIndexUsageStats(): Promise<{
-    indexName: string;
-    tableName: string;
-    indexScans: number;
-    tuplesRead: number;
-    tuplesFetched: number;
-  }[]> {
+  async getIndexUsageStats(): Promise<
+    {
+      indexName: string;
+      tableName: string;
+      indexScans: number;
+      tuplesRead: number;
+      tuplesFetched: number;
+    }[]
+  > {
     const query = `
       SELECT
         schemaname,
@@ -59,11 +61,13 @@ export class QueryPerformanceService {
   /**
    * Get unused indexes (indexes that have never been scanned)
    */
-  async getUnusedIndexes(): Promise<{
-    tableName: string;
-    indexName: string;
-    indexSize: string;
-  }[]> {
+  async getUnusedIndexes(): Promise<
+    {
+      tableName: string;
+      indexName: string;
+      indexSize: string;
+    }[]
+  > {
     const query = `
       SELECT
         schemaname,
@@ -94,15 +98,17 @@ export class QueryPerformanceService {
    * Get table statistics
    * Returns information about table sizes, row counts, and last vacuum/analyze
    */
-  async getTableStats(): Promise<{
-    tableName: string;
-    rowCount: number;
-    tableSize: string;
-    indexesSize: string;
-    totalSize: string;
-    lastVacuum: Date | null;
-    lastAnalyze: Date | null;
-  }[]> {
+  async getTableStats(): Promise<
+    {
+      tableName: string;
+      rowCount: number;
+      tableSize: string;
+      indexesSize: string;
+      totalSize: string;
+      lastVacuum: Date | null;
+      lastAnalyze: Date | null;
+    }[]
+  > {
     const query = `
       SELECT
         schemaname,
@@ -140,14 +146,16 @@ export class QueryPerformanceService {
    * Get slow queries from pg_stat_statements
    * Note: Requires pg_stat_statements extension to be enabled
    */
-  async getSlowQueries(limit: number = 20): Promise<{
-    query: string;
-    calls: number;
-    totalTime: number;
-    meanTime: number;
-    minTime: number;
-    maxTime: number;
-  }[]> {
+  async getSlowQueries(limit: number = 20): Promise<
+    {
+      query: string;
+      calls: number;
+      totalTime: number;
+      meanTime: number;
+      minTime: number;
+      maxTime: number;
+    }[]
+  > {
     const query = `
       SELECT
         query,
@@ -186,7 +194,10 @@ export class QueryPerformanceService {
    * Analyze query execution plan
    * Returns the execution plan for a given query
    */
-  async analyzeQueryPlan(sql: string, params: any[] = []): Promise<{
+  async analyzeQueryPlan(
+    sql: string,
+    params: any[] = [],
+  ): Promise<{
     plan: string;
     executionTime: number;
   }> {
@@ -211,12 +222,14 @@ export class QueryPerformanceService {
    * Get index recommendations based on missing indexes
    * Analyzes sequential scans that could benefit from indexes
    */
-  async getIndexRecommendations(): Promise<{
-    tableName: string;
-    columnName: string;
-    sequentialScans: number;
-    recommendation: string;
-  }[]> {
+  async getIndexRecommendations(): Promise<
+    {
+      tableName: string;
+      columnName: string;
+      sequentialScans: number;
+      recommendation: string;
+    }[]
+  > {
     const query = `
       SELECT
         schemaname,
@@ -256,12 +269,14 @@ export class QueryPerformanceService {
    * Get table bloat information
    * Identifies tables that may need VACUUM
    */
-  async getTableBloat(): Promise<{
-    tableName: string;
-    tableSize: string;
-    bloatSize: string;
-    bloatPercent: number;
-  }[]> {
+  async getTableBloat(): Promise<
+    {
+      tableName: string;
+      tableSize: string;
+      bloatSize: string;
+      bloatPercent: number;
+    }[]
+  > {
     const query = `
       SELECT
         schemaname,
@@ -301,12 +316,14 @@ export class QueryPerformanceService {
    * Get index size information
    * Returns size of all indexes
    */
-  async getIndexSizes(): Promise<{
-    tableName: string;
-    indexName: string;
-    indexSize: string;
-    indexSizeBytes: number;
-  }[]> {
+  async getIndexSizes(): Promise<
+    {
+      tableName: string;
+      indexName: string;
+      indexSize: string;
+      indexSizeBytes: number;
+    }[]
+  > {
     const query = `
       SELECT
         schemaname,
@@ -350,10 +367,9 @@ export class QueryPerformanceService {
     ];
 
     try {
-      const [totalResult, activeResult, idleResult, maxResult] =
-        await Promise.all(
-          queries.map((q) => this.dataSource.query(q)),
-        );
+      const [totalResult, activeResult, idleResult, maxResult] = await Promise.all(
+        queries.map((q) => this.dataSource.query(q)),
+      );
 
       return {
         totalConnections: parseInt(totalResult[0].total, 10),
@@ -444,3 +460,4 @@ export class QueryPerformanceService {
     }
   }
 }
+

@@ -28,7 +28,7 @@ import { RuleType, RuleTriggerType } from './entities/business-rule.entity';
 
 /**
  * Rules Controller
- * 
+ *
  * REST API endpoints for business rule management:
  * - Rule definitions (CRUD)
  * - Rule execution
@@ -97,5 +97,4 @@ export class RulesController {
     return this.ruleEngineService.executeRules(executeDto, user.userId);
   }
 }
-
 

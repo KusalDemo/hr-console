@@ -3,12 +3,12 @@ import { TenantContext } from '../../tenants/services/tenant-context.service';
 
 /**
  * Tenant Query Builder Helper
- * 
+ *
  * Provides utilities for building tenant-scoped queries:
  * - Automatic schema prefixing for raw SQL queries
  * - Organization filtering helpers
  * - Common query patterns
- * 
+ *
  * This utility makes it easier to build queries that are automatically
  * scoped to the current tenant schema and organization context.
  */
@@ -39,10 +39,7 @@ export class TenantQueryBuilder {
    * @param tableName - Table name
    * @returns Fully qualified table name
    */
-  static getQualifiedTableName(
-    context: TenantContext | null,
-    tableName: string,
-  ): string {
+  static getQualifiedTableName(context: TenantContext | null, tableName: string): string {
     const schemaName = context?.schemaName || 'admin';
     return this.prefixTable(schemaName, tableName);
   }
@@ -53,7 +50,7 @@ export class TenantQueryBuilder {
    * @param baseQuery - Base SQL query with {tableName} placeholders
    * @param tableNames - Map of placeholder names to actual table names
    * @returns SQL query with schema-prefixed table names
-   * 
+   *
    * @example
    * const query = TenantQueryBuilder.buildQuery(
    *   context,
@@ -73,10 +70,7 @@ export class TenantQueryBuilder {
     // Replace all table name placeholders with schema-prefixed names
     for (const [placeholder, tableName] of Object.entries(tableNames)) {
       const qualifiedName = this.prefixTable(schemaName, tableName);
-      query = query.replace(
-        new RegExp(`\\{${placeholder}\\}`, 'g'),
-        qualifiedName,
-      );
+      query = query.replace(new RegExp(`\\{${placeholder}\\}`, 'g'), qualifiedName);
     }
 
     return query;
@@ -85,7 +79,7 @@ export class TenantQueryBuilder {
   /**
    * Add organization filter to a query builder
    * Filters results to only include data from the specified organization(s)
-   * 
+   *
    * @param queryBuilder - TypeORM SelectQueryBuilder
    * @param context - Tenant context
    * @param organizationId - Organization ID to filter by (optional)
@@ -93,7 +87,7 @@ export class TenantQueryBuilder {
    * @param tableAlias - Table alias for the main entity (default: 'entity')
    * @param organizationColumn - Column name for organization_id (default: 'organization_id')
    * @returns Query builder with organization filter applied
-   * 
+   *
    * @example
    * const queryBuilder = repository.createQueryBuilder('user');
    * TenantQueryBuilder.filterByOrganization(
@@ -120,10 +114,9 @@ export class TenantQueryBuilder {
     // Build organization filter
     if (organizationIds && organizationIds.length > 0) {
       // Filter by multiple organizations
-      queryBuilder.andWhere(
-        `${tableAlias}.${organizationColumn} IN (:...organizationIds)`,
-        { organizationIds },
-      );
+      queryBuilder.andWhere(`${tableAlias}.${organizationColumn} IN (:...organizationIds)`, {
+        organizationIds,
+      });
     } else if (organizationId) {
       // Filter by single organization
       queryBuilder.andWhere(`${tableAlias}.${organizationColumn} = :organizationId`, {
@@ -137,14 +130,14 @@ export class TenantQueryBuilder {
   /**
    * Add organization membership filter to a query builder
    * Filters results based on user's organization memberships
-   * 
+   *
    * @param queryBuilder - TypeORM SelectQueryBuilder
    * @param context - Tenant context
    * @param userId - User ID
    * @param tableAlias - Table alias for the main entity (default: 'entity')
    * @param organizationColumn - Column name for organization_id (default: 'organization_id')
    * @returns Query builder with organization membership filter applied
-   * 
+   *
    * @example
    * const queryBuilder = repository.createQueryBuilder('employee');
    * TenantQueryBuilder.filterByUserOrganizations(
@@ -169,20 +162,19 @@ export class TenantQueryBuilder {
     const schemaName = context.schemaName;
 
     // Join with organization_memberships to filter by user's organizations
-    queryBuilder
-      .innerJoin(
-        `${this.prefixTable(schemaName, 'organization_memberships')}`,
-        'om',
-        `om.organization_id = ${tableAlias}.${organizationColumn} AND om.user_id = :userId AND om.left_at IS NULL`,
-        { userId },
-      );
+    queryBuilder.innerJoin(
+      `${this.prefixTable(schemaName, 'organization_memberships')}`,
+      'om',
+      `om.organization_id = ${tableAlias}.${organizationColumn} AND om.user_id = :userId AND om.left_at IS NULL`,
+      { userId },
+    );
 
     return queryBuilder;
   }
 
   /**
    * Build a query that filters by tenant and optionally by organization
-   * 
+   *
    * @param queryBuilder - TypeORM SelectQueryBuilder
    * @param context - Tenant context
    * @param options - Query options
@@ -235,7 +227,7 @@ export class TenantQueryBuilder {
 
   /**
    * Build a raw SQL query with organization filter
-   * 
+   *
    * @param context - Tenant context
    * @param baseQuery - Base SQL query
    * @param tableNames - Map of placeholder names to actual table names
@@ -257,7 +249,9 @@ export class TenantQueryBuilder {
 
     // Add organization filter if provided
     if (organizationIds && organizationIds.length > 0) {
-      const placeholders = organizationIds.map((_, index) => `$${parameters.length + index + 1}`).join(', ');
+      const placeholders = organizationIds
+        .map((_, index) => `$${parameters.length + index + 1}`)
+        .join(', ');
       query += ` AND ${organizationColumn} IN (${placeholders})`;
       parameters.push(...organizationIds);
     } else if (organizationId) {
@@ -270,7 +264,7 @@ export class TenantQueryBuilder {
 
   /**
    * Build a count query with tenant and organization filters
-   * 
+   *
    * @param context - Tenant context
    * @param tableName - Table name
    * @param organizationId - Organization ID to filter by (optional)
@@ -295,7 +289,9 @@ export class TenantQueryBuilder {
 
     // Add organization filter
     if (organizationIds && organizationIds.length > 0) {
-      const placeholders = organizationIds.map((_, index) => `$${parameters.length + index + 1}`).join(', ');
+      const placeholders = organizationIds
+        .map((_, index) => `$${parameters.length + index + 1}`)
+        .join(', ');
       query += ` AND ${organizationColumn} IN (${placeholders})`;
       parameters.push(...organizationIds);
     } else if (organizationId) {
@@ -313,7 +309,7 @@ export class TenantQueryBuilder {
 
   /**
    * Build a paginated query with tenant and organization filters
-   * 
+   *
    * @param context - Tenant context
    * @param tableName - Table name
    * @param options - Query options
@@ -364,7 +360,9 @@ export class TenantQueryBuilder {
 
     // Add organization filter
     if (organizationIds && organizationIds.length > 0) {
-      const placeholders = organizationIds.map((_, index) => `$${parameters.length + index + 1}`).join(', ');
+      const placeholders = organizationIds
+        .map((_, index) => `$${parameters.length + index + 1}`)
+        .join(', ');
       query += ` AND ${organizationColumn} IN (${placeholders})`;
       parameters.push(...organizationIds);
     } else if (organizationId) {
@@ -392,4 +390,3 @@ export class TenantQueryBuilder {
     };
   }
 }
-

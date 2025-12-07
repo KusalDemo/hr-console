@@ -11,7 +11,7 @@ import { ProjectRepository } from '../projects/repositories/project.repository';
 
 /**
  * Tasks Module
- * 
+ *
  * Provides hierarchical task management with:
  * - Parent-child relationships (sub-tasks)
  * - Task dependencies (FS, SS, FF, SF)
@@ -22,14 +22,7 @@ import { ProjectRepository } from '../projects/repositories/project.repository';
  * - Integration with time tracking
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Task,
-      TaskDependency,
-      Employee,
-      Project,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([Task, TaskDependency, Employee, Project])],
   controllers: [TasksController],
   providers: [
     TaskService,
@@ -38,12 +31,7 @@ import { ProjectRepository } from '../projects/repositories/project.repository';
     EmployeeRepository,
     ProjectRepository,
   ],
-  exports: [
-    TaskService,
-    TaskRepository,
-    TaskDependencyRepository,
-  ],
+  exports: [TaskService, TaskRepository, TaskDependencyRepository],
 })
 export class TasksModule {}
-
 

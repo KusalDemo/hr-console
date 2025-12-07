@@ -5,21 +5,16 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import {
-  WebhookSubscriptionRepository,
-  WebhookEventRepository,
-} from '../repositories';
+import { WebhookSubscriptionRepository, WebhookEventRepository } from '../repositories';
 import {
   WebhookSubscription,
   WebhookSubscriptionStatus,
   WebhookEventType,
 } from '../entities/webhook-subscription.entity';
-import {
-  WebhookEvent,
-  WebhookEventStatus,
-} from '../entities/webhook-event.entity';
+import { WebhookEvent, WebhookEventStatus } from '../entities/webhook-event.entity';
 import { OrganizationRepository } from '../../organizations/repositories/organization.repository';
 import { AuditLogService } from '../../activities/services/audit-log.service';
+import { ActorType } from '../../activities/entities/audit-log.entity';
 import {
   CreateWebhookSubscriptionDto,
   UpdateWebhookSubscriptionDto,
@@ -30,7 +25,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Webhook Service
- * 
+ *
  * Manages webhook subscriptions and event publishing:
  * - Subscription CRUD operations
  * - Event publishing
@@ -86,8 +81,8 @@ export class WebhookService {
     // Log activity
     await this.auditLogService.createAuditLog({
       activityType: 'WEBHOOK_SUBSCRIPTION_CREATED',
-      actorType: 'USER',
-      actorId: createdBy || null,
+      actorType: ActorType.USER,
+      actorId: createdBy,
       targetType: 'WEBHOOK_SUBSCRIPTION',
       targetId: saved.id,
       organizationId: saved.organizationId,
@@ -177,10 +172,10 @@ export class WebhookService {
     const saved = await this.subscriptionRepository.save(subscription);
 
     // Log activity
-    await this.activityLogService.logActivity({
+    await this.auditLogService.createAuditLog({
       activityType: 'WEBHOOK_SUBSCRIPTION_UPDATED',
-      actorType: 'USER',
-      actorId: updatedBy || null,
+      actorType: ActorType.USER,
+      actorId: updatedBy,
       targetType: 'WEBHOOK_SUBSCRIPTION',
       targetId: saved.id,
       organizationId: saved.organizationId,
@@ -203,8 +198,8 @@ export class WebhookService {
     // Log activity before deletion
     await this.auditLogService.createAuditLog({
       activityType: 'WEBHOOK_SUBSCRIPTION_DELETED',
-      actorType: 'USER',
-      actorId: deletedBy || null,
+      actorType: ActorType.USER,
+      actorId: deletedBy,
       targetType: 'WEBHOOK_SUBSCRIPTION',
       targetId: subscription.id,
       organizationId: subscription.organizationId,
@@ -255,9 +250,7 @@ export class WebhookService {
 
     if (events.length > 0) {
       await this.eventRepository.save(events);
-      this.logger.log(
-        `Published ${events.length} webhook event(s) for event type: ${eventType}`,
-      );
+      this.logger.log(`Published ${events.length} webhook event(s) for event type: ${eventType}`);
     }
   }
 
@@ -305,7 +298,7 @@ export class WebhookService {
   private matchesFilters(payload: Record<string, any>, filters: Record<string, any>): boolean {
     for (const [key, value] of Object.entries(filters)) {
       const payloadValue = this.getNestedValue(payload, key);
-      
+
       if (Array.isArray(value)) {
         // Check if payload value is in the filter array
         if (!value.includes(payloadValue)) {

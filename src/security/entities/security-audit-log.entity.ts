@@ -51,7 +51,7 @@ export enum RiskLevel {
 
 /**
  * Security Audit Log Entity
- * 
+ *
  * Security-specific audit logging for compliance and monitoring.
  */
 @Entity('security_audit_logs')
@@ -99,3 +99,4 @@ export class SecurityAuditLog {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;
 }
+

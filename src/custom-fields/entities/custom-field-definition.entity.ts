@@ -33,10 +33,10 @@ export enum CustomFieldType {
 
 /**
  * Custom Field Definition Entity
- * 
+ *
  * Defines custom fields that can be attached to any entity type.
  * Supports various field types with validation rules, permissions, and conditional visibility.
- * 
+ *
  * Features:
  * - Field-level permissions (view, edit)
  * - Validation rules (required, min, max, pattern, etc.)
@@ -210,10 +210,8 @@ export class CustomFieldDefinition {
    */
   supportsOptions(): boolean {
     return (
-      this.fieldType === CustomFieldType.DROPDOWN ||
-      this.fieldType === CustomFieldType.MULTI_SELECT
+      this.fieldType === CustomFieldType.DROPDOWN || this.fieldType === CustomFieldType.MULTI_SELECT
     );
   }
 }
-
 

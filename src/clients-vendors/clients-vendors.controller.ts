@@ -29,7 +29,7 @@ import {
 
 /**
  * Clients Vendors Controller
- * 
+ *
  * REST API endpoints for client and vendor management:
  * - Clients (CRUD, search, contract tracking)
  * - Vendors (CRUD, search, performance tracking)
@@ -51,10 +51,7 @@ export class ClientsVendorsController {
   @Post('clients')
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'SALES', 'EMPLOYEE')
-  async createClient(
-    @Body() createDto: CreateClientDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createClient(@Body() createDto: CreateClientDto, @CurrentUser() user: JwtPayload) {
     return this.clientVendorService.createClient(createDto, user.userId);
   }
 
@@ -93,10 +90,7 @@ export class ClientsVendorsController {
   @Post('vendors')
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'PROCUREMENT', 'EMPLOYEE')
-  async createVendor(
-    @Body() createDto: CreateVendorDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createVendor(@Body() createDto: CreateVendorDto, @CurrentUser() user: JwtPayload) {
     return this.clientVendorService.createVendor(createDto, user.userId);
   }
 
@@ -135,10 +129,7 @@ export class ClientsVendorsController {
   @Post('purchase-orders')
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'PROCUREMENT', 'EMPLOYEE')
-  async createPurchaseOrder(
-    @Body() createDto: any,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createPurchaseOrder(@Body() createDto: any, @CurrentUser() user: JwtPayload) {
     return this.clientVendorService.createPurchaseOrder(createDto, user.userId);
   }
 
@@ -197,10 +188,7 @@ export class ClientsVendorsController {
   @Post('contracts')
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR', 'SALES', 'LEGAL')
-  async createContract(
-    @Body() createDto: any,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createContract(@Body() createDto: any, @CurrentUser() user: JwtPayload) {
     return this.clientVendorService.createContract(createDto, user.userId);
   }
 
@@ -216,4 +204,3 @@ export class ClientsVendorsController {
     return this.clientVendorService.getContractById(id, includeRelations);
   }
 }
-

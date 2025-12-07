@@ -13,12 +13,7 @@ import {
   ParseBoolPipe,
 } from '@nestjs/common';
 import { LeadService } from './services/lead.service';
-import {
-  CreateLeadDto,
-  UpdateLeadDto,
-  LeadResponseDto,
-  ConvertLeadToContactDto,
-} from './dto';
+import { CreateLeadDto, UpdateLeadDto, LeadResponseDto, ConvertLeadToContactDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -28,7 +23,7 @@ import { LeadStatus, LeadSource, LeadPriority } from './entities/lead.entity';
 
 /**
  * Leads Controller
- * 
+ *
  * REST API endpoints for lead management:
  * - Leads (CRUD, search, pipeline tracking)
  * - Lead scoring and routing
@@ -61,7 +56,8 @@ export class LeadsController {
   @Get(':id')
   async getLead(
     @Param('id', ParseIntPipe) id: number,
-    @Query('includeConvertedContact', new ParseBoolPipe({ optional: true })) includeConvertedContact = false,
+    @Query('includeConvertedContact', new ParseBoolPipe({ optional: true }))
+    includeConvertedContact = false,
   ): Promise<LeadResponseDto> {
     return this.leadService.getLeadById(id, includeConvertedContact);
   }
@@ -71,9 +67,7 @@ export class LeadsController {
    * GET /leads/number/:number
    */
   @Get('number/:number')
-  async getLeadByNumber(
-    @Param('number') number: string,
-  ): Promise<LeadResponseDto> {
+  async getLeadByNumber(@Param('number') number: string): Promise<LeadResponseDto> {
     return this.leadService.getLeadByNumber(number);
   }
 
@@ -239,8 +233,8 @@ export class LeadsController {
   async updateLeadStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body('status') status: LeadStatus,
-    @Body('reason') reason?: string,
     @CurrentUser() user: JwtPayload,
+    @Body('reason') reason?: string,
   ): Promise<LeadResponseDto> {
     return this.leadService.updateLeadStatus(id, status, reason, user.userId);
   }
@@ -251,9 +245,7 @@ export class LeadsController {
    */
   @Post(':id/recalculate-score')
   @Roles('ADMIN', 'HR', 'SALES')
-  async recalculateLeadScore(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<LeadResponseDto> {
+  async recalculateLeadScore(@Param('id', ParseIntPipe) id: number): Promise<LeadResponseDto> {
     return this.leadService.recalculateLeadScore(id);
   }
 
@@ -284,5 +276,3 @@ export class LeadsController {
     return this.leadService.archiveLead(id, user.userId);
   }
 }
-
-

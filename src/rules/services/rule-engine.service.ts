@@ -8,11 +8,7 @@ import {
 import { BusinessRuleRepository } from '../repositories/business-rule.repository';
 import { RuleExecutionLogRepository } from '../repositories/rule-execution-log.repository';
 import { ExpressionEvaluatorService } from './expression-evaluator.service';
-import {
-  BusinessRule,
-  RuleExecutionLog,
-  ExecutionStatus,
-} from '../entities';
+import { BusinessRule, RuleExecutionLog, ExecutionStatus } from '../entities';
 import {
   CreateBusinessRuleDto,
   UpdateBusinessRuleDto,
@@ -37,7 +33,7 @@ export interface RuleExecutionResult {
 
 /**
  * Rule Engine Service
- * 
+ *
  * Evaluates and executes business rules.
  * Supports JSONPath-like expression evaluation, event-driven rules, and scheduled rules.
  */
@@ -116,7 +112,7 @@ export class RuleEngineService {
 
     // Update business rule
     Object.assign(businessRule, updateDto);
-    businessRule.updatedBy = updatedBy;
+    businessRule.updatedBy = updatedBy ?? null;
 
     const saved = await this.businessRuleRepository.save(businessRule);
 
@@ -183,12 +179,21 @@ export class RuleEngineService {
       }
 
       try {
-        const result = await this.executeRule(rule, entityType, entityId, triggerEvent, entityData, triggeredBy);
+        const result = await this.executeRule(
+          rule,
+          entityType,
+          entityId,
+          triggerEvent,
+          entityData,
+          triggeredBy,
+        );
         results.push(result);
 
         // If rule has stopOnMatch and conditions matched, stop processing
         if (rule.stopOnMatch && result.conditionMatched && result.actionsExecuted) {
-          this.logger.log(`Rule ${rule.ruleKey} matched and stopOnMatch=true, stopping rule evaluation`);
+          this.logger.log(
+            `Rule ${rule.ruleKey} matched and stopOnMatch=true, stopping rule evaluation`,
+          );
           break;
         }
       } catch (error) {
@@ -225,7 +230,10 @@ export class RuleEngineService {
 
     try {
       // Evaluate conditions
-      const conditionResult = this.expressionEvaluator.evaluateConditions(rule.conditions, entityData);
+      const conditionResult = this.expressionEvaluator.evaluateConditions(
+        rule.conditions,
+        entityData,
+      );
       logEntry.conditionResult = conditionResult;
 
       const result: RuleExecutionResult = {
@@ -245,7 +253,13 @@ export class RuleEngineService {
         result.status = 'CONDITION_NOT_MET';
       } else {
         // Conditions matched, execute actions
-        const actionOutput = await this.executeActions(rule.actions, entityData, rule, entityType, entityId);
+        const actionOutput = await this.executeActions(
+          rule.actions,
+          entityData,
+          rule,
+          entityType,
+          entityId,
+        );
         logEntry.actionsExecuted = true;
         logEntry.outputData = actionOutput;
         logEntry.executionStatus = ExecutionStatus.SUCCESS;
@@ -271,7 +285,7 @@ export class RuleEngineService {
       logEntry.executionTimeMs = executionTime;
       logEntry.executionStatus = ExecutionStatus.FAILED;
       logEntry.errorMessage = error instanceof Error ? error.message : String(error);
-      logEntry.errorStackTrace = error instanceof Error ? error.stack : undefined;
+      logEntry.errorStackTrace = error instanceof Error ? error.stack ?? null : null;
 
       await this.ruleExecutionLogRepository.save(logEntry);
 
@@ -319,14 +333,26 @@ export class RuleEngineService {
     if (Array.isArray(actions)) {
       // Array of actions
       for (const action of actions) {
-        const actionResult = await this.executeSingleAction(action, entityData, rule, entityType, entityId);
+        const actionResult = await this.executeSingleAction(
+          action,
+          entityData,
+          rule,
+          entityType,
+          entityId,
+        );
         if (actionResult) {
           Object.assign(output, actionResult);
         }
       }
     } else {
       // Single action object
-      const actionResult = await this.executeSingleAction(actions, entityData, rule, entityType, entityId);
+      const actionResult = await this.executeSingleAction(
+        actions,
+        entityData,
+        rule,
+        entityType,
+        entityId,
+      );
       if (actionResult) {
         Object.assign(output, actionResult);
       }
@@ -525,4 +551,3 @@ export class RuleEngineService {
     };
   }
 }
-

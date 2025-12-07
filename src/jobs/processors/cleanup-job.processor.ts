@@ -4,7 +4,7 @@ import { JobQueue } from '../entities/job-queue.entity';
 
 /**
  * Cleanup Job Processor
- * 
+ *
  * Processes cleanup jobs (old data, expired records, etc.).
  */
 @Injectable()
@@ -13,10 +13,7 @@ export class CleanupJobProcessor extends BaseJobProcessor {
     super(CleanupJobProcessor.name);
   }
 
-  async process(
-    jobData: Record<string, any>,
-    job: JobQueue,
-  ): Promise<any> {
+  async process(jobData: Record<string, any>, job: JobQueue): Promise<any> {
     this.validateJobData(jobData, ['cleanupType']);
 
     this.logger.log(`Processing cleanup job: ${job.id}`);
@@ -33,3 +30,4 @@ export class CleanupJobProcessor extends BaseJobProcessor {
     };
   }
 }
+

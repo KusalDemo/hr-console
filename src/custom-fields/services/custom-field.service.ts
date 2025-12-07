@@ -7,10 +7,7 @@ import {
 } from '@nestjs/common';
 import { CustomFieldDefinitionRepository } from '../repositories/custom-field-definition.repository';
 import { CustomFieldValueRepository } from '../repositories/custom-field-value.repository';
-import {
-  CustomFieldDefinition,
-  CustomFieldType,
-} from '../entities/custom-field-definition.entity';
+import { CustomFieldDefinition, CustomFieldType } from '../entities/custom-field-definition.entity';
 import { CustomFieldValue } from '../entities/custom-field-value.entity';
 import {
   CreateCustomFieldDefinitionDto,
@@ -23,7 +20,7 @@ import {
 
 /**
  * Custom Field Service
- * 
+ *
  * Provides business logic for custom field operations:
  * - Field definition management (create, update, delete)
  * - Field value management (set, get, validate)
@@ -115,7 +112,7 @@ export class CustomFieldService {
 
     // Update field definition
     Object.assign(fieldDefinition, updateDto);
-    fieldDefinition.updatedBy = updatedBy;
+    fieldDefinition.updatedBy = updatedBy ?? null;
 
     const saved = await this.fieldDefinitionRepository.save(fieldDefinition);
 
@@ -200,7 +197,7 @@ export class CustomFieldService {
       // Update existing value
       fieldValue = existingValue;
       this.setValueOnEntity(fieldValue, createDto, fieldDefinition);
-      fieldValue.updatedBy = createdBy;
+      fieldValue.updatedBy = createdBy ?? null;
     } else {
       // Create new value
       fieldValue = this.fieldValueRepository.create({
@@ -267,7 +264,7 @@ export class CustomFieldService {
     // Validate value
     this.validateFieldValue(fieldValue, fieldDefinition);
 
-    fieldValue.updatedBy = updatedBy;
+    fieldValue.updatedBy = updatedBy ?? null;
 
     const saved = await this.fieldValueRepository.save(fieldValue);
 
@@ -329,9 +326,7 @@ export class CustomFieldService {
         dto.fieldType === CustomFieldType.MULTI_SELECT) &&
       (!dto.options || dto.options.length === 0)
     ) {
-      throw new BadRequestException(
-        `${dto.fieldType} field type requires options to be provided`,
-      );
+      throw new BadRequestException(`${dto.fieldType} field type requires options to be provided`);
     }
 
     // Validate reference type has reference config
@@ -348,10 +343,7 @@ export class CustomFieldService {
   /**
    * Validate field value against definition
    */
-  private validateFieldValue(
-    value: CustomFieldValue,
-    definition: CustomFieldDefinition,
-  ): void {
+  private validateFieldValue(value: CustomFieldValue, definition: CustomFieldDefinition): void {
     // Check required
     if (definition.isRequired) {
       const actualValue = this.getValueFromEntity(value, definition);
@@ -430,9 +422,7 @@ export class CustomFieldService {
           const validValues = definition.options.map((opt) => opt.value);
           if (definition.fieldType === CustomFieldType.DROPDOWN) {
             if (!validValues.includes(String(actualValue))) {
-              throw new BadRequestException(
-                `Value must be one of: ${validValues.join(', ')}`,
-              );
+              throw new BadRequestException(`Value must be one of: ${validValues.join(', ')}`);
             }
           } else {
             // Multi-select
@@ -493,9 +483,7 @@ export class CustomFieldService {
   /**
    * Map entity to response DTO
    */
-  private mapToDefinitionResponse(
-    field: CustomFieldDefinition,
-  ): CustomFieldDefinitionResponseDto {
+  private mapToDefinitionResponse(field: CustomFieldDefinition): CustomFieldDefinitionResponseDto {
     return {
       id: field.id,
       entityType: field.entityType,
@@ -553,5 +541,3 @@ export class CustomFieldService {
     };
   }
 }
-
-

@@ -9,4 +9,3 @@ export class RefreshTokenDto {
   @IsString({ message: 'Refresh token must be a string' })
   refreshToken: string;
 }
-

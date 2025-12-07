@@ -8,7 +8,7 @@ import {
 
 /**
  * Equipment Maintenance Repository
- * 
+ *
  * Custom repository methods for equipment maintenance queries.
  */
 @Injectable()
@@ -43,10 +43,7 @@ export class EquipmentMaintenanceRepository extends Repository<EquipmentMaintena
   /**
    * Find scheduled maintenance
    */
-  async findScheduled(
-    organizationId?: number,
-    beforeDate?: Date,
-  ): Promise<EquipmentMaintenance[]> {
+  async findScheduled(organizationId?: number, beforeDate?: Date): Promise<EquipmentMaintenance[]> {
     const maintenanceDate = beforeDate || new Date();
     const query = this.createQueryBuilder('maintenance')
       .leftJoin('maintenance.equipment', 'equipment')

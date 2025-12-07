@@ -2,11 +2,11 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Rate Limiting & API Throttling Migration
- * 
+ *
  * This migration creates:
  * - rate_limit_configs table for configurable rate limit rules
  * - Indexes for performance
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class RateLimiting0000000000046 implements MigrationInterface {

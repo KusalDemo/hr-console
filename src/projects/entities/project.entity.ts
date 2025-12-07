@@ -9,6 +9,7 @@ import {
   OneToMany,
   Index,
 } from 'typeorm';
+import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
 import { Organization } from '../../organizations/entities/organization.entity';
 import { ProjectPhase } from './project-phase.entity';
 import { ProjectTeam } from './project-team.entity';
@@ -46,9 +47,13 @@ export enum ProjectHealth {
   CRITICAL = 'CRITICAL', // Critical issues
 }
 
+registerEnumType(ProjectStatus, { name: 'ProjectStatus' });
+registerEnumType(ProjectPriority, { name: 'ProjectPriority' });
+registerEnumType(ProjectHealth, { name: 'ProjectHealth' });
+
 /**
  * Project Entity
- * 
+ *
  * Comprehensive project tracking with:
  * - Budgets and financial tracking
  * - Hierarchical structure (parent-child projects)
@@ -58,6 +63,7 @@ export enum ProjectHealth {
  * - Time/cost estimates
  * - Integration with time tracking and task management
  */
+@ObjectType()
 @Entity('projects')
 @Index('idx_projects_key', ['projectKey'])
 @Index('idx_projects_organization', ['organizationId'])
@@ -67,24 +73,28 @@ export enum ProjectHealth {
 @Index('idx_projects_archived', ['isArchived'])
 @Index('idx_projects_health', ['health'])
 export class Project {
+  @Field(() => Int)
   @PrimaryGeneratedColumn('increment')
   id: number;
 
   /**
    * Unique project key (e.g., PROJ-2024-001)
    */
+  @Field(() => String)
   @Column({ name: 'project_key', type: 'varchar', length: 128, unique: true, nullable: false })
   projectKey: string;
 
   /**
    * Project name
    */
+  @Field(() => String)
   @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
 
   /**
    * Project description
    */
+  @Field(() => String, { nullable: true })
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
@@ -98,6 +108,7 @@ export class Project {
   @JoinColumn({ name: 'organization_id' })
   organization: Organization;
 
+  @Field(() => Int)
   @Column({ name: 'organization_id', type: 'bigint', nullable: false })
   organizationId: number;
 
@@ -416,5 +427,3 @@ export class Project {
     return Math.min(100, (this.actualHours / totalHours) * 100);
   }
 }
-
-

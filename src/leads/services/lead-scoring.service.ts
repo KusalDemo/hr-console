@@ -9,7 +9,7 @@ import { Lead } from '../entities/lead.entity';
 
 /**
  * Lead Scoring Service
- * 
+ *
  * Automated lead scoring based on scoring rules.
  * Evaluates rules and calculates lead scores.
  */
@@ -17,17 +17,12 @@ import { Lead } from '../entities/lead.entity';
 export class LeadScoringService {
   private readonly logger = new Logger(LeadScoringService.name);
 
-  constructor(
-    private readonly leadScoringRuleRepository: LeadScoringRuleRepository,
-  ) {}
+  constructor(private readonly leadScoringRuleRepository: LeadScoringRuleRepository) {}
 
   /**
    * Calculate lead score based on active scoring rules
    */
-  async calculateLeadScore(
-    lead: Lead,
-    organizationId?: number,
-  ): Promise<number> {
+  async calculateLeadScore(lead: Lead, organizationId?: number): Promise<number> {
     // Get active scoring rules
     const rules = await this.leadScoringRuleRepository.findActive(organizationId);
 
@@ -58,16 +53,12 @@ export class LeadScoringService {
     for (const rule of rules) {
       if (rule.maxScoreCap !== null && newScore > rule.maxScoreCap) {
         newScore = rule.maxScoreCap;
-        this.logger.debug(
-          `Score capped at ${rule.maxScoreCap} by rule "${rule.ruleName}"`,
-        );
+        this.logger.debug(`Score capped at ${rule.maxScoreCap} by rule "${rule.ruleName}"`);
       }
 
       if (rule.minScoreFloor !== null && newScore < rule.minScoreFloor) {
         newScore = rule.minScoreFloor;
-        this.logger.debug(
-          `Score floored at ${rule.minScoreFloor} by rule "${rule.ruleName}"`,
-        );
+        this.logger.debug(`Score floored at ${rule.minScoreFloor} by rule "${rule.ruleName}"`);
       }
     }
 
@@ -82,10 +73,7 @@ export class LeadScoringService {
   /**
    * Evaluate a scoring rule against a lead
    */
-  private async evaluateRule(
-    rule: LeadScoringRule,
-    lead: Lead,
-  ): Promise<boolean> {
+  private async evaluateRule(rule: LeadScoringRule, lead: Lead): Promise<boolean> {
     switch (rule.ruleType) {
       case ScoringRuleType.FIELD_MATCH:
         return this.evaluateFieldMatch(rule, lead);
@@ -154,7 +142,9 @@ export class LeadScoringService {
 
       case ScoringRuleOperator.NOT_IN:
         const notInValues = Array.isArray(ruleValue) ? ruleValue : String(ruleValue).split(',');
-        return !notInValues.some((v) => String(v).toLowerCase() === String(fieldValue).toLowerCase());
+        return !notInValues.some(
+          (v) => String(v).toLowerCase() === String(fieldValue).toLowerCase(),
+        );
 
       default:
         return false;
@@ -279,9 +269,10 @@ export class LeadScoringService {
    * Get field value from lead entity
    */
   private getFieldValue(lead: Lead, fieldName: string): any {
-    // Direct property access
-    if (lead[fieldName] !== undefined) {
-      return lead[fieldName];
+    // Direct property access with type assertion
+    const leadAny = lead as any;
+    if (leadAny[fieldName] !== undefined) {
+      return leadAny[fieldName];
     }
 
     // Check metadata
@@ -327,5 +318,3 @@ export class LeadScoringService {
     return { processed: 0, updated: 0 };
   }
 }
-
-

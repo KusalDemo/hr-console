@@ -36,7 +36,7 @@ export enum NotificationPriority {
 
 /**
  * Notification Entity
- * 
+ *
  * Stores notification history and delivery tracking:
  * - Notification content
  * - Recipient information
@@ -305,8 +305,7 @@ export class Notification {
    */
   canRetry(): boolean {
     return (
-      this.status === NotificationStatus.FAILED &&
-      this.deliveryAttempts < this.maxDeliveryAttempts
+      this.status === NotificationStatus.FAILED && this.deliveryAttempts < this.maxDeliveryAttempts
     );
   }
 

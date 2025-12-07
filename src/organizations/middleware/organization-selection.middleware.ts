@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NestMiddleware,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NestMiddleware, Logger, BadRequestException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { Reflector } from '@nestjs/core';
 import { OrganizationContextService } from '../services/organization-context.service';
@@ -14,17 +9,17 @@ import { IS_PUBLIC_KEY } from '../../auth/decorators/public.decorator';
 
 /**
  * Organization Selection Middleware
- * 
+ *
  * Extracts organization information from request headers/query and sets organization context.
  * This middleware should run after TenantContextMiddleware but before route handlers.
- * 
+ *
  * Features:
  * - Extracts organization from headers (X-Organization, X-Organization-Key) or query parameters
  * - Sets organization context using AsyncLocalStorage
  * - Validates organization access
  * - Handles default organization selection
  * - Skips public routes and super admin requests
- * 
+ *
  * Priority for organization resolution:
  * 1. X-Organization header (organization ID)
  * 2. X-Organization-Key header (organization key)
@@ -122,13 +117,14 @@ export class OrganizationSelectionMiddleware implements NestMiddleware {
   /**
    * Extract organization ID from request
    * Checks headers first, then query parameters
-   * 
+   *
    * @param req - Express request object
    * @returns Organization ID as string or undefined
    */
   private extractOrganizationIdFromRequest(req: Request): string | undefined {
     // Priority 1: X-Organization header
-    const headerValue = req.headers[OrganizationSelectionMiddleware.ORGANIZATION_HEADER.toLowerCase()];
+    const headerValue =
+      req.headers[OrganizationSelectionMiddleware.ORGANIZATION_HEADER.toLowerCase()];
     if (headerValue) {
       const value = Array.isArray(headerValue) ? headerValue[0] : headerValue;
       if (value && value.trim()) {
@@ -152,15 +148,14 @@ export class OrganizationSelectionMiddleware implements NestMiddleware {
   /**
    * Extract organization key from request
    * Checks headers first, then query parameters
-   * 
+   *
    * @param req - Express request object
    * @returns Organization key or undefined
    */
   private extractOrganizationKeyFromRequest(req: Request): string | undefined {
     // Priority 1: X-Organization-Key header
-    const headerValue = req.headers[
-      OrganizationSelectionMiddleware.ORGANIZATION_KEY_HEADER.toLowerCase()
-    ];
+    const headerValue =
+      req.headers[OrganizationSelectionMiddleware.ORGANIZATION_KEY_HEADER.toLowerCase()];
     if (headerValue) {
       const value = Array.isArray(headerValue) ? headerValue[0] : headerValue;
       if (value && value.trim()) {
@@ -206,7 +201,7 @@ export class OrganizationSelectionMiddleware implements NestMiddleware {
    * Note: This is a simplified check. The actual public route check
    * should be done by the JWT guard, but we check here to avoid
    * unnecessary processing.
-   * 
+   *
    * @param req - Express request object
    * @returns True if route is public
    */
@@ -219,6 +214,4 @@ export class OrganizationSelectionMiddleware implements NestMiddleware {
     return publicPaths.some((publicPath) => path.startsWith(publicPath));
   }
 }
-
-
 

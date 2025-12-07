@@ -6,7 +6,11 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { OrganizationRepository } from '../repositories/organization.repository';
-import { Organization, OrganizationType, OrganizationStatus } from '../entities/organization.entity';
+import {
+  Organization,
+  OrganizationType,
+  OrganizationStatus,
+} from '../entities/organization.entity';
 import {
   CreateOrganizationDto,
   UpdateOrganizationDto,
@@ -20,14 +24,14 @@ import { OrganizationStatsService } from './organization-stats.service';
 
 /**
  * Organization Service
- * 
+ *
  * Provides business logic for organization operations:
  * - Organization creation
  * - Organization updates
  * - Organization deletion (soft delete)
  * - List organizations for tenant
  * - Set default organization
- * 
+ *
  * This service handles all organization management operations
  * within the current tenant context.
  */
@@ -43,7 +47,7 @@ export class OrganizationsService {
 
   /**
    * Create a new organization
-   * 
+   *
    * @param createDto - Organization creation data
    * @param createdBy - User ID who created the organization (optional)
    * @returns Created organization information
@@ -116,10 +120,7 @@ export class OrganizationsService {
       );
 
       // Re-throw known exceptions
-      if (
-        error instanceof BadRequestException ||
-        error instanceof ConflictException
-      ) {
+      if (error instanceof BadRequestException || error instanceof ConflictException) {
         throw error;
       }
 
@@ -132,7 +133,7 @@ export class OrganizationsService {
 
   /**
    * Get all organizations with pagination and filtering
-   * 
+   *
    * @param page - Page number (default: 1)
    * @param limit - Items per page (default: 10)
    * @param includeInactive - Include inactive organizations (default: false)
@@ -166,9 +167,7 @@ export class OrganizationsService {
       filters,
     );
 
-    const organizations = result.organizations.map((org) =>
-      this.toOrganizationResponse(org),
-    );
+    const organizations = result.organizations.map((org) => this.toOrganizationResponse(org));
 
     const totalPages = Math.ceil(result.total / limit);
 
@@ -183,7 +182,7 @@ export class OrganizationsService {
 
   /**
    * Get organization by ID
-   * 
+   *
    * @param id - Organization ID
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Organization details
@@ -232,7 +231,7 @@ export class OrganizationsService {
 
   /**
    * Get organization by organization key
-   * 
+   *
    * @param organizationKey - Organization key
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Organization details
@@ -256,7 +255,7 @@ export class OrganizationsService {
 
   /**
    * Update organization
-   * 
+   *
    * @param id - Organization ID
    * @param updateDto - Organization update data
    * @param updatedBy - User ID who updated the organization (optional)
@@ -370,7 +369,7 @@ export class OrganizationsService {
   /**
    * Delete organization (soft delete)
    * Marks organization as ARCHIVED status
-   * 
+   *
    * @param id - Organization ID
    * @param deletedBy - User ID who deleted the organization (optional)
    * @returns Deleted organization
@@ -412,7 +411,7 @@ export class OrganizationsService {
   /**
    * Set default organization
    * Unsets other default organizations and sets the specified one as default
-   * 
+   *
    * @param id - Organization ID
    * @param updatedBy - User ID who updated the organization (optional)
    * @returns Updated organization
@@ -448,7 +447,7 @@ export class OrganizationsService {
 
   /**
    * Get default organization
-   * 
+   *
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns Default organization or null if none exists
    */
@@ -464,23 +463,19 @@ export class OrganizationsService {
 
   /**
    * Get root organizations (organizations with no parent)
-   * 
+   *
    * @param includeInactive - Include inactive organizations (default: false)
    * @returns List of root organizations
    */
-  async getRootOrganizations(
-    includeInactive = false,
-  ): Promise<OrganizationResponseDto[]> {
-    const organizations = await this.organizationRepository.findRootOrganizations(
-      includeInactive,
-    );
+  async getRootOrganizations(includeInactive = false): Promise<OrganizationResponseDto[]> {
+    const organizations = await this.organizationRepository.findRootOrganizations(includeInactive);
 
     return organizations.map((org) => this.toOrganizationResponse(org));
   }
 
   /**
    * Validate organization key is unique
-   * 
+   *
    * @param organizationKey - Organization key to validate
    * @throws ConflictException if organization key already exists
    */
@@ -489,24 +484,19 @@ export class OrganizationsService {
     const exists = await this.organizationRepository.organizationKeyExists(normalizedKey);
 
     if (exists) {
-      throw new ConflictException(
-        `Organization with key '${normalizedKey}' already exists`,
-      );
+      throw new ConflictException(`Organization with key '${normalizedKey}' already exists`);
     }
   }
 
   /**
    * Validate parent organization exists and is valid
-   * 
+   *
    * @param parentId - Parent organization ID
    * @param excludeId - Organization ID to exclude from validation (for updates)
    * @throws NotFoundException if parent not found
    * @throws BadRequestException if parent is invalid
    */
-  private async validateParentOrganization(
-    parentId: number,
-    excludeId?: number,
-  ): Promise<void> {
+  private async validateParentOrganization(parentId: number, excludeId?: number): Promise<void> {
     const parent = await this.organizationRepository.findByIdIncludeInactive(parentId);
 
     if (!parent) {
@@ -514,16 +504,12 @@ export class OrganizationsService {
     }
 
     if (parent.status !== OrganizationStatus.ACTIVE) {
-      throw new BadRequestException(
-        'Parent organization must be active',
-      );
+      throw new BadRequestException('Parent organization must be active');
     }
 
     // Prevent setting organization as its own parent
     if (excludeId && parentId === excludeId) {
-      throw new BadRequestException(
-        'Organization cannot be its own parent',
-      );
+      throw new BadRequestException('Organization cannot be its own parent');
     }
 
     // Prevent circular references (check if parent is a descendant)
@@ -566,7 +552,7 @@ export class OrganizationsService {
 
   /**
    * Validate organization update operation
-   * 
+   *
    * @param organization - Current organization entity
    * @param updateDto - Update data
    */
@@ -616,4 +602,3 @@ export class OrganizationsService {
     };
   }
 }
-

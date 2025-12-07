@@ -36,7 +36,7 @@ export enum TransactionStatus {
 
 /**
  * Financial Transaction Entity
- * 
+ *
  * Journal entries with double-entry bookkeeping support.
  * Supports invoices, payments, receipts, adjustments, and transfers.
  */
@@ -55,7 +55,13 @@ export class FinancialTransaction {
   /**
    * Transaction number (e.g., "JE-2024-001")
    */
-  @Column({ name: 'transaction_number', type: 'varchar', length: 64, unique: true, nullable: false })
+  @Column({
+    name: 'transaction_number',
+    type: 'varchar',
+    length: 64,
+    unique: true,
+    nullable: false,
+  })
   transactionNumber: string;
 
   /**

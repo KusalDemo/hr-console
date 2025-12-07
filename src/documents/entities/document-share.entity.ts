@@ -24,7 +24,7 @@ export enum SharePermission {
 
 /**
  * Document Share Entity
- * 
+ *
  * Manages document sharing and permissions:
  * - Shared with users/roles
  * - Permission levels

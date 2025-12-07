@@ -1,20 +1,9 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { EquipmentRepository } from '../repositories/equipment.repository';
 import { EquipmentAssignmentRepository } from '../repositories/equipment-assignment.repository';
 import { EquipmentMaintenanceRepository } from '../repositories/equipment-maintenance.repository';
-import {
-  Equipment,
-  EquipmentStatus,
-} from '../entities/equipment.entity';
-import {
-  EquipmentAssignment,
-  AssignmentStatus,
-} from '../entities/equipment-assignment.entity';
+import { Equipment, EquipmentStatus } from '../entities/equipment.entity';
+import { EquipmentAssignment, AssignmentStatus } from '../entities/equipment-assignment.entity';
 import {
   EquipmentMaintenance,
   MaintenanceType,
@@ -23,7 +12,7 @@ import {
 
 /**
  * Equipment Service
- * 
+ *
  * Manages equipment with:
  * - Equipment CRUD operations
  * - Assignment tracking
@@ -50,7 +39,9 @@ export class EquipmentService {
     // Check if asset tag already exists
     const existing = await this.equipmentRepository.findByAssetTag(createDto.assetTag);
     if (existing) {
-      throw new BadRequestException(`Equipment with asset tag ${createDto.assetTag} already exists`);
+      throw new BadRequestException(
+        `Equipment with asset tag ${createDto.assetTag} already exists`,
+      );
     }
 
     const equipment = this.equipmentRepository.create({
@@ -61,10 +52,11 @@ export class EquipmentService {
     });
 
     const saved = await this.equipmentRepository.save(equipment);
+    const savedEquipment = Array.isArray(saved) ? saved[0] : saved;
 
-    this.logger.log(`Created equipment: ${saved.id} (${saved.assetTag})`);
+    this.logger.log(`Created equipment: ${savedEquipment.id} (${savedEquipment.assetTag})`);
 
-    return saved;
+    return savedEquipment;
   }
 
   /**
@@ -104,11 +96,7 @@ export class EquipmentService {
   /**
    * Update equipment
    */
-  async updateEquipment(
-    id: number,
-    updateDto: any,
-    updatedBy?: number,
-  ): Promise<Equipment> {
+  async updateEquipment(id: number, updateDto: any, updatedBy?: number): Promise<Equipment> {
     const equipment = await this.equipmentRepository.findById(id);
 
     if (!equipment) {
@@ -119,7 +107,9 @@ export class EquipmentService {
     if (updateDto.assetTag && updateDto.assetTag !== equipment.assetTag) {
       const existing = await this.equipmentRepository.findByAssetTag(updateDto.assetTag);
       if (existing) {
-        throw new BadRequestException(`Equipment with asset tag ${updateDto.assetTag} already exists`);
+        throw new BadRequestException(
+          `Equipment with asset tag ${updateDto.assetTag} already exists`,
+        );
       }
     }
 
@@ -150,7 +140,7 @@ export class EquipmentService {
     }
 
     equipment.equipmentStatus = status;
-    equipment.updatedBy = updatedBy;
+    equipment.updatedBy = updatedBy ?? null;
 
     return this.equipmentRepository.save(equipment);
   }
@@ -271,9 +261,9 @@ export class EquipmentService {
     assignment.assignmentStatus = AssignmentStatus.RETURNED;
     assignment.actualReturnDate = new Date();
     assignment.returnedById = returnedById;
-    assignment.conditionAtReturn = returnData.conditionAtReturn;
-    assignment.returnNotes = returnData.returnNotes;
-    assignment.updatedBy = updatedBy;
+    assignment.conditionAtReturn = returnData.conditionAtReturn ?? null;
+    assignment.returnNotes = returnData.returnNotes ?? null;
+    assignment.updatedBy = updatedBy ?? null;
 
     const saved = await this.assignmentRepository.save(assignment);
 
@@ -376,8 +366,8 @@ export class EquipmentService {
     maintenance.maintenanceCost = completionData.maintenanceCost || maintenance.maintenanceCost;
     maintenance.partsReplaced = completionData.partsReplaced || maintenance.partsReplaced;
     maintenance.maintenanceNotes = completionData.maintenanceNotes || maintenance.maintenanceNotes;
-    maintenance.nextMaintenanceDate = completionData.nextMaintenanceDate;
-    maintenance.updatedBy = updatedBy;
+    maintenance.nextMaintenanceDate = completionData.nextMaintenanceDate ?? null;
+    maintenance.updatedBy = updatedBy ?? null;
 
     const saved = await this.maintenanceRepository.save(maintenance);
 
@@ -385,7 +375,8 @@ export class EquipmentService {
     const equipment = await this.equipmentRepository.findById(maintenance.equipmentId);
     if (equipment) {
       equipment.lastMaintenanceDate = new Date();
-      equipment.nextMaintenanceDate = completionData.nextMaintenanceDate || equipment.nextMaintenanceDate;
+      equipment.nextMaintenanceDate =
+        completionData.nextMaintenanceDate || equipment.nextMaintenanceDate;
       if (equipment.equipmentStatus === EquipmentStatus.MAINTENANCE) {
         equipment.equipmentStatus = EquipmentStatus.AVAILABLE;
       }
@@ -454,7 +445,7 @@ export class EquipmentService {
     if (maxConcurrentBookings !== undefined) {
       equipment.maxConcurrentBookings = maxConcurrentBookings;
     }
-    equipment.updatedBy = updatedBy;
+    equipment.updatedBy = updatedBy ?? null;
 
     return this.equipmentRepository.save(equipment);
   }

@@ -7,15 +7,11 @@ import {
   ContactRelationshipRepository,
   ContactInteractionRepository,
 } from './repositories';
-import {
-  Contact,
-  ContactRelationship,
-  ContactInteraction,
-} from './entities';
+import { Contact, ContactRelationship, ContactInteraction } from './entities';
 
 /**
  * Contacts Module
- * 
+ *
  * Provides unified contact management for clients, customers, vendors, leads:
  * - Contact CRUD operations
  * - Contact relationships (hierarchical and other)
@@ -25,13 +21,7 @@ import {
  * - Full-text search
  */
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      Contact,
-      ContactRelationship,
-      ContactInteraction,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([Contact, ContactRelationship, ContactInteraction])],
   controllers: [ContactsController],
   providers: [
     ContactService,
@@ -47,5 +37,4 @@ import {
   ],
 })
 export class ContactsModule {}
-
 

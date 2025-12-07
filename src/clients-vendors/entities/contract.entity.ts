@@ -49,7 +49,7 @@ export enum RenewalStatus {
 
 /**
  * Contract Entity
- * 
+ *
  * Contracts and agreements with renewal management, SLA tracking, and signature tracking.
  */
 @Entity('contracts')
@@ -393,4 +393,3 @@ export class Contract {
     return renewalDate <= thresholdDate;
   }
 }
-

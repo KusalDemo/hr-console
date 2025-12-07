@@ -6,10 +6,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import {
-  KnowledgeArticleRepository,
-  KnowledgeCategoryRepository,
-} from '../repositories';
+import { KnowledgeArticleRepository, KnowledgeCategoryRepository } from '../repositories';
 import { KnowledgeSearchService } from './knowledge-search.service';
 import {
   KnowledgeArticle,
@@ -35,7 +32,7 @@ import { OrganizationRepository } from '../../organizations/repositories/organiz
 
 /**
  * Knowledge Service
- * 
+ *
  * Manages knowledge base operations:
  * - Article CRUD
  * - Article versioning
@@ -69,13 +66,9 @@ export class KnowledgeService {
 
     // Validate organization if provided
     if (createDto.organizationId) {
-      const organization = await this.organizationRepository.findById(
-        createDto.organizationId,
-      );
+      const organization = await this.organizationRepository.findById(createDto.organizationId);
       if (!organization) {
-        throw new NotFoundException(
-          `Organization not found: ${createDto.organizationId}`,
-        );
+        throw new NotFoundException(`Organization not found: ${createDto.organizationId}`);
       }
     }
 
@@ -124,7 +117,8 @@ export class KnowledgeService {
 
       return KnowledgeArticleResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create article: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to create article: ${errorMessage}`, error);
       throw error;
     }
   }
@@ -212,7 +206,8 @@ export class KnowledgeService {
 
       return KnowledgeArticleResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to update article: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to update article: ${errorMessage}`, error);
       throw error;
     }
   }
@@ -293,10 +288,7 @@ export class KnowledgeService {
       throw new NotFoundException(`Article not found: ${id}`);
     }
 
-    if (
-      article.status !== ArticleStatus.APPROVED &&
-      article.status !== ArticleStatus.DRAFT
-    ) {
+    if (article.status !== ArticleStatus.APPROVED && article.status !== ArticleStatus.DRAFT) {
       throw new BadRequestException(
         `Article must be in APPROVED or DRAFT status to publish. Current status: ${article.status}`,
       );
@@ -316,7 +308,12 @@ export class KnowledgeService {
   /**
    * Track article view
    */
-  async trackView(articleId: number, userId?: number, ipAddress?: string, userAgent?: string): Promise<void> {
+  async trackView(
+    articleId: number,
+    userId?: number,
+    ipAddress?: string,
+    userAgent?: string,
+  ): Promise<void> {
     const article = await this.articleRepository.findById(articleId);
     if (!article) {
       return; // Silently fail for analytics
@@ -404,11 +401,7 @@ export class KnowledgeService {
     categoryId?: number,
     limit?: number,
   ): Promise<KnowledgeArticleResponseDto[]> {
-    const articles = await this.articleRepository.findPublished(
-      organizationId,
-      categoryId,
-      limit,
-    );
+    const articles = await this.articleRepository.findPublished(organizationId, categoryId, limit);
     return articles.map((a) => KnowledgeArticleResponseDto.fromEntity(a));
   }
 
@@ -474,13 +467,9 @@ export class KnowledgeService {
   ): Promise<KnowledgeCategoryResponseDto> {
     // Validate organization if provided
     if (createDto.organizationId) {
-      const organization = await this.organizationRepository.findById(
-        createDto.organizationId,
-      );
+      const organization = await this.organizationRepository.findById(createDto.organizationId);
       if (!organization) {
-        throw new NotFoundException(
-          `Organization not found: ${createDto.organizationId}`,
-        );
+        throw new NotFoundException(`Organization not found: ${createDto.organizationId}`);
       }
     }
 
@@ -518,7 +507,8 @@ export class KnowledgeService {
       const saved = await this.categoryRepository.save(category);
       return KnowledgeCategoryResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to create category: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to create category: ${errorMessage}`, error);
       throw error;
     }
   }
@@ -568,7 +558,8 @@ export class KnowledgeService {
       const saved = await this.categoryRepository.save(category);
       return KnowledgeCategoryResponseDto.fromEntity(saved);
     } catch (error) {
-      this.logger.error(`Failed to update category: ${error.message}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to update category: ${errorMessage}`, error);
       throw error;
     }
   }

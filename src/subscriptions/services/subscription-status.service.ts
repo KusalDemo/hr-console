@@ -28,13 +28,13 @@ export interface SubscriptionStatusResult {
 
 /**
  * Subscription Status Service
- * 
+ *
  * Provides subscription status validation and access control:
  * - Check subscription is active
  * - Validate subscription access
  * - Check expiration
  * - Handle grace period
- * 
+ *
  * This service is used by guards and other services to validate
  * subscription status before allowing access to tenant resources.
  */
@@ -46,7 +46,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription is active for a tenant
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns True if subscription is active, false otherwise
    */
@@ -61,7 +61,7 @@ export class SubscriptionStatusService {
 
   /**
    * Validate subscription access for a tenant
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param allowGracePeriod - Whether to allow access during grace period (default: true)
    * @returns Subscription status validation result
@@ -180,7 +180,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription has expired
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns True if subscription is expired, false otherwise
    */
@@ -195,7 +195,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription is in grace period
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns True if subscription is in grace period, false otherwise
    */
@@ -210,7 +210,7 @@ export class SubscriptionStatusService {
 
   /**
    * Get subscription status information for a tenant
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns Subscription status information
    */
@@ -220,7 +220,7 @@ export class SubscriptionStatusService {
 
   /**
    * Validate subscription and throw exception if invalid
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param allowGracePeriod - Whether to allow access during grace period (default: true)
    * @throws BusinessException if subscription is invalid
@@ -232,9 +232,7 @@ export class SubscriptionStatusService {
     const result = await this.validateSubscriptionAccess(tenantId, allowGracePeriod);
 
     if (!result.hasAccess || !result.subscription) {
-      const errorMessage =
-        result.reason ||
-        'Subscription is not active or valid for this tenant';
+      const errorMessage = result.reason || 'Subscription is not active or valid for this tenant';
       throw new BusinessException(
         ErrorCode.SUBSCRIPTION_EXPIRED,
         errorMessage,
@@ -247,7 +245,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription can access a feature
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param featureKey - Feature key to check
    * @returns True if feature is available, false otherwise
@@ -274,7 +272,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription has reached user limit
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param currentUserCount - Current number of users
    * @returns True if limit is reached, false otherwise
@@ -301,7 +299,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription has reached organization limit
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param currentOrganizationCount - Current number of organizations
    * @returns True if limit is reached, false otherwise
@@ -331,7 +329,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription has reached storage limit
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param currentStorageGb - Current storage in GB
    * @returns True if limit is reached, false otherwise
@@ -358,7 +356,7 @@ export class SubscriptionStatusService {
 
   /**
    * Get days until subscription expires
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns Number of days until expiration, or null if no subscription
    */
@@ -373,7 +371,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription needs renewal warning
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param warningDays - Days before expiration to show warning (default: 7)
    * @returns True if warning should be shown, false otherwise
@@ -389,7 +387,7 @@ export class SubscriptionStatusService {
 
   /**
    * Check if subscription is expiring soon
-   * 
+   *
    * @param tenantId - Tenant ID
    * @param soonDays - Days threshold for "soon" (default: 7)
    * @returns True if expiring soon, false otherwise
@@ -398,5 +396,3 @@ export class SubscriptionStatusService {
     return this.needsRenewalWarning(tenantId, soonDays);
   }
 }
-
-

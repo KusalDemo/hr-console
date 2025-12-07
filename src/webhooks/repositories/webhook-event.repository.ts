@@ -4,7 +4,7 @@ import { WebhookEvent, WebhookEventStatus } from '../entities/webhook-event.enti
 
 /**
  * Webhook Event Repository
- * 
+ *
  * Provides custom queries for webhook event operations
  */
 @Injectable()
@@ -69,9 +69,7 @@ export class WebhookEventRepository extends Repository<WebhookEvent> {
       order: {
         createdAt: 'ASC',
       },
-    }).then((events) =>
-      events.filter((event) => event.attemptCount >= maxAttempts),
-    );
+    }).then((events) => events.filter((event) => event.attemptCount >= maxAttempts));
   }
 
   /**

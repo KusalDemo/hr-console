@@ -17,5 +17,3 @@ export class ConvertLeadToContactDto {
   @IsString()
   conversionReason?: string;
 }
-
-

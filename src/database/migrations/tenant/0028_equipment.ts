@@ -2,14 +2,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Equipment & Asset Tracking Migration
- * 
+ *
  * This migration creates:
  * - equipment table (lifecycle asset management with asset tags, categories, locations, maintenance schedules)
  * - equipment_assignments table (employee assignments with tracking)
  * - equipment_maintenance table (maintenance history with scheduling and tracking)
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Equipment0000000000028 implements MigrationInterface {

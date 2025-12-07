@@ -32,10 +32,7 @@ export class ImportTemplateRepository extends Repository<ImportTemplate> {
   /**
    * Find templates by entity type
    */
-  async findByEntityType(
-    entityType: string,
-    organizationId?: number,
-  ): Promise<ImportTemplate[]> {
+  async findByEntityType(entityType: string, organizationId?: number): Promise<ImportTemplate[]> {
     const query = this.createQueryBuilder('template')
       .where('template.entityType = :entityType', { entityType })
       .andWhere('template.isActive = :isActive', { isActive: true })
@@ -146,10 +143,7 @@ export class ImportTemplateRepository extends Repository<ImportTemplate> {
   /**
    * Count templates by entity type
    */
-  async countByEntityType(
-    entityType: string,
-    organizationId?: number,
-  ): Promise<number> {
+  async countByEntityType(entityType: string, organizationId?: number): Promise<number> {
     const query = this.createQueryBuilder('template')
       .where('template.entityType = :entityType', { entityType })
       .andWhere('template.isActive = :isActive', { isActive: true });

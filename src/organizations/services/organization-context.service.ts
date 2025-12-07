@@ -23,14 +23,14 @@ export interface OrganizationContext {
 /**
  * Organization Context Service
  * Manages organization context using AsyncLocalStorage for request-scoped isolation
- * 
+ *
  * This service provides:
  * - Organization context management per request
  * - Current organization resolution from JWT, headers, or user membership
  * - Organization switching logic
  * - Default organization selection
  * - Organization membership validation
- * 
+ *
  * Priority for organization resolution:
  * 1. Request header (X-Organization or X-Organization-Key)
  * 2. JWT token organizationId claim
@@ -161,7 +161,7 @@ export class OrganizationContextService {
    * 1. JWT organizationId claim
    * 2. User's primary organization
    * 3. Default organization for tenant
-   * 
+   *
    * @param payload - JWT payload containing user and organization information
    * @param requestedOrganizationId - Optional organization ID from request header
    * @param requestedOrganizationKey - Optional organization key from request header
@@ -173,7 +173,7 @@ export class OrganizationContextService {
     requestedOrganizationKey?: string,
   ): Promise<OrganizationContext> {
     const tenantContext = this.tenantContextService.getContext();
-    
+
     // Super admin doesn't have organization context
     if (payload.userType === 'SUPER_ADMIN' || !tenantContext || tenantContext.isSuperAdmin) {
       return {
@@ -193,12 +193,18 @@ export class OrganizationContextService {
 
     // Priority 1: Requested organization ID (from header)
     if (requestedOrganizationId) {
-      const orgId = typeof requestedOrganizationId === 'string' 
-        ? parseInt(requestedOrganizationId, 10) 
-        : requestedOrganizationId;
-      
+      const orgId =
+        typeof requestedOrganizationId === 'string'
+          ? parseInt(requestedOrganizationId, 10)
+          : requestedOrganizationId;
+
       if (!isNaN(orgId)) {
-        const org = await this.validateAndGetOrganization(orgId, userId, isTenantAdmin, organizationIds);
+        const org = await this.validateAndGetOrganization(
+          orgId,
+          userId,
+          isTenantAdmin,
+          organizationIds,
+        );
         if (org) {
           return {
             organizationId: org.id,
@@ -218,7 +224,7 @@ export class OrganizationContextService {
         requestedOrganizationKey.trim().toLowerCase(),
         false,
       );
-      
+
       if (org && this.canAccessOrganization(org.id, userId, isTenantAdmin, organizationIds)) {
         return {
           organizationId: org.id,
@@ -294,7 +300,7 @@ export class OrganizationContextService {
   /**
    * Switch to a different organization
    * Validates that the user has access to the organization
-   * 
+   *
    * @param organizationId - Organization ID to switch to
    * @param userId - User ID (optional, uses current context if not provided)
    * @returns Updated organization context
@@ -318,7 +324,9 @@ export class OrganizationContextService {
     );
 
     if (!org) {
-      throw new NotFoundException(`Organization with ID ${organizationId} not found or access denied`);
+      throw new NotFoundException(
+        `Organization with ID ${organizationId} not found or access denied`,
+      );
     }
 
     // Update context
@@ -344,7 +352,7 @@ export class OrganizationContextService {
    * Validate user has access to organization
    * Tenant admins have access to all organizations
    * Regular users must be members of the organization
-   * 
+   *
    * @param organizationId - Organization ID to validate
    * @param userId - User ID
    * @param isTenantAdmin - Whether user is tenant admin
@@ -369,7 +377,7 @@ export class OrganizationContextService {
   /**
    * Validate and get organization
    * Checks if organization exists and user has access
-   * 
+   *
    * @param organizationId - Organization ID
    * @param userId - User ID
    * @param isTenantAdmin - Whether user is tenant admin
@@ -395,15 +403,12 @@ export class OrganizationContextService {
   /**
    * Get all organization IDs user belongs to
    * For tenant admins, returns all organization IDs in tenant
-   * 
+   *
    * @param userId - User ID
    * @param isTenantAdmin - Whether user is tenant admin
    * @returns Array of organization IDs
    */
-  private async getUserOrganizationIds(
-    userId: number,
-    isTenantAdmin: boolean,
-  ): Promise<number[]> {
+  private async getUserOrganizationIds(userId: number, isTenantAdmin: boolean): Promise<number[]> {
     const tenantContext = this.tenantContextService.getContext();
     if (!tenantContext || tenantContext.isSuperAdmin) {
       return [];
@@ -460,7 +465,7 @@ export class OrganizationContextService {
 
   /**
    * Get user's primary organization ID
-   * 
+   *
    * @param userId - User ID
    * @returns Primary organization ID or null
    */
@@ -506,6 +511,4 @@ export class OrganizationContextService {
     }
   }
 }
-
-
 

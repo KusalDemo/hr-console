@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, ConflictException } from '@nestjs/common';
 import { DataSource, QueryRunner } from 'typeorm';
 import { MultiTenantService } from '../../database/multi-tenant.service';
 import { TenantRepository } from '../../admin/repositories/tenant.repository';
@@ -12,13 +7,13 @@ import { TenantBaseline0000000000001 } from '../../database/migrations/tenant/00
 
 /**
  * Tenant Provisioning Service
- * 
+ *
  * Handles the complete tenant provisioning process:
  * 1. Create tenant schema (t_{tenantKey})
  * 2. Run tenant migrations
  * 3. Create tenant record in admin schema
  * 4. Initialize default data (delegated to TenantInitializationService)
- * 
+ *
  * This service should be called by super admin when creating a new tenant.
  */
 @Injectable()
@@ -34,15 +29,12 @@ export class TenantProvisioningService {
   /**
    * Provision a new tenant
    * This is the main entry point for tenant provisioning
-   * 
+   *
    * @param tenantKey - Unique tenant key (will be normalized to lowercase)
    * @param tenantName - Display name for the tenant
    * @returns Created tenant entity
    */
-  async provisionTenant(
-    tenantKey: string,
-    tenantName: string,
-  ): Promise<Tenant> {
+  async provisionTenant(tenantKey: string, tenantName: string): Promise<Tenant> {
     // Normalize tenant key
     const normalizedTenantKey = tenantKey.trim().toLowerCase();
 
@@ -57,15 +49,11 @@ export class TenantProvisioningService {
 
     if (existingTenant) {
       this.logger.error(`Tenant already exists: ${normalizedTenantKey}`);
-      throw new ConflictException(
-        `Tenant with key '${normalizedTenantKey}' already exists`,
-      );
+      throw new ConflictException(`Tenant with key '${normalizedTenantKey}' already exists`);
     }
 
     // Get schema name
-    const schemaName = this.multiTenantService.getTenantSchemaName(
-      normalizedTenantKey,
-    );
+    const schemaName = this.multiTenantService.getTenantSchemaName(normalizedTenantKey);
 
     // Check if schema already exists
     const schemaExists = await this.multiTenantService.schemaExists(schemaName);
@@ -76,9 +64,7 @@ export class TenantProvisioningService {
       );
     }
 
-    this.logger.log(
-      `Starting tenant provisioning: ${normalizedTenantKey} (schema: ${schemaName})`,
-    );
+    this.logger.log(`Starting tenant provisioning: ${normalizedTenantKey} (schema: ${schemaName})`);
 
     try {
       // Step 1: Create tenant schema
@@ -88,21 +74,13 @@ export class TenantProvisioningService {
       await this.runTenantMigrations(schemaName);
 
       // Step 3: Create tenant record in admin schema
-      const tenant = await this.createTenantRecord(
-        normalizedTenantKey,
-        tenantName,
-      );
+      const tenant = await this.createTenantRecord(normalizedTenantKey, tenantName);
 
-      this.logger.log(
-        `Successfully provisioned tenant: ${normalizedTenantKey} (ID: ${tenant.id})`,
-      );
+      this.logger.log(`Successfully provisioned tenant: ${normalizedTenantKey} (ID: ${tenant.id})`);
 
       return tenant;
     } catch (error) {
-      this.logger.error(
-        `Failed to provision tenant: ${normalizedTenantKey}`,
-        error,
-      );
+      this.logger.error(`Failed to provision tenant: ${normalizedTenantKey}`, error);
 
       // Attempt cleanup on failure
       await this.cleanupFailedProvisioning(schemaName, normalizedTenantKey);
@@ -134,9 +112,7 @@ export class TenantProvisioningService {
 
     try {
       // Set search path to the tenant schema
-      await queryRunner.query(
-        `SET search_path TO ${this.quoteIdentifier(schemaName)}`,
-      );
+      await queryRunner.query(`SET search_path TO ${this.quoteIdentifier(schemaName)}`);
 
       // Create migrations table in the tenant schema if it doesn't exist
       await this.createMigrationsTable(queryRunner, schemaName);
@@ -146,15 +122,9 @@ export class TenantProvisioningService {
       await baselineMigration.up(queryRunner);
 
       // Record the migration in the migrations table
-      await this.recordMigration(
-        queryRunner,
-        schemaName,
-        baselineMigration.name,
-      );
+      await this.recordMigration(queryRunner, schemaName, baselineMigration.name);
 
-      this.logger.log(
-        `Successfully ran tenant migrations for schema: ${schemaName}`,
-      );
+      this.logger.log(`Successfully ran tenant migrations for schema: ${schemaName}`);
     } finally {
       await queryRunner.release();
     }
@@ -165,10 +135,7 @@ export class TenantProvisioningService {
    * @param queryRunner - Query runner for the tenant schema
    * @param schemaName - Schema name
    */
-  private async createMigrationsTable(
-    queryRunner: QueryRunner,
-    schemaName: string,
-  ): Promise<void> {
+  private async createMigrationsTable(queryRunner: QueryRunner, schemaName: string): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS ${this.quoteIdentifier(schemaName)}.migrations (
         id SERIAL PRIMARY KEY,
@@ -192,9 +159,7 @@ export class TenantProvisioningService {
   ): Promise<void> {
     // Extract timestamp from migration name (format: MigrationName0000000000001)
     const timestampMatch = migrationName.match(/(\d+)$/);
-    const timestamp = timestampMatch
-      ? parseInt(timestampMatch[1], 10)
-      : Date.now();
+    const timestamp = timestampMatch ? parseInt(timestampMatch[1], 10) : Date.now();
 
     await queryRunner.query(
       `
@@ -212,10 +177,7 @@ export class TenantProvisioningService {
    * @param tenantName - Tenant name
    * @returns Created tenant entity
    */
-  private async createTenantRecord(
-    tenantKey: string,
-    tenantName: string,
-  ): Promise<Tenant> {
+  private async createTenantRecord(tenantKey: string, tenantName: string): Promise<Tenant> {
     this.logger.log(`Creating tenant record: ${tenantKey}`);
 
     const tenant = this.tenantRepository.create({
@@ -240,9 +202,7 @@ export class TenantProvisioningService {
     }
 
     if (tenantKey.length > 64) {
-      throw new BadRequestException(
-        'Tenant key must be 64 characters or less',
-      );
+      throw new BadRequestException('Tenant key must be 64 characters or less');
     }
 
     // Allow alphanumeric, hyphens, and underscores
@@ -255,9 +215,7 @@ export class TenantProvisioningService {
     // Reserved keys
     const reservedKeys = ['admin', 'public', 'postgres', 'information_schema'];
     if (reservedKeys.includes(tenantKey)) {
-      throw new BadRequestException(
-        `Tenant key '${tenantKey}' is reserved and cannot be used`,
-      );
+      throw new BadRequestException(`Tenant key '${tenantKey}' is reserved and cannot be used`);
     }
   }
 
@@ -267,19 +225,16 @@ export class TenantProvisioningService {
    * @param schemaName - Schema name to cleanup
    * @param tenantKey - Tenant key to cleanup
    */
-  private async cleanupFailedProvisioning(
-    schemaName: string,
-    tenantKey: string,
-  ): Promise<void> {
-    this.logger.warn(
-      `Cleaning up failed provisioning: ${schemaName} (tenant: ${tenantKey})`,
-    );
+  private async cleanupFailedProvisioning(schemaName: string, tenantKey: string): Promise<void> {
+    this.logger.warn(`Cleaning up failed provisioning: ${schemaName} (tenant: ${tenantKey})`);
 
     try {
       // Try to drop schema
       const schemaExists = await this.multiTenantService.schemaExists(schemaName);
       if (schemaExists) {
-        await this.dataSource.query(`DROP SCHEMA IF EXISTS ${this.quoteIdentifier(schemaName)} CASCADE`);
+        await this.dataSource.query(
+          `DROP SCHEMA IF EXISTS ${this.quoteIdentifier(schemaName)} CASCADE`,
+        );
         this.logger.log(`Dropped schema: ${schemaName}`);
       }
 
@@ -290,10 +245,7 @@ export class TenantProvisioningService {
         this.logger.log(`Removed tenant record: ${tenantKey}`);
       }
     } catch (error) {
-      this.logger.error(
-        `Error during cleanup of failed provisioning: ${schemaName}`,
-        error,
-      );
+      this.logger.error(`Error during cleanup of failed provisioning: ${schemaName}`, error);
       // Don't throw - cleanup errors should not mask the original error
     }
   }
@@ -314,15 +266,10 @@ export class TenantProvisioningService {
    */
   async isTenantProvisioned(tenantKey: string): Promise<boolean> {
     const normalizedTenantKey = tenantKey.trim().toLowerCase();
-    const schemaName = this.multiTenantService.getTenantSchemaName(
-      normalizedTenantKey,
-    );
+    const schemaName = this.multiTenantService.getTenantSchemaName(normalizedTenantKey);
 
     // Check if tenant record exists
-    const tenant = await this.tenantRepository.findByTenantKey(
-      normalizedTenantKey,
-      true,
-    );
+    const tenant = await this.tenantRepository.findByTenantKey(normalizedTenantKey, true);
     if (!tenant) {
       return false;
     }
@@ -343,4 +290,3 @@ export class TenantProvisioningService {
     return hasRequiredTables;
   }
 }
-

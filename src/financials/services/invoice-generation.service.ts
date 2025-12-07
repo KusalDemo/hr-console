@@ -1,12 +1,12 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Invoice, InvoiceStatus } from '../entities/invoice.entity';
+import { Invoice, InvoiceStatus, InvoiceType } from '../entities/invoice.entity';
 import { InvoiceLineItem } from '../entities/invoice-line-item.entity';
-import { RecurringInvoice } from '../entities/recurring-invoice.entity';
+import { RecurringInvoice, RecurringInvoiceStatus } from '../entities/recurring-invoice.entity';
 
 /**
  * Invoice Generation Service
- * 
+ *
  * Provides automated invoice generation with:
  * - Invoice creation from templates
  * - Recurring invoice generation
@@ -30,9 +30,7 @@ export class InvoiceGenerationService {
     const invoiceNumber = await this.getNextInvoiceNumber();
 
     // Calculate due date
-    const dueDate = recurringInvoice.dueDateDays
-      ? new Date(date)
-      : null;
+    const dueDate = recurringInvoice.dueDateDays ? new Date(date) : null;
     if (dueDate && recurringInvoice.dueDateDays) {
       dueDate.setDate(dueDate.getDate() + recurringInvoice.dueDateDays);
     }
@@ -44,7 +42,7 @@ export class InvoiceGenerationService {
       clientId: recurringInvoice.clientId,
       contactId: recurringInvoice.contactId,
       billToContactId: recurringInvoice.billToContactId,
-      invoiceType: 'STANDARD',
+      invoiceType: InvoiceType.STANDARD,
       invoiceStatus: InvoiceStatus.DRAFT,
       subtotal: recurringInvoice.baseSubtotal,
       taxAmount: recurringInvoice.baseTaxAmount,
@@ -59,18 +57,19 @@ export class InvoiceGenerationService {
     });
 
     const saved = await this.dataSource.getRepository(Invoice).save(invoice);
+    const savedEntity = Array.isArray(saved) ? saved[0] : saved;
 
     // Update recurring invoice tracking
     recurringInvoice.totalInvoicesGenerated += 1;
     recurringInvoice.lastInvoiceDate = date;
-    recurringInvoice.lastInvoiceId = saved.id;
+    recurringInvoice.lastInvoiceId = savedEntity.id;
     await this.dataSource.getRepository(RecurringInvoice).save(recurringInvoice);
 
     this.logger.log(
-      `Generated invoice ${saved.invoiceNumber} from recurring schedule ${recurringInvoice.recurringInvoiceNumber}`,
+      `Generated invoice ${savedEntity.invoiceNumber} from recurring schedule ${recurringInvoice.recurringInvoiceNumber}`,
     );
 
-    return saved;
+    return savedEntity;
   }
 
   /**
@@ -93,7 +92,7 @@ export class InvoiceGenerationService {
 
     for (const schedule of dueSchedules) {
       if (schedule.isComplete()) {
-        schedule.status = 'COMPLETED';
+        schedule.status = RecurringInvoiceStatus.COMPLETED;
         schedule.isActive = false;
         await this.dataSource.getRepository(RecurringInvoice).save(schedule);
         continue;
@@ -110,13 +109,19 @@ export class InvoiceGenerationService {
         );
 
         // Check if recurrence is complete
-        if (schedule.recurrenceEndDate && schedule.nextInvoiceDate > new Date(schedule.recurrenceEndDate)) {
-          schedule.status = 'COMPLETED';
+        if (
+          schedule.recurrenceEndDate &&
+          schedule.nextInvoiceDate > new Date(schedule.recurrenceEndDate)
+        ) {
+          schedule.status = RecurringInvoiceStatus.COMPLETED;
           schedule.isActive = false;
         }
 
-        if (schedule.recurrenceCount && schedule.totalInvoicesGenerated >= schedule.recurrenceCount) {
-          schedule.status = 'COMPLETED';
+        if (
+          schedule.recurrenceCount &&
+          schedule.totalInvoicesGenerated >= schedule.recurrenceCount
+        ) {
+          schedule.status = RecurringInvoiceStatus.COMPLETED;
           schedule.isActive = false;
         }
 
@@ -131,7 +136,7 @@ export class InvoiceGenerationService {
         }
       } catch (error) {
         this.logger.error(
-          `Failed to generate invoice from recurring schedule ${schedule.recurringInvoiceNumber}: ${error.message}`,
+          `Failed to generate invoice from recurring schedule ${schedule.recurringInvoiceNumber}: ${error instanceof Error ? error.message : String(error)}`,
         );
       }
     }

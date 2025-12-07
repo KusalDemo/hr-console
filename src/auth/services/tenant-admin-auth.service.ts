@@ -101,7 +101,9 @@ export class TenantAdminAuthService {
     }
     this.logger.log(`[DEBUG] Tenant Admins in DB: ${tenantAdmins.length}`);
     if (tenantAdmins.length > 0) {
-      this.logger.log(`[DEBUG] Tenant Admins: ${JSON.stringify(tenantAdmins.map((ta: any) => ({ id: ta.id, email: ta.email, is_active: ta.is_active })))}`);
+      this.logger.log(
+        `[DEBUG] Tenant Admins: ${JSON.stringify(tenantAdmins.map((ta: any) => ({ id: ta.id, email: ta.email, is_active: ta.is_active })))}`,
+      );
     }
     if (tenantAdmin) {
       this.logger.log(`[DEBUG] Tenant Admin ID: ${tenantAdmin.id}`);
@@ -147,11 +149,13 @@ export class TenantAdminAuthService {
         loginDto.password,
         tenantAdmin.passwordHash,
       );
-      
+
       // DEBUG LOGGING - Remove in production
       this.logger.log(`[DEBUG] Password verification result: ${isPasswordValid}`);
     } catch (error) {
-      this.logger.error(`[DEBUG] Password verification error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(
+        `[DEBUG] Password verification error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw error;
     }
 
@@ -415,4 +419,3 @@ export class TenantAdminAuthService {
     return Math.max(0, this.MAX_FAILED_ATTEMPTS - tenantAdmin.failedLoginAttempts);
   }
 }
-

@@ -5,7 +5,7 @@ import { AccountingService } from './accounting.service';
 
 /**
  * Financial Reporting Service
- * 
+ *
  * Provides financial reports with:
  * - Profit & Loss (Income Statement)
  * - Balance Sheet
@@ -192,10 +192,7 @@ export class FinancialReportingService {
       })),
     );
 
-    const totalCurrentAssets = currentAssetBalances.reduce(
-      (sum, item) => sum + item.balance,
-      0,
-    );
+    const totalCurrentAssets = currentAssetBalances.reduce((sum, item) => sum + item.balance, 0);
     const totalFixedAssets = fixedAssetBalances.reduce((sum, item) => sum + item.balance, 0);
     const totalAssets = totalCurrentAssets + totalFixedAssets;
 
@@ -265,10 +262,7 @@ export class FinancialReportingService {
 
     const accountBalances = await Promise.all(
       accounts.map(async (account) => {
-        const balance = await this.accountingService.calculateAccountBalance(
-          account.id,
-          asOfDate,
-        );
+        const balance = await this.accountingService.calculateAccountBalance(account.id, asOfDate);
 
         let debitBalance = 0;
         let creditBalance = 0;
@@ -298,7 +292,9 @@ export class FinancialReportingService {
 
     return {
       asOfDate,
-      accounts: accountBalances.filter((item) => item.debitBalance !== 0 || item.creditBalance !== 0),
+      accounts: accountBalances.filter(
+        (item) => item.debitBalance !== 0 || item.creditBalance !== 0,
+      ),
       totalDebits,
       totalCredits,
       isBalanced,

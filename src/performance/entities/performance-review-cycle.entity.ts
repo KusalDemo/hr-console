@@ -23,7 +23,7 @@ export enum ReviewCycleStatus {
 
 /**
  * Performance Review Cycle Entity
- * 
+ *
  * Review cycles with periods, templates, and review management.
  */
 @Entity('performance_review_cycles')

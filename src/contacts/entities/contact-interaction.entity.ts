@@ -34,7 +34,7 @@ export enum InteractionDirection {
 
 /**
  * Contact Interaction Entity
- * 
+ *
  * Tracks interaction history and activity timeline for contacts.
  * Supports various interaction types (email, phone, meeting, etc.)
  */
@@ -161,5 +161,4 @@ export class ContactInteraction {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedBy: number | null;
 }
-
 

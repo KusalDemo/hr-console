@@ -8,7 +8,7 @@ import {
 
 /**
  * Inventory Transaction Repository
- * 
+ *
  * Custom repository methods for inventory transaction queries.
  */
 @Injectable()

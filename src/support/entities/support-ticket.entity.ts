@@ -43,7 +43,7 @@ export enum TicketPriority {
 
 /**
  * Support Ticket Entity
- * 
+ *
  * Manages support tickets with:
  * - Ticket lifecycle (open, assigned, in-progress, resolved, closed)
  * - SLA tracking
@@ -315,11 +315,9 @@ export class SupportTicket {
    * Check if ticket is closed
    */
   isClosed(): boolean {
-    return [
-      TicketStatus.CLOSED,
-      TicketStatus.CANCELLED,
-      TicketStatus.RESOLVED,
-    ].includes(this.status);
+    return [TicketStatus.CLOSED, TicketStatus.CANCELLED, TicketStatus.RESOLVED].includes(
+      this.status,
+    );
   }
 
   /**

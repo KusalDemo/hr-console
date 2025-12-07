@@ -31,7 +31,7 @@ export enum ExecutionResult {
 
 /**
  * Compliance Check Execution Entity
- * 
+ *
  * Execution history for automated compliance checks.
  */
 @Entity('compliance_check_executions')
@@ -81,3 +81,4 @@ export class ComplianceCheckExecution {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;
 }
+

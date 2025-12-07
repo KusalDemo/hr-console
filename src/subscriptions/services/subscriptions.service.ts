@@ -27,14 +27,14 @@ import { ErrorCode } from '../../common/exceptions/business.exception';
 
 /**
  * Subscription Service
- * 
+ *
  * Provides business logic for subscription operations:
  * - Create subscription for tenant
  * - Update subscription
  * - Cancel subscription
  * - Renew subscription
  * - Get active subscription
- * 
+ *
  * This service handles all subscription management operations
  * including billing cycle calculations and status management.
  */
@@ -50,7 +50,7 @@ export class SubscriptionsService {
 
   /**
    * Create a new subscription for a tenant
-   * 
+   *
    * @param createDto - Subscription creation data
    * @param createdBy - User ID who created the subscription (optional)
    * @returns Created subscription information
@@ -168,7 +168,7 @@ export class SubscriptionsService {
 
   /**
    * Create subscription with plan selection (simplified)
-   * 
+   *
    * @param createDto - Simplified subscription creation data
    * @param createdBy - User ID who created the subscription (optional)
    * @returns Created subscription information
@@ -203,7 +203,7 @@ export class SubscriptionsService {
 
   /**
    * Update subscription
-   * 
+   *
    * @param id - Subscription ID
    * @param updateDto - Subscription update data
    * @param updatedBy - User ID who updated the subscription (optional)
@@ -260,7 +260,9 @@ export class SubscriptionsService {
       updateData.trialEnd = updateDto.trialEnd ? new Date(updateDto.trialEnd) : null;
     }
     if (updateDto.gracePeriodEnd !== undefined) {
-      updateData.gracePeriodEnd = updateDto.gracePeriodEnd ? new Date(updateDto.gracePeriodEnd) : null;
+      updateData.gracePeriodEnd = updateDto.gracePeriodEnd
+        ? new Date(updateDto.gracePeriodEnd)
+        : null;
     }
     if (updateDto.amount !== undefined) {
       updateData.amount = updateDto.amount;
@@ -313,7 +315,7 @@ export class SubscriptionsService {
 
   /**
    * Cancel subscription
-   * 
+   *
    * @param id - Subscription ID
    * @param cancelDto - Cancellation data
    * @param updatedBy - User ID who canceled the subscription (optional)
@@ -376,7 +378,7 @@ export class SubscriptionsService {
 
   /**
    * Renew subscription
-   * 
+   *
    * @param id - Subscription ID
    * @param renewDto - Renewal data
    * @param updatedBy - User ID who renewed the subscription (optional)
@@ -460,7 +462,7 @@ export class SubscriptionsService {
 
   /**
    * Get active subscription for a tenant
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns Active subscription or null
    */
@@ -475,7 +477,7 @@ export class SubscriptionsService {
 
   /**
    * Get subscription by ID
-   * 
+   *
    * @param id - Subscription ID
    * @returns Subscription information
    */
@@ -490,7 +492,7 @@ export class SubscriptionsService {
 
   /**
    * Get all subscriptions for a tenant
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns List of subscriptions
    */
@@ -501,7 +503,7 @@ export class SubscriptionsService {
 
   /**
    * Get subscriptions with pagination
-   * 
+   *
    * @param page - Page number
    * @param limit - Items per page
    * @param filters - Optional filters
@@ -535,7 +537,7 @@ export class SubscriptionsService {
 
   /**
    * Calculate billing period dates
-   * 
+   *
    * @param startDate - Period start date
    * @param billingCycle - Billing cycle (MONTHLY, QUARTERLY, YEARLY)
    * @param interval - Billing interval (multiplier)
@@ -628,9 +630,7 @@ export class SubscriptionsService {
   /**
    * Convert Subscription entity to SubscriptionDetailResponseDto
    */
-  private toSubscriptionDetailResponse(
-    subscription: Subscription,
-  ): SubscriptionDetailResponseDto {
+  private toSubscriptionDetailResponse(subscription: Subscription): SubscriptionDetailResponseDto {
     const base = this.toSubscriptionResponse(subscription);
     return {
       ...base,
@@ -640,5 +640,3 @@ export class SubscriptionsService {
     };
   }
 }
-
-

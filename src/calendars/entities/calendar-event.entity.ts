@@ -36,7 +36,7 @@ export enum EventType {
 
 /**
  * Calendar Event Entity
- * 
+ *
  * Calendar events with attendees, recurrence, reminders, and timezone support.
  */
 @Entity('calendar_events')
@@ -59,7 +59,10 @@ export class CalendarEvent {
   /**
    * Calendar relationship
    */
-  @ManyToOne(() => Calendar, (calendar) => calendar.events, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => Calendar, (calendar) => calendar.events, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'calendar_id' })
   calendar: Calendar;
 
@@ -233,4 +236,3 @@ export class CalendarEvent {
     return new Date() < this.startTime;
   }
 }
-

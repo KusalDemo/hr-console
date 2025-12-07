@@ -4,7 +4,7 @@ import { HolidayCalendar, CalendarType } from '../entities/holiday-calendar.enti
 
 /**
  * Holiday Calendar Repository
- * 
+ *
  * Custom repository methods for holiday calendar queries.
  */
 @Injectable()

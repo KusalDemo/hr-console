@@ -28,7 +28,7 @@ export enum ProjectTeamRole {
 
 /**
  * Project Team Entity
- * 
+ *
  * Represents team member assignments to projects.
  * Tracks roles, allocation, and dates.
  */
@@ -161,5 +161,4 @@ export class ProjectTeam {
     return true;
   }
 }
-
 

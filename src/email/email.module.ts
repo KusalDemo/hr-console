@@ -4,7 +4,7 @@ import { EmailService } from './email.service';
 
 /**
  * Email Module
- * 
+ *
  * Provides email sending functionality using Nodemailer.
  * Supports:
  * - SMTP email sending
@@ -18,5 +18,4 @@ import { EmailService } from './email.service';
   exports: [EmailService],
 })
 export class EmailModule {}
-
 

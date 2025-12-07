@@ -8,15 +8,12 @@ import {
 import { ResourceBookingRepository } from '../repositories/resource-booking.repository';
 import { ResourceRepository } from '../repositories/resource.repository';
 import { ResourceService } from './resource.service';
-import {
-  ResourceBooking,
-  BookingStatus,
-} from '../entities/resource-booking.entity';
+import { ResourceBooking, BookingStatus } from '../entities/resource-booking.entity';
 import { Resource } from '../entities/resource.entity';
 
 /**
  * Resource Booking Service
- * 
+ *
  * Manages resource bookings with:
  * - Booking CRUD operations
  * - Conflict detection algorithms
@@ -88,13 +85,19 @@ export class ResourceBookingService {
     const durationMinutes =
       (createDto.endTime.getTime() - createDto.startTime.getTime()) / (1000 * 60);
 
-    if (resource.minBookingDurationMinutes && durationMinutes < resource.minBookingDurationMinutes) {
+    if (
+      resource.minBookingDurationMinutes &&
+      durationMinutes < resource.minBookingDurationMinutes
+    ) {
       throw new BadRequestException(
         `Booking duration must be at least ${resource.minBookingDurationMinutes} minutes`,
       );
     }
 
-    if (resource.maxBookingDurationMinutes && durationMinutes > resource.maxBookingDurationMinutes) {
+    if (
+      resource.maxBookingDurationMinutes &&
+      durationMinutes > resource.maxBookingDurationMinutes
+    ) {
       throw new BadRequestException(
         `Booking duration must not exceed ${resource.maxBookingDurationMinutes} minutes`,
       );
@@ -262,10 +265,10 @@ export class ResourceBookingService {
     }
 
     booking.bookingStatus = BookingStatus.CANCELLED;
-    booking.cancellationReason = cancellationReason;
-    booking.cancelledById = cancelledBy;
+    booking.cancellationReason = cancellationReason ?? null;
+    booking.cancelledById = cancelledBy ?? null;
     booking.cancelledAt = new Date();
-    booking.updatedBy = cancelledBy;
+    booking.updatedBy = cancelledBy ?? null;
 
     const saved = await this.resourceBookingRepository.save(booking);
 
@@ -312,7 +315,7 @@ export class ResourceBookingService {
 
     booking.bookingStatus = BookingStatus.APPROVED;
     booking.approverId = approverId;
-    booking.approvalReason = approvalReason;
+    booking.approvalReason = approvalReason ?? null;
     booking.approvedAt = new Date();
     booking.hasConflicts = false;
     booking.updatedBy = approverId;

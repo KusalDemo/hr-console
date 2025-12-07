@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsEnum,
-  IsDateString,
-  Min,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsDateString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { KeyResultType, KeyResultStatus } from '../entities/key-result.entity';
 

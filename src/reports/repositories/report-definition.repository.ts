@@ -4,7 +4,7 @@ import { ReportDefinition, ReportStatus, ReportType } from '../entities/report-d
 
 /**
  * Report Definition Repository
- * 
+ *
  * Custom repository methods for report definition queries.
  */
 @Injectable()
@@ -17,8 +17,7 @@ export class ReportDefinitionRepository extends Repository<ReportDefinition> {
    * Find report definition by ID
    */
   async findById(id: number, includeSchedules = false): Promise<ReportDefinition | null> {
-    const query = this.createQueryBuilder('report')
-      .where('report.id = :id', { id });
+    const query = this.createQueryBuilder('report').where('report.id = :id', { id });
 
     if (includeSchedules) {
       query.leftJoinAndSelect('report.schedules', 'schedules');
@@ -48,10 +47,7 @@ export class ReportDefinitionRepository extends Repository<ReportDefinition> {
   /**
    * Find reports by status
    */
-  async findByStatus(
-    status: ReportStatus,
-    organizationId?: number,
-  ): Promise<ReportDefinition[]> {
+  async findByStatus(status: ReportStatus, organizationId?: number): Promise<ReportDefinition[]> {
     const query = this.createQueryBuilder('report')
       .where('report.status = :status', { status })
       .andWhere('report.isActive = :isActive', { isActive: true })
@@ -67,10 +63,7 @@ export class ReportDefinitionRepository extends Repository<ReportDefinition> {
   /**
    * Find reports by type
    */
-  async findByType(
-    reportType: ReportType,
-    organizationId?: number,
-  ): Promise<ReportDefinition[]> {
+  async findByType(reportType: ReportType, organizationId?: number): Promise<ReportDefinition[]> {
     const query = this.createQueryBuilder('report')
       .where('report.reportType = :reportType', { reportType })
       .andWhere('report.isActive = :isActive', { isActive: true })
@@ -86,9 +79,7 @@ export class ReportDefinitionRepository extends Repository<ReportDefinition> {
   /**
    * Find report templates
    */
-  async findTemplates(
-    organizationId?: number,
-  ): Promise<ReportDefinition[]> {
+  async findTemplates(organizationId?: number): Promise<ReportDefinition[]> {
     const query = this.createQueryBuilder('report')
       .where('report.isTemplate = :isTemplate', { isTemplate: true })
       .andWhere('report.isActive = :isActive', { isActive: true })
@@ -104,10 +95,7 @@ export class ReportDefinitionRepository extends Repository<ReportDefinition> {
   /**
    * Find reports by category
    */
-  async findByCategory(
-    category: string,
-    organizationId?: number,
-  ): Promise<ReportDefinition[]> {
+  async findByCategory(category: string, organizationId?: number): Promise<ReportDefinition[]> {
     const query = this.createQueryBuilder('report')
       .where('report.category = :category', { category })
       .andWhere('report.isActive = :isActive', { isActive: true })
@@ -131,8 +119,7 @@ export class ReportDefinitionRepository extends Repository<ReportDefinition> {
     organizationId?: number,
     includeInactive = false,
   ): Promise<ReportDefinition[]> {
-    const query = this.createQueryBuilder('report')
-      .orderBy('report.reportName', 'ASC');
+    const query = this.createQueryBuilder('report').orderBy('report.reportName', 'ASC');
 
     if (searchTerm) {
       query.andWhere(

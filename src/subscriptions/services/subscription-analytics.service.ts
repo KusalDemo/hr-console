@@ -143,13 +143,13 @@ export interface GrowthMetrics {
 
 /**
  * Subscription Analytics Service
- * 
+ *
  * Provides comprehensive analytics for subscription management:
  * - Revenue tracking (MRR, ARR, revenue by period/plan)
  * - Subscription metrics (counts, status distribution)
  * - Churn analysis (churn rate, churn trends)
  * - Growth metrics (growth rate, retention, trends)
- * 
+ *
  * All analytics support date range filtering and can be aggregated
  * by various dimensions (plan, billing cycle, status, etc.)
  */
@@ -164,15 +164,12 @@ export class SubscriptionAnalyticsService {
 
   /**
    * Get revenue metrics
-   * 
+   *
    * @param startDate - Start date for period analysis (optional)
    * @param endDate - End date for period analysis (optional)
    * @returns Revenue metrics
    */
-  async getRevenueMetrics(
-    startDate?: Date,
-    endDate?: Date,
-  ): Promise<RevenueMetrics> {
+  async getRevenueMetrics(startDate?: Date, endDate?: Date): Promise<RevenueMetrics> {
     this.logger.log('Calculating revenue metrics');
 
     const now = new Date();
@@ -191,10 +188,7 @@ export class SubscriptionAnalyticsService {
     let arr = 0;
     let totalRevenue = 0;
     const revenueByPlanMap = new Map<number, { revenue: number; count: number }>();
-    const revenueByBillingCycleMap = new Map<
-      BillingCycle,
-      { revenue: number; count: number }
-    >();
+    const revenueByBillingCycleMap = new Map<BillingCycle, { revenue: number; count: number }>();
 
     for (const subscription of activeSubscriptions) {
       const monthlyAmount = this.getMonthlyAmount(subscription.amount, subscription.billingCycle);
@@ -281,15 +275,12 @@ export class SubscriptionAnalyticsService {
 
   /**
    * Get subscription metrics
-   * 
+   *
    * @param startDate - Start date for period analysis (optional)
    * @param endDate - End date for period analysis (optional)
    * @returns Subscription metrics
    */
-  async getSubscriptionMetrics(
-    startDate?: Date,
-    endDate?: Date,
-  ): Promise<SubscriptionMetrics> {
+  async getSubscriptionMetrics(startDate?: Date, endDate?: Date): Promise<SubscriptionMetrics> {
     this.logger.log('Calculating subscription metrics');
 
     const periodStart = startDate || this.getStartOfMonth(new Date());
@@ -369,7 +360,7 @@ export class SubscriptionAnalyticsService {
 
   /**
    * Get churn analysis
-   * 
+   *
    * @param startDate - Start date for period analysis (optional)
    * @param endDate - End date for period analysis (optional)
    * @returns Churn analysis
@@ -386,7 +377,8 @@ export class SubscriptionAnalyticsService {
 
     // Find churned subscriptions (canceled or expired in period)
     const churnedSubscriptions = allSubscriptions.filter((sub) => {
-      const isChurned = sub.status === SubscriptionStatus.CANCELED || sub.status === SubscriptionStatus.EXPIRED;
+      const isChurned =
+        sub.status === SubscriptionStatus.CANCELED || sub.status === SubscriptionStatus.EXPIRED;
       if (!isChurned) return false;
 
       const churnedAt = sub.canceledAt || sub.currentPeriodEnd;
@@ -394,7 +386,9 @@ export class SubscriptionAnalyticsService {
     });
 
     // Count subscriptions at start of period
-    const subscriptionsAtStart = allSubscriptions.filter((sub) => sub.createdAt < periodStart).length;
+    const subscriptionsAtStart = allSubscriptions.filter(
+      (sub) => sub.createdAt < periodStart,
+    ).length;
 
     // Calculate churn rate
     const churnRate =
@@ -415,7 +409,8 @@ export class SubscriptionAnalyticsService {
     // Churn by plan
     const churnByPlanMap = new Map<number, { churned: number; total: number }>();
     for (const sub of allSubscriptions) {
-      const isChurned = sub.status === SubscriptionStatus.CANCELED || sub.status === SubscriptionStatus.EXPIRED;
+      const isChurned =
+        sub.status === SubscriptionStatus.CANCELED || sub.status === SubscriptionStatus.EXPIRED;
       const data = churnByPlanMap.get(sub.planId) || { churned: 0, total: 0 };
       data.total += 1;
       if (isChurned) {
@@ -439,12 +434,10 @@ export class SubscriptionAnalyticsService {
     );
 
     // Churn by billing cycle
-    const churnByBillingCycleMap = new Map<
-      BillingCycle,
-      { churned: number; total: number }
-    >();
+    const churnByBillingCycleMap = new Map<BillingCycle, { churned: number; total: number }>();
     for (const sub of allSubscriptions) {
-      const isChurned = sub.status === SubscriptionStatus.CANCELED || sub.status === SubscriptionStatus.EXPIRED;
+      const isChurned =
+        sub.status === SubscriptionStatus.CANCELED || sub.status === SubscriptionStatus.EXPIRED;
       const data = churnByBillingCycleMap.get(sub.billingCycle) || { churned: 0, total: 0 };
       data.total += 1;
       if (isChurned) {
@@ -480,7 +473,7 @@ export class SubscriptionAnalyticsService {
 
   /**
    * Get growth metrics
-   * 
+   *
    * @param startDate - Start date for period analysis (optional)
    * @param endDate - End date for period analysis (optional)
    * @returns Growth metrics
@@ -509,7 +502,8 @@ export class SubscriptionAnalyticsService {
     // Calculate growth rate
     const growthRate =
       previousPeriodNewSubscriptions > 0
-        ? ((newSubscriptions - previousPeriodNewSubscriptions) / previousPeriodNewSubscriptions) * 100
+        ? ((newSubscriptions - previousPeriodNewSubscriptions) / previousPeriodNewSubscriptions) *
+          100
         : newSubscriptions > 0
           ? 100
           : 0;
@@ -537,7 +531,11 @@ export class SubscriptionAnalyticsService {
       Array.from(growthByPlanMap.entries()).map(async ([planId, data]) => {
         const plan = await this.subscriptionPlanRepository.findById(planId);
         const planGrowthRate =
-          data.previous > 0 ? ((data.current - data.previous) / data.previous) * 100 : data.current > 0 ? 100 : 0;
+          data.previous > 0
+            ? ((data.current - data.previous) / data.previous) * 100
+            : data.current > 0
+              ? 100
+              : 0;
         return {
           planId,
           planKey: plan?.planKey || 'unknown',
@@ -554,9 +552,7 @@ export class SubscriptionAnalyticsService {
     // Calculate retention rate (subscriptions created 90+ days ago that are still active)
     const ninetyDaysAgo = this.subtractDays(now, 90);
     const oldSubscriptions = allSubscriptions.filter((sub) => sub.createdAt < ninetyDaysAgo);
-    const retainedSubscriptions = oldSubscriptions.filter((sub) =>
-      sub.isActive(),
-    ).length;
+    const retainedSubscriptions = oldSubscriptions.filter((sub) => sub.isActive()).length;
     const retentionRate =
       oldSubscriptions.length > 0 ? (retainedSubscriptions / oldSubscriptions.length) * 100 : 0;
 
@@ -597,9 +593,9 @@ export class SubscriptionAnalyticsService {
   /**
    * Calculate churn trend for the last N months
    */
-  private async calculateChurnTrend(months: number): Promise<
-    Array<{ period: string; churnRate: number; churnedCount: number }>
-  > {
+  private async calculateChurnTrend(
+    months: number,
+  ): Promise<Array<{ period: string; churnRate: number; churnedCount: number }>> {
     const trend: Array<{ period: string; churnRate: number; churnedCount: number }> = [];
     const now = new Date();
 
@@ -608,7 +604,9 @@ export class SubscriptionAnalyticsService {
       const periodEnd = this.subtractMonths(this.getStartOfMonth(now), i);
 
       const allSubscriptions = await this.subscriptionRepository.find();
-      const subscriptionsAtStart = allSubscriptions.filter((sub) => sub.createdAt < periodStart).length;
+      const subscriptionsAtStart = allSubscriptions.filter(
+        (sub) => sub.createdAt < periodStart,
+      ).length;
 
       const churnedSubscriptions = allSubscriptions.filter((sub) => {
         const isChurned =
@@ -636,9 +634,9 @@ export class SubscriptionAnalyticsService {
   /**
    * Calculate growth trend for the last N months
    */
-  private async calculateGrowthTrend(months: number): Promise<
-    Array<{ period: string; newSubscriptions: number; growthRate: number }>
-  > {
+  private async calculateGrowthTrend(
+    months: number,
+  ): Promise<Array<{ period: string; newSubscriptions: number; growthRate: number }>> {
     const trend: Array<{ period: string; newSubscriptions: number; growthRate: number }> = [];
     const now = new Date();
 
@@ -659,7 +657,8 @@ export class SubscriptionAnalyticsService {
 
       const growthRate =
         previousPeriodNewSubscriptions > 0
-          ? ((newSubscriptions - previousPeriodNewSubscriptions) / previousPeriodNewSubscriptions) * 100
+          ? ((newSubscriptions - previousPeriodNewSubscriptions) / previousPeriodNewSubscriptions) *
+            100
           : newSubscriptions > 0
             ? 100
             : 0;
@@ -724,4 +723,3 @@ export class SubscriptionAnalyticsService {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 }
-

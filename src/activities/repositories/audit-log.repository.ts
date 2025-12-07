@@ -24,11 +24,7 @@ export class AuditLogRepository extends Repository<AuditLog> {
   /**
    * Find audit logs by actor
    */
-  async findByActor(
-    actorType: string,
-    actorId: number,
-    limit?: number,
-  ): Promise<AuditLog[]> {
+  async findByActor(actorType: string, actorId: number, limit?: number): Promise<AuditLog[]> {
     const query = this.createQueryBuilder('log')
       .where('log.actorType = :actorType', { actorType })
       .andWhere('log.actorId = :actorId', { actorId })
@@ -44,11 +40,7 @@ export class AuditLogRepository extends Repository<AuditLog> {
   /**
    * Find audit logs by target entity
    */
-  async findByTarget(
-    targetType: string,
-    targetId: number,
-    limit?: number,
-  ): Promise<AuditLog[]> {
+  async findByTarget(targetType: string, targetId: number, limit?: number): Promise<AuditLog[]> {
     const query = this.createQueryBuilder('log')
       .where('log.targetType = :targetType', { targetType })
       .andWhere('log.targetId = :targetId', { targetId })
@@ -193,10 +185,7 @@ export class AuditLogRepository extends Repository<AuditLog> {
   /**
    * Archive audit logs
    */
-  async archiveLogs(
-    logIds: number[],
-    archivedBy: number,
-  ): Promise<void> {
+  async archiveLogs(logIds: number[], archivedBy: number): Promise<void> {
     await this.update(
       { id: In(logIds) },
       {
@@ -255,13 +244,11 @@ export class AuditLogRepository extends Repository<AuditLog> {
 
       // Count by category
       if (log.activityCategory) {
-        stats.byCategory[log.activityCategory] =
-          (stats.byCategory[log.activityCategory] || 0) + 1;
+        stats.byCategory[log.activityCategory] = (stats.byCategory[log.activityCategory] || 0) + 1;
       }
 
       // Count by activity type
-      stats.byActivityType[log.activityType] =
-        (stats.byActivityType[log.activityType] || 0) + 1;
+      stats.byActivityType[log.activityType] = (stats.byActivityType[log.activityType] || 0) + 1;
     });
 
     return stats;

@@ -6,7 +6,7 @@ import { Document, StorageProvider } from '../entities';
 
 /**
  * Document Storage Service
- * 
+ *
  * Handles file storage operations:
  * - Local file storage
  * - Cloud storage integration (S3, GCS, Azure) - structure for future
@@ -32,7 +32,9 @@ export class DocumentStorageService {
       await fs.mkdir(this.uploadDir, { recursive: true });
       this.logger.log(`Document upload directory: ${this.uploadDir}`);
     } catch (error) {
-      this.logger.error(`Failed to create upload directory: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to create upload directory: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
@@ -174,7 +176,9 @@ export class DocumentStorageService {
       this.logger.log(`File deleted: ${fullPath}`);
     } catch (error) {
       // File might not exist, log but don't throw
-      this.logger.warn(`Failed to delete file ${fullPath}: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.warn(
+        `Failed to delete file ${fullPath}: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 

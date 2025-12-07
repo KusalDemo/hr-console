@@ -51,4 +51,3 @@ export class CreateWorkflowDefinitionDto {
   workflowMetadata?: Record<string, any>;
 }
 
-

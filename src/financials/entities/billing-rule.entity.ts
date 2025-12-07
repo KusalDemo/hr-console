@@ -75,7 +75,7 @@ export enum BillingRuleStatus {
 
 /**
  * Billing Rule Entity
- * 
+ *
  * Rules for subscription-based or usage-based billing with recurrence patterns.
  */
 @Entity('billing_rules')

@@ -26,7 +26,7 @@ export enum ItemStatus {
 
 /**
  * Compliance Checklist Item Entity
- * 
+ *
  * Individual items in compliance checklists.
  */
 @Entity('compliance_checklist_items')
@@ -61,10 +61,23 @@ export class ComplianceChecklistItem {
   @Column({ name: 'requirement_id', type: 'bigint', nullable: false })
   requirementId: number;
 
-  @Column({ name: 'item_status', type: 'varchar', length: 32, nullable: false, default: ItemStatus.NOT_STARTED })
+  @Column({
+    name: 'item_status',
+    type: 'varchar',
+    length: 32,
+    nullable: false,
+    default: ItemStatus.NOT_STARTED,
+  })
   itemStatus: ItemStatus;
 
-  @Column({ name: 'completion_percentage', type: 'decimal', precision: 5, scale: 2, nullable: false, default: 0.0 })
+  @Column({
+    name: 'completion_percentage',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: false,
+    default: 0.0,
+  })
   completionPercentage: number;
 
   @ManyToOne(() => User, {
@@ -133,3 +146,4 @@ export class ComplianceChecklistItem {
   @Column({ name: 'updated_by', type: 'bigint', nullable: true })
   updatedById: number | null;
 }
+

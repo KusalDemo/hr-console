@@ -36,20 +36,20 @@ export interface NotificationContext {
 
 /**
  * Subscription Notification Service
- * 
+ *
  * Handles all subscription-related notifications:
  * - Expiration warnings (30, 14, 7, 3, 1 days before expiration)
  * - Renewal reminders (before billing period ends)
  * - Payment failure notifications (when payment fails)
  * - Subscription status change notifications (when status changes)
  * - Grace period warnings and expiration notices
- * 
+ *
  * This service:
  * - Retrieves tenant admin information for notifications
  * - Formats notification messages
  * - Tracks notification history in subscription metadata
  * - Can be extended to integrate with email, SMS, or push notification services
- * 
+ *
  * For now, notifications are logged. In production, integrate with:
  * - Email service (SendGrid, AWS SES, etc.)
  * - SMS service (Twilio, AWS SNS, etc.)
@@ -67,14 +67,11 @@ export class SubscriptionNotificationsService {
   /**
    * Send expiration warning notification
    * Called when subscription is expiring soon
-   * 
+   *
    * @param subscription - Subscription entity
    * @param daysRemaining - Days remaining until expiration
    */
-  async sendExpirationWarning(
-    subscription: Subscription,
-    daysRemaining: number,
-  ): Promise<void> {
+  async sendExpirationWarning(subscription: Subscription, daysRemaining: number): Promise<void> {
     this.logger.log(
       `Sending expiration warning for subscription ID: ${subscription.id}, ${daysRemaining} days remaining`,
     );
@@ -129,7 +126,7 @@ export class SubscriptionNotificationsService {
   /**
    * Send expiration notice notification
    * Called when subscription has expired
-   * 
+   *
    * @param subscription - Subscription entity
    */
   async sendExpirationNotice(subscription: Subscription): Promise<void> {
@@ -184,7 +181,7 @@ export class SubscriptionNotificationsService {
   /**
    * Send renewal reminder notification
    * Called before subscription renewal date
-   * 
+   *
    * @param subscription - Subscription entity
    * @param daysBeforeRenewal - Days before renewal (default: 7)
    */
@@ -246,14 +243,11 @@ export class SubscriptionNotificationsService {
   /**
    * Send payment failure notification
    * Called when subscription payment fails
-   * 
+   *
    * @param subscription - Subscription entity
    * @param reason - Reason for payment failure (optional)
    */
-  async sendPaymentFailureNotification(
-    subscription: Subscription,
-    reason?: string,
-  ): Promise<void> {
+  async sendPaymentFailureNotification(subscription: Subscription, reason?: string): Promise<void> {
     this.logger.log(`Sending payment failure notification for subscription ID: ${subscription.id}`);
 
     try {
@@ -307,7 +301,7 @@ export class SubscriptionNotificationsService {
   /**
    * Send subscription status change notification
    * Called when subscription status changes
-   * 
+   *
    * @param subscription - Subscription entity
    * @param previousStatus - Previous subscription status
    * @param reason - Reason for status change (optional)
@@ -375,14 +369,11 @@ export class SubscriptionNotificationsService {
   /**
    * Send grace period warning notification
    * Called when subscription grace period is ending soon
-   * 
+   *
    * @param subscription - Subscription entity
    * @param daysRemaining - Days remaining in grace period
    */
-  async sendGracePeriodWarning(
-    subscription: Subscription,
-    daysRemaining: number,
-  ): Promise<void> {
+  async sendGracePeriodWarning(subscription: Subscription, daysRemaining: number): Promise<void> {
     this.logger.log(
       `Sending grace period warning for subscription ID: ${subscription.id}, ${daysRemaining} days remaining`,
     );
@@ -439,13 +430,11 @@ export class SubscriptionNotificationsService {
   /**
    * Send grace period expired notification
    * Called when subscription grace period has expired
-   * 
+   *
    * @param subscription - Subscription entity
    */
   async sendGracePeriodExpired(subscription: Subscription): Promise<void> {
-    this.logger.log(
-      `Sending grace period expired notice for subscription ID: ${subscription.id}`,
-    );
+    this.logger.log(`Sending grace period expired notice for subscription ID: ${subscription.id}`);
 
     try {
       // Get recipients
@@ -497,7 +486,7 @@ export class SubscriptionNotificationsService {
   /**
    * Get notification recipients for a tenant
    * Returns all active tenant admins for the tenant
-   * 
+   *
    * @param tenantId - Tenant ID
    * @returns Array of notification recipients
    */
@@ -522,7 +511,7 @@ export class SubscriptionNotificationsService {
    * Send notification to a recipient
    * This is a placeholder that logs the notification
    * In production, integrate with actual notification service
-   * 
+   *
    * @param recipient - Notification recipient
    * @param templateKey - Notification template key
    * @param content - Notification content
@@ -549,7 +538,7 @@ export class SubscriptionNotificationsService {
 
   /**
    * Track notification in subscription metadata
-   * 
+   *
    * @param subscriptionId - Subscription ID
    * @param notificationType - Type of notification
    * @param data - Notification data to store
@@ -566,7 +555,7 @@ export class SubscriptionNotificationsService {
 
     const metadata = subscription.metadata || {};
     const notifications = metadata.notifications || [];
-    
+
     notifications.push({
       type: notificationType,
       ...data,
@@ -730,4 +719,3 @@ If you have any questions, please contact support.
     `.trim();
   }
 }
-

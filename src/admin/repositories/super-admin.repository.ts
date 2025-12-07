@@ -78,10 +78,7 @@ export class SuperAdminRepository extends Repository<SuperAdmin> {
    * Lock super admin account
    * Sets isLocked to true and optionally sets lockedUntil timestamp
    */
-  async lockAccount(
-    id: number,
-    lockedUntil?: Date,
-  ): Promise<void> {
+  async lockAccount(id: number, lockedUntil?: Date): Promise<void> {
     await this.update(id, {
       isLocked: true,
       lockedUntil: lockedUntil || null,
@@ -131,11 +128,7 @@ export class SuperAdminRepository extends Repository<SuperAdmin> {
   /**
    * Update password and related fields
    */
-  async updatePassword(
-    id: number,
-    passwordHash: string,
-    expiresAt?: Date,
-  ): Promise<void> {
+  async updatePassword(id: number, passwordHash: string, expiresAt?: Date): Promise<void> {
     await this.update(id, {
       passwordHash,
       passwordChangedAt: new Date(),
@@ -192,4 +185,3 @@ export class SuperAdminRepository extends Repository<SuperAdmin> {
     });
   }
 }
-

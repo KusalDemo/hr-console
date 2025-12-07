@@ -22,7 +22,7 @@ export enum ExchangeRateSource {
 
 /**
  * Exchange Rate Entity
- * 
+ *
  * Represents exchange rates between currencies with:
  * - Historical rate tracking (effective dates)
  * - Rate source tracking (manual, API, import)

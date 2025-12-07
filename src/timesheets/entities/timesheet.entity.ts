@@ -9,6 +9,7 @@ import {
   OneToMany,
   Index,
 } from 'typeorm';
+import { ObjectType, Field, Int, Float, registerEnumType } from '@nestjs/graphql';
 import { Employee } from '../../employees/entities/employee.entity';
 import { TimesheetPeriod } from './timesheet-period.entity';
 import { TimesheetEntry } from './timesheet-entry.entity';
@@ -24,13 +25,16 @@ export enum TimesheetStatus {
   LOCKED = 'LOCKED', // Locked - cannot be edited
 }
 
+registerEnumType(TimesheetStatus, { name: 'TimesheetStatus' });
+
 /**
  * Timesheet Entity
- * 
+ *
  * Groups time entries for a specific period.
  * Links employee, period, status, and totals.
  * Supports approval workflow integration.
  */
+@ObjectType()
 @Entity('timesheets')
 @Index('idx_timesheets_employee', ['employeeId'])
 @Index('idx_timesheets_period', ['periodId', 'periodStartDate'])
@@ -40,6 +44,7 @@ export enum TimesheetStatus {
 })
 @Index('idx_timesheets_organization', ['organizationId'])
 export class Timesheet {
+  @Field(() => Int)
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -53,6 +58,7 @@ export class Timesheet {
   @JoinColumn({ name: 'employee_id' })
   employee: Employee;
 
+  @Field(() => Int)
   @Column({ name: 'employee_id', type: 'bigint', nullable: false })
   employeeId: number;
 
@@ -66,30 +72,35 @@ export class Timesheet {
   @JoinColumn({ name: 'period_id' })
   period: TimesheetPeriod;
 
+  @Field(() => Int)
   @Column({ name: 'period_id', type: 'bigint', nullable: false })
   periodId: number;
 
   /**
    * Period start date
    */
+  @Field(() => Date)
   @Column({ name: 'period_start_date', type: 'date', nullable: false })
   periodStartDate: Date;
 
   /**
    * Period end date
    */
+  @Field(() => Date)
   @Column({ name: 'period_end_date', type: 'date', nullable: false })
   periodEndDate: Date;
 
   /**
    * Period number within the period type
    */
+  @Field(() => Int, { nullable: true })
   @Column({ name: 'period_number', type: 'bigint', nullable: true })
   periodNumber: number | null;
 
   /**
    * Timesheet status
    */
+  @Field(() => String)
   @Column({
     type: 'varchar',
     length: 32,
@@ -101,7 +112,15 @@ export class Timesheet {
   /**
    * Total hours
    */
-  @Column({ name: 'total_hours', type: 'decimal', precision: 10, scale: 2, nullable: false, default: 0 })
+  @Field(() => Float)
+  @Column({
+    name: 'total_hours',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: false,
+    default: 0,
+  })
   totalHours: number;
 
   /**
@@ -146,6 +165,7 @@ export class Timesheet {
   /**
    * Organization ID (for organization-scoped timesheets)
    */
+  @Field(() => Int, { nullable: true })
   @Column({ name: 'organization_id', type: 'bigint', nullable: true })
   organizationId: number | null;
 
@@ -252,7 +272,10 @@ export class Timesheet {
    * Check if timesheet can be edited
    */
   canBeEdited(): boolean {
-    return !this.isLocked && (this.status === TimesheetStatus.DRAFT || this.status === TimesheetStatus.REJECTED);
+    return (
+      !this.isLocked &&
+      (this.status === TimesheetStatus.DRAFT || this.status === TimesheetStatus.REJECTED)
+    );
   }
 
   /**
@@ -269,5 +292,3 @@ export class Timesheet {
     return this.status === TimesheetStatus.APPROVED;
   }
 }
-
-

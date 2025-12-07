@@ -45,21 +45,21 @@ export interface SubscriptionMetadata {
   paymentMethodType?: string;
   lastPaymentDate?: string;
   nextPaymentDate?: string;
-  
+
   // Trial information
   trialDaysRemaining?: number;
-  
+
   // Custom fields
   notes?: string;
   tags?: string[];
-  
+
   // Additional metadata
   [key: string]: any;
 }
 
 /**
  * Subscription Entity - Represents tenant subscriptions in the admin schema
- * 
+ *
  * Subscriptions link tenants to subscription plans and track billing cycles,
  * payment information, and subscription lifecycle (trial, active, canceled, etc.)
  */
@@ -68,7 +68,9 @@ export interface SubscriptionMetadata {
 @Index('idx_subscriptions_plan_id', ['plan'])
 @Index('idx_subscriptions_status', ['status'])
 @Index('idx_subscriptions_period_end', ['currentPeriodEnd'])
-@Index('idx_subscriptions_grace_period', ['gracePeriodEnd'], { where: 'grace_period_end IS NOT NULL' })
+@Index('idx_subscriptions_grace_period', ['gracePeriodEnd'], {
+  where: 'grace_period_end IS NOT NULL',
+})
 @Index('idx_subscriptions_payment_gateway_id', ['paymentGatewaySubscriptionId'], {
   where: 'payment_gateway_subscription_id IS NOT NULL',
 })
@@ -345,5 +347,3 @@ export class Subscription {
     return this.isActive() && !this.isCanceled();
   }
 }
-
-

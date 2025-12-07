@@ -21,7 +21,7 @@ import {
 
 /**
  * Equipment Booking Service
- * 
+ *
  * Manages equipment bookings with:
  * - Booking creation with conflict detection
  * - Approval workflow integration
@@ -108,11 +108,8 @@ export class EquipmentBookingService {
     }
 
     // Determine initial status based on approval requirements
-    const requiresApproval =
-      equipment.bookingAvailabilityRules?.requiresApproval !== false;
-    const initialStatus = requiresApproval
-      ? BookingStatus.PENDING
-      : BookingStatus.APPROVED;
+    const requiresApproval = equipment.bookingAvailabilityRules?.requiresApproval !== false;
+    const initialStatus = requiresApproval ? BookingStatus.PENDING : BookingStatus.APPROVED;
 
     // Create booking
     const booking = this.bookingRepository.create({
@@ -135,7 +132,7 @@ export class EquipmentBookingService {
             workflowKey: 'equipment_booking_approval',
             entityType: 'equipment_booking',
             entityId: 0, // Will be updated after booking is saved
-            workflowData: {
+            initialData: {
               equipmentId: createDto.equipmentId,
               employeeId: createDto.employeeId,
               startDate: startDate.toISOString(),
@@ -150,7 +147,7 @@ export class EquipmentBookingService {
         booking.workflowInstanceId = workflowInstance.id;
       } catch (error) {
         this.logger.warn(
-          `Failed to start approval workflow for booking: ${error.message}. Proceeding without workflow.`,
+          `Failed to start approval workflow for booking: ${error instanceof Error ? error.message : String(error)}. Proceeding without workflow.`,
         );
       }
     }
@@ -160,7 +157,9 @@ export class EquipmentBookingService {
     // Note: Workflow instance entityId will be set to booking ID after creation
     // This is handled by the workflow service when the entity is created
 
-    this.logger.log(`Created equipment booking: ${saved.id} for equipment ${createDto.equipmentId}`);
+    this.logger.log(
+      `Created equipment booking: ${saved.id} for equipment ${createDto.equipmentId}`,
+    );
 
     return saved;
   }
@@ -197,16 +196,12 @@ export class EquipmentBookingService {
       booking.bookingStatus !== BookingStatus.PENDING &&
       booking.bookingStatus !== BookingStatus.APPROVED
     ) {
-      throw new BadRequestException(
-        `Cannot update booking with status ${booking.bookingStatus}`,
-      );
+      throw new BadRequestException(`Cannot update booking with status ${booking.bookingStatus}`);
     }
 
     // If dates are being updated, check for conflicts
     if (updateDto.startDate || updateDto.endDate) {
-      const startDate = updateDto.startDate
-        ? new Date(updateDto.startDate)
-        : booking.startDate;
+      const startDate = updateDto.startDate ? new Date(updateDto.startDate) : booking.startDate;
       const endDate = updateDto.endDate ? new Date(updateDto.endDate) : booking.endDate;
 
       if (startDate >= endDate) {
@@ -221,9 +216,7 @@ export class EquipmentBookingService {
       );
 
       if (conflicts.length > 0) {
-        throw new ConflictException(
-          `Equipment is already booked for the requested time period`,
-        );
+        throw new ConflictException(`Equipment is already booked for the requested time period`);
       }
 
       booking.startDate = startDate;
@@ -238,7 +231,7 @@ export class EquipmentBookingService {
       booking.bookingNotes = updateDto.bookingNotes;
     }
 
-    booking.updatedBy = updatedBy;
+    booking.updatedBy = updatedBy ?? null;
 
     const saved = await this.bookingRepository.save(booking);
 
@@ -262,9 +255,7 @@ export class EquipmentBookingService {
     }
 
     if (booking.bookingStatus !== BookingStatus.PENDING) {
-      throw new BadRequestException(
-        `Cannot approve booking with status ${booking.bookingStatus}`,
-      );
+      throw new BadRequestException(`Cannot approve booking with status ${booking.bookingStatus}`);
     }
 
     // Process workflow approval if workflow exists
@@ -286,7 +277,9 @@ export class EquipmentBookingService {
           );
         }
       } catch (error) {
-        this.logger.warn(`Workflow check failed: ${error.message}. Proceeding with direct approval.`);
+        this.logger.warn(
+          `Workflow check failed: ${error instanceof Error ? error.message : String(error)}. Proceeding with direct approval.`,
+        );
       }
     }
 
@@ -317,9 +310,7 @@ export class EquipmentBookingService {
     }
 
     if (booking.bookingStatus !== BookingStatus.PENDING) {
-      throw new BadRequestException(
-        `Cannot reject booking with status ${booking.bookingStatus}`,
-      );
+      throw new BadRequestException(`Cannot reject booking with status ${booking.bookingStatus}`);
     }
 
     // Process workflow rejection if workflow exists
@@ -331,7 +322,7 @@ export class EquipmentBookingService {
           rejectedBy,
         );
       } catch (error) {
-        this.logger.warn(`Workflow cancellation failed: ${error.message}`);
+        this.logger.warn(`Workflow cancellation failed: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
 
@@ -366,24 +357,22 @@ export class EquipmentBookingService {
       booking.bookingStatus !== BookingStatus.PENDING &&
       booking.bookingStatus !== BookingStatus.APPROVED
     ) {
-      throw new BadRequestException(
-        `Cannot cancel booking with status ${booking.bookingStatus}`,
-      );
+      throw new BadRequestException(`Cannot cancel booking with status ${booking.bookingStatus}`);
     }
 
     // Cancel workflow if exists
     if (booking.workflowInstanceId) {
       try {
-        await this.workflowService.cancelWorkflow(booking.workflowInstanceId, cancelledBy);
+        await this.workflowService.cancelWorkflowInstance(booking.workflowInstanceId, cancellationReason ?? '', cancelledBy ?? 0);
       } catch (error) {
-        this.logger.warn(`Workflow cancellation failed: ${error.message}`);
+        this.logger.warn(`Workflow cancellation failed: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
 
     booking.bookingStatus = BookingStatus.CANCELLED;
-    booking.cancelledById = cancelledBy;
+    booking.cancelledById = cancelledBy ?? null;
     booking.cancelledAt = new Date();
-    booking.cancellationReason = cancellationReason;
+    booking.cancellationReason = cancellationReason ?? null;
 
     const saved = await this.bookingRepository.save(booking);
 
@@ -419,7 +408,7 @@ export class EquipmentBookingService {
 
     booking.bookingStatus = BookingStatus.ACTIVE;
     booking.actualPickupDate = now;
-    booking.conditionAtPickup = pickupDto.conditionAtPickup;
+    booking.conditionAtPickup = pickupDto.conditionAtPickup ?? null;
 
     const saved = await this.bookingRepository.save(booking);
 
@@ -458,14 +447,13 @@ export class EquipmentBookingService {
     const now = new Date();
     booking.bookingStatus = BookingStatus.COMPLETED;
     booking.actualReturnDate = now;
-    booking.conditionAtReturn = returnDto.conditionAtReturn;
-    booking.returnNotes = returnDto.returnNotes;
-    booking.updatedBy = returnedBy;
+    booking.conditionAtReturn = returnDto.conditionAtReturn ?? null;
+    booking.returnNotes = returnDto.returnNotes ?? null;
+    booking.updatedBy = returnedBy ?? null;
 
     // Calculate usage hours
     if (booking.actualPickupDate) {
-      const hoursDiff =
-        (now.getTime() - booking.actualPickupDate.getTime()) / (1000 * 60 * 60);
+      const hoursDiff = (now.getTime() - booking.actualPickupDate.getTime()) / (1000 * 60 * 60);
       booking.usageHours = Math.round(hoursDiff * 100) / 100; // Round to 2 decimals
     }
 
@@ -517,11 +505,7 @@ export class EquipmentBookingService {
   /**
    * Get booking statistics for equipment
    */
-  async getBookingStatistics(
-    equipmentId: number,
-    startDate?: Date,
-    endDate?: Date,
-  ) {
+  async getBookingStatistics(equipmentId: number, startDate?: Date, endDate?: Date) {
     return this.bookingRepository.getBookingStatistics(equipmentId, startDate, endDate);
   }
 
@@ -570,25 +554,17 @@ export class EquipmentBookingService {
 
     // Check maximum booking duration
     if (rules.maxBookingDays) {
-      const daysDiff = Math.ceil(
-        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
+      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
       if (daysDiff > rules.maxBookingDays) {
-        throw new BadRequestException(
-          `Maximum booking duration is ${rules.maxBookingDays} days`,
-        );
+        throw new BadRequestException(`Maximum booking duration is ${rules.maxBookingDays} days`);
       }
     }
 
     // Check minimum booking duration
     if (rules.minBookingDays) {
-      const daysDiff = Math.ceil(
-        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
+      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
       if (daysDiff < rules.minBookingDays) {
-        throw new BadRequestException(
-          `Minimum booking duration is ${rules.minBookingDays} days`,
-        );
+        throw new BadRequestException(`Minimum booking duration is ${rules.minBookingDays} days`);
       }
     }
 
@@ -598,10 +574,7 @@ export class EquipmentBookingService {
       const endDateStr = endDate.toISOString().split('T')[0];
       const blackoutDates = rules.blackoutDates.map((d: string) => d.split('T')[0]);
 
-      if (
-        blackoutDates.includes(startDateStr) ||
-        blackoutDates.includes(endDateStr)
-      ) {
+      if (blackoutDates.includes(startDateStr) || blackoutDates.includes(endDateStr)) {
         throw new BadRequestException('Booking dates fall on blackout dates');
       }
     }

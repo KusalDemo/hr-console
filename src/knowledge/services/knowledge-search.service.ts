@@ -4,7 +4,7 @@ import { KnowledgeArticle, ArticleStatus } from '../entities/knowledge-article.e
 
 /**
  * Knowledge Search Service
- * 
+ *
  * Provides full-text search capabilities using PostgreSQL full-text search
  */
 @Injectable()

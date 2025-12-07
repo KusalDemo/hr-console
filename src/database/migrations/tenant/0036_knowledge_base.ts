@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Knowledge Base System Migration
- * 
+ *
  * This migration creates:
  * - knowledge_categories table (hierarchical categories for organizing articles)
  * - knowledge_articles table (articles with versioning, workflow, permissions)
@@ -11,7 +11,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * - knowledge_article_views table (view tracking for analytics)
  * - knowledge_article_feedback table (user feedback and votes)
  * - Full-text search indexes
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class KnowledgeBase0000000000036 implements MigrationInterface {

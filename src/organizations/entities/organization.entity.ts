@@ -9,6 +9,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
+import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
 
 /**
  * Organization Type Enum
@@ -34,12 +35,13 @@ export enum OrganizationStatus {
 
 /**
  * Organization Entity - Represents organizations within a tenant
- * 
+ *
  * Organizations support hierarchical structure (parent-child relationships)
  * and can have multiple types (company, division, department, etc.)
- * 
+ *
  * Each tenant can have multiple organizations, with one default organization.
  */
+@ObjectType()
 @Entity('organizations')
 @Index('idx_organizations_key', ['organizationKey'])
 @Index('idx_organizations_parent', ['parentOrganization'])
@@ -47,12 +49,15 @@ export enum OrganizationStatus {
 @Index('idx_organizations_status', ['status'])
 @Index('idx_organizations_default', ['isDefault'], { where: 'is_default = true' })
 export class Organization {
+  @Field(() => Int)
   @PrimaryGeneratedColumn('increment')
   id: number;
 
+  @Field(() => String)
   @Column({ name: 'organization_key', type: 'varchar', length: 128, unique: true, nullable: false })
   organizationKey: string;
 
+  @Field(() => String)
   @Column({ type: 'varchar', length: 255, nullable: false })
   name: string;
 
@@ -241,4 +246,3 @@ export class Organization {
     return parts.join(', ');
   }
 }
-

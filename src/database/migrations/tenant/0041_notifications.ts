@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Notification System Migration
- * 
+ *
  * This migration creates:
  * - notification_templates table (email, SMS, push, in-app, webhook templates)
  * - notification_preferences table (user/tenant notification preferences)
  * - notifications table (notification history and delivery tracking)
  * - Indexes for performance optimization
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class Notifications0000000000041 implements MigrationInterface {

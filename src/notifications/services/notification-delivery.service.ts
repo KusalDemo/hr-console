@@ -11,7 +11,7 @@ import { EmployeeRepository } from '../../employees/repositories/employee.reposi
 
 /**
  * Notification Delivery Service
- * 
+ *
  * Handles actual delivery of notifications:
  * - Email delivery (via EmailService)
  * - SMS delivery (structure for future)
@@ -54,9 +54,7 @@ export class NotificationDeliveryService {
    */
   async deliverNotification(notification: Notification): Promise<void> {
     try {
-      this.logger.debug(
-        `Delivering notification ${notification.id} via ${notification.channel}`,
-      );
+      this.logger.debug(`Delivering notification ${notification.id} via ${notification.channel}`);
 
       notification.status = NotificationStatus.QUEUED;
       notification.deliveryAttempts += 1;
@@ -130,7 +128,7 @@ export class NotificationDeliveryService {
   private async deliverSMS(notification: Notification): Promise<void> {
     // TODO: Implement SMS delivery (e.g., Twilio, AWS SNS)
     this.logger.warn(`SMS delivery not yet implemented for notification ${notification.id}`);
-    
+
     // For now, mark as sent (structure for future implementation)
     notification.status = NotificationStatus.SENT;
     notification.sentAt = new Date();
@@ -143,7 +141,7 @@ export class NotificationDeliveryService {
   private async deliverPush(notification: Notification): Promise<void> {
     // TODO: Implement push notification delivery (e.g., FCM, APNS)
     this.logger.warn(`Push delivery not yet implemented for notification ${notification.id}`);
-    
+
     // For now, mark as sent (structure for future implementation)
     notification.status = NotificationStatus.SENT;
     notification.sentAt = new Date();
@@ -266,6 +264,9 @@ export class NotificationDeliveryService {
    * Strip HTML tags from text
    */
   private stripHtml(html: string): string {
-    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    return html
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .trim();
   }
 }

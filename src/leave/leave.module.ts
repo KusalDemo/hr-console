@@ -7,17 +7,13 @@ import {
   EmployeeLeavePolicyAssignmentRepository,
   LeaveRequestRepository,
 } from './repositories';
-import {
-  LeavePolicy,
-  LeaveRequest,
-  EmployeeLeavePolicyAssignment,
-} from './entities';
+import { LeavePolicy, LeaveRequest, EmployeeLeavePolicyAssignment } from './entities';
 import { Employee } from '../employees/entities/employee.entity';
 import { WorkflowsModule } from '../workflows/workflows.module';
 
 /**
  * Leave Module
- * 
+ *
  * Provides leave policy management with:
  * - Leave policy CRUD operations
  * - Policy templates and cloning
@@ -28,12 +24,7 @@ import { WorkflowsModule } from '../workflows/workflows.module';
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      LeavePolicy,
-      LeaveRequest,
-      EmployeeLeavePolicyAssignment,
-      Employee,
-    ]),
+    TypeOrmModule.forFeature([LeavePolicy, LeaveRequest, EmployeeLeavePolicyAssignment, Employee]),
     WorkflowsModule,
   ],
   controllers: [LeaveController],

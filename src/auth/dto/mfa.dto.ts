@@ -56,4 +56,3 @@ export class DisableMfaDto {
   @Length(6, 6, { message: 'MFA code must be 6 digits' })
   mfaCode?: string;
 }
-

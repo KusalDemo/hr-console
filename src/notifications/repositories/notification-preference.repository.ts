@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, IsNull } from 'typeorm';
 import { NotificationPreference } from '../entities';
 
 @Injectable()
@@ -57,7 +57,7 @@ export class NotificationPreferenceRepository extends Repository<NotificationPre
    */
   async findGlobalByUser(userId: number): Promise<NotificationPreference | null> {
     return this.findOne({
-      where: { userId, templateKey: null, category: null, isActive: true },
+      where: { userId, templateKey: IsNull(), category: IsNull(), isActive: true },
     });
   }
 
@@ -90,7 +90,7 @@ export class NotificationPreferenceRepository extends Repository<NotificationPre
    */
   async findGlobalByOrganization(organizationId: number): Promise<NotificationPreference | null> {
     return this.findOne({
-      where: { organizationId, templateKey: null, category: null, isActive: true },
+      where: { organizationId, templateKey: IsNull(), category: IsNull(), isActive: true },
     });
   }
 }

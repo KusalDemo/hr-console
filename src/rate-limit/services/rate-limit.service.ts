@@ -16,7 +16,7 @@ export interface RateLimitResult {
 
 /**
  * Enhanced Rate Limit Service
- * 
+ *
  * Provides Redis-based rate limiting with:
  * - Token bucket algorithm
  * - Sliding window algorithm
@@ -29,9 +29,7 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
   private redis: Redis | null = null;
   private readonly keyPrefix = 'ratelimit:';
 
-  constructor(
-    private readonly configRepository: RateLimitConfigRepository,
-  ) {}
+  constructor(private readonly configRepository: RateLimitConfigRepository) {}
 
   async onModuleInit() {
     // Initialize Redis connection if configured
@@ -153,10 +151,7 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
   /**
    * Token bucket algorithm
    */
-  private async checkTokenBucket(
-    key: string,
-    config: RateLimitConfig,
-  ): Promise<RateLimitResult> {
+  private async checkTokenBucket(key: string, config: RateLimitConfig): Promise<RateLimitResult> {
     const bucketKey = `${this.keyPrefix}tb:${key}`;
     const capacity = config.burstSize || config.requestsPerMinute;
     const refillRate = config.requestsPerMinute / 60; // Tokens per second
@@ -194,7 +189,7 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
       `;
 
       try {
-        const result = await this.redis.eval(
+        const result = (await this.redis.eval(
           luaScript,
           1,
           bucketKey,
@@ -202,12 +197,12 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
           refillRate.toString(),
           now.toString(),
           config.windowSizeSeconds.toString(),
-        ) as [string, string, string];
+        )) as [string, string, string];
 
         const allowed = result[0] === '1';
         const remaining = Math.max(0, parseInt(result[1], 10));
         const limit = parseInt(result[2], 10);
-        const resetTime = now + (config.windowSizeSeconds * 1000);
+        const resetTime = now + config.windowSizeSeconds * 1000;
 
         return {
           allowed,
@@ -227,7 +222,7 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
       allowed: true,
       limit: capacity,
       remaining: capacity - 1,
-      resetTime: now + (config.windowSizeSeconds * 1000),
+      resetTime: now + config.windowSizeSeconds * 1000,
       resetSeconds: config.windowSizeSeconds,
     };
   }
@@ -235,15 +230,12 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
   /**
    * Sliding window algorithm
    */
-  private async checkSlidingWindow(
-    key: string,
-    config: RateLimitConfig,
-  ): Promise<RateLimitResult> {
+  private async checkSlidingWindow(key: string, config: RateLimitConfig): Promise<RateLimitResult> {
     const windowKey = `${this.keyPrefix}sw:${key}`;
     const limit = config.requestsPerMinute;
     const windowSize = config.windowSizeSeconds;
     const now = Date.now();
-    const windowStart = now - (windowSize * 1000);
+    const windowStart = now - windowSize * 1000;
 
     if (this.redis) {
       // Use Redis for distributed rate limiting
@@ -274,7 +266,7 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
       `;
 
       try {
-        const result = await this.redis.eval(
+        const result = (await this.redis.eval(
           luaScript,
           1,
           windowKey,
@@ -282,13 +274,13 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
           limit.toString(),
           windowSize.toString(),
           now.toString(),
-        ) as [string, string, string];
+        )) as [string, string, string];
 
         const allowed = result[0] === '1';
         const count = parseInt(result[1], 10);
         const limitValue = parseInt(result[2], 10);
         const remaining = Math.max(0, limitValue - count - (allowed ? 1 : 0));
-        const resetTime = now + (windowSize * 1000);
+        const resetTime = now + windowSize * 1000;
 
         return {
           allowed,
@@ -308,7 +300,7 @@ export class RateLimitService implements OnModuleInit, OnModuleDestroy {
       allowed: true,
       limit,
       remaining: limit - 1,
-      resetTime: now + (windowSize * 1000),
+      resetTime: now + windowSize * 1000,
       resetSeconds: windowSize,
     };
   }

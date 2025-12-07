@@ -1,11 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsNumber,
-  IsArray,
-  Min,
-  Max,
-} from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsArray, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 
 /**

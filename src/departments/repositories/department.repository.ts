@@ -126,10 +126,7 @@ export class DepartmentRepository extends Repository<Department> {
   /**
    * Find departments by status
    */
-  async findByStatus(
-    status: DepartmentStatus,
-    organizationId?: number,
-  ): Promise<Department[]> {
+  async findByStatus(status: DepartmentStatus, organizationId?: number): Promise<Department[]> {
     const where: any = {
       status,
     };
@@ -224,4 +221,3 @@ export class DepartmentRepository extends Repository<Department> {
     });
   }
 }
-

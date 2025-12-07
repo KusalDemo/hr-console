@@ -22,7 +22,7 @@ import { PolicyType } from './entities/privacy-policy-acceptance.entity';
 
 /**
  * GDPR Controller
- * 
+ *
  * Provides endpoints for GDPR compliance:
  * - Data subject requests (access, deletion, portability)
  * - Consent management
@@ -43,16 +43,13 @@ export class GdprController {
    * Create data subject request
    */
   @Post('requests')
-  async createRequest(
-    @Request() req: any,
-    @Body() dto: CreateDataSubjectRequestDto,
-  ) {
+  async createRequest(@Request() req: any, @Body() dto: CreateDataSubjectRequestDto) {
     const request = await this.gdprService.createDataSubjectRequest(
       dto.requestType,
       dto.dataSubjectEmail,
       dto.dataSubjectName,
       dto.dataSubjectIdentifier,
-      dto.dataSubjectType || DataSubjectType.USER,
+      (dto.dataSubjectType || DataSubjectType.USER) as DataSubjectType,
       dto.description,
       req.user.id,
     );
@@ -86,10 +83,7 @@ export class GdprController {
    * Download exported data
    */
   @Get('requests/:requestId/download')
-  async downloadExport(
-    @Param('requestId') requestId: number,
-    @Res() res: Response,
-  ) {
+  async downloadExport(@Param('requestId') requestId: number, @Res() res: Response) {
     // TODO: Get request and return file
     res.status(200).json({ message: 'Download endpoint - implementation needed' });
   }
@@ -111,8 +105,7 @@ export class GdprController {
    */
   @Post('requests/:requestId/process-anonymization')
   async processAnonymizationRequest(@Param('requestId') requestId: number) {
-    const anonymizedCount =
-      await this.gdprService.processAnonymizationRequest(requestId);
+    const anonymizedCount = await this.gdprService.processAnonymizationRequest(requestId);
     return {
       anonymizedCount,
       message: 'Anonymization request processed successfully',
@@ -125,18 +118,15 @@ export class GdprController {
    * Record consent
    */
   @Post('consents')
-  async recordConsent(
-    @Request() req: any,
-    @Body() dto: RecordConsentDto,
-  ) {
+  async recordConsent(@Request() req: any, @Body() dto: RecordConsentDto) {
     const consent = await this.gdprService.recordConsent(
       dto.dataSubjectEmail,
       dto.consentType,
       dto.consentCategory,
       dto.consentPurpose,
       dto.dataSubjectId,
-      dto.dataSubjectType || DataSubjectType.USER,
-      dto.organizationId || null,
+      (dto.dataSubjectType || DataSubjectType.USER) as DataSubjectType,
+      dto.organizationId ?? undefined,
       req.ip,
       req.headers['user-agent'],
     );
@@ -172,10 +162,7 @@ export class GdprController {
    * Get user consents
    */
   @Get('consents')
-  async getUserConsents(
-    @Request() req: any,
-    @Query('email') email?: string,
-  ) {
+  async getUserConsents(@Request() req: any, @Query('email') email?: string) {
     const userEmail = email || req.user.email;
     return this.gdprService.getUserConsents(userEmail, req.user.id);
   }

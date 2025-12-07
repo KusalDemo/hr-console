@@ -19,3 +19,4 @@ export class CreateChecklistDto {
   @IsNumber()
   assignedToId?: number;
 }
+

@@ -96,4 +96,3 @@ export class ValidationException extends BusinessException {
     super(ErrorCode.VALIDATION_ERROR, message, HttpStatus.BAD_REQUEST, details);
   }
 }
-

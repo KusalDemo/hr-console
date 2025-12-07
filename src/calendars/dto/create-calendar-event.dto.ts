@@ -85,4 +85,3 @@ export class CreateCalendarEventDto {
   @IsObject()
   eventMetadata?: Record<string, any>;
 }
-

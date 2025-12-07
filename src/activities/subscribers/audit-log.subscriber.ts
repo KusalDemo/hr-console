@@ -6,22 +6,17 @@ import {
   RemoveEvent,
 } from 'typeorm';
 import { AuditLogService } from '../services/audit-log.service';
-import {
-  AuditLog,
-  AuditLevel,
-  ActivityCategory,
-  ActorType,
-} from '../entities/audit-log.entity';
+import { AuditLog, AuditLevel, ActivityCategory, ActorType } from '../entities/audit-log.entity';
 import { Injectable } from '@nestjs/common';
 
 /**
  * Audit Log Subscriber
- * 
+ *
  * Automatically logs entity lifecycle events:
  * - Entity creation
  * - Entity updates (with before/after values)
  * - Entity deletion
- * 
+ *
  * This subscriber uses TypeORM's event system to automatically
  * track changes to entities for audit purposes.
  */
@@ -37,7 +32,7 @@ export class AuditLogSubscriber implements EntitySubscriberInterface {
   listenTo(): Function | string {
     // Listen to all entities by returning a pattern
     // In practice, you might want to filter specific entities
-    return /.*/;
+    return '.*';
   }
 
   /**
@@ -65,12 +60,12 @@ export class AuditLogSubscriber implements EntitySubscriberInterface {
         actorName,
         targetType: entityName,
         targetId: entity.id || null,
-        targetName: this.getEntityDisplayName(entity),
+        targetName: this.getEntityDisplayName(entity) ?? undefined,
         organizationId: entity.organizationId || null,
         description: `${entityName} created`,
         auditLevel: AuditLevel.INFO,
-        beforeValues: null,
-        afterValues: this.sanitizeEntity(entity),
+        beforeValues: undefined,
+        afterValues: this.sanitizeEntity(entity) ?? undefined,
         metadata: {
           entityType: entityName,
           operation: 'CREATE',
@@ -116,12 +111,12 @@ export class AuditLogSubscriber implements EntitySubscriberInterface {
         actorName,
         targetType: entityName,
         targetId: entity.id || null,
-        targetName: this.getEntityDisplayName(entity),
+        targetName: this.getEntityDisplayName(entity) ?? undefined,
         organizationId: entity.organizationId || null,
         description: `${entityName} updated`,
         auditLevel: AuditLevel.INFO,
-        beforeValues,
-        afterValues,
+        beforeValues: beforeValues ?? undefined,
+        afterValues: afterValues ?? undefined,
         metadata: {
           entityType: entityName,
           operation: 'UPDATE',
@@ -158,12 +153,12 @@ export class AuditLogSubscriber implements EntitySubscriberInterface {
         actorName,
         targetType: entityName,
         targetId: entity.id || null,
-        targetName: this.getEntityDisplayName(entity),
+        targetName: this.getEntityDisplayName(entity) ?? undefined,
         organizationId: entity.organizationId || null,
         description: `${entityName} deleted`,
         auditLevel: AuditLevel.WARN,
-        beforeValues: this.sanitizeEntity(entity),
-        afterValues: null,
+        beforeValues: this.sanitizeEntity(entity) ?? undefined,
+        afterValues: undefined,
         metadata: {
           entityType: entityName,
           operation: 'DELETE',

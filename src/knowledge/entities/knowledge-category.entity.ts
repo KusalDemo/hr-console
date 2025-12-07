@@ -14,7 +14,7 @@ import { KnowledgeArticle } from './knowledge-article.entity';
 
 /**
  * Knowledge Category Entity
- * 
+ *
  * Categories for organizing knowledge articles
  */
 @Entity('knowledge_categories')

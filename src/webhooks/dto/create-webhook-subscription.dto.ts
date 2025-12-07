@@ -12,7 +12,10 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { WebhookEventType, WebhookSubscriptionStatus } from '../entities/webhook-subscription.entity';
+import {
+  WebhookEventType,
+  WebhookSubscriptionStatus,
+} from '../entities/webhook-subscription.entity';
 
 export class CreateWebhookSubscriptionDto {
   @IsString()

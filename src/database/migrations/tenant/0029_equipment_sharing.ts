@@ -2,13 +2,13 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Equipment Sharing & Booking Migration
- * 
+ *
  * This migration creates:
  * - equipment_bookings table (shared equipment booking system with approval workflows)
  * - Adds booking availability fields to equipment table
  * - Indexes for performance optimization
  * - Foreign key relationships
- * 
+ *
  * Note: This migration is designed to be run in tenant schemas (t_{tenantKey})
  */
 export class EquipmentSharing0000000000029 implements MigrationInterface {

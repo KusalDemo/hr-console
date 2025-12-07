@@ -23,7 +23,7 @@ export enum AssignmentStatus {
 
 /**
  * Equipment Assignment Entity
- * 
+ *
  * Employee equipment assignments with tracking.
  */
 @Entity('equipment_assignments')

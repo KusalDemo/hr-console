@@ -14,11 +14,7 @@ import {
   ParseBoolPipe,
 } from '@nestjs/common';
 import { HolidayService } from './services/holiday.service';
-import {
-  CreateHolidayCalendarDto,
-  CreateHolidayDto,
-  AssignCalendarToEmployeeDto,
-} from './dto';
+import { CreateHolidayCalendarDto, CreateHolidayDto, AssignCalendarToEmployeeDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -28,7 +24,7 @@ import { CalendarType } from './entities/holiday-calendar.entity';
 
 /**
  * Holidays Controller
- * 
+ *
  * REST API endpoints for holiday calendar management:
  * - Holiday calendars (CRUD, search)
  * - Holidays (CRUD, recurring generation)
@@ -164,10 +160,7 @@ export class HolidaysController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles('ADMIN', 'HR')
-  async createHoliday(
-    @Body() createDto: CreateHolidayDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async createHoliday(@Body() createDto: CreateHolidayDto, @CurrentUser() user: JwtPayload) {
     return this.holidayService.createHoliday(createDto, user.userId);
   }
 
@@ -260,7 +253,9 @@ export class HolidaysController {
       assignDto.calendarId,
       {
         effectiveStartDate: new Date(assignDto.effectiveStartDate),
-        effectiveEndDate: assignDto.effectiveEndDate ? new Date(assignDto.effectiveEndDate) : undefined,
+        effectiveEndDate: assignDto.effectiveEndDate
+          ? new Date(assignDto.effectiveEndDate)
+          : undefined,
         assignmentNotes: assignDto.assignmentNotes,
       },
       user.userId,
@@ -283,10 +278,7 @@ export class HolidaysController {
   @Delete('assignments/:id')
   @Roles('ADMIN', 'HR')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeAssignment(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  async removeAssignment(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: JwtPayload) {
     await this.holidayService.removeAssignment(id, user.userId);
   }
 }

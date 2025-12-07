@@ -34,6 +34,7 @@ import { FinancialsModule } from './financials/financials.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { DocumentsModule } from './documents/documents.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { DocumentsModule } from './documents/documents.module';
     NotificationsModule, // Notification system module
     IntegrationsModule, // Integration framework module
     DocumentsModule, // Document management system module
+    SearchModule, // Advanced search & filtering module
   ],
   controllers: [AppController],
   providers: [AppService],

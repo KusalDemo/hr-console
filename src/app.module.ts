@@ -25,6 +25,7 @@ import { GoalsModule } from './goals/goals.module';
 import { KPIsModule } from './kpis/kpis.module';
 import { PerformanceModule } from './performance/performance.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { EquipmentModule } from './equipment/equipment.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { InventoryModule } from './inventory/inventory.module';
     KPIsModule, // KPI & Metrics framework module
     PerformanceModule, // Performance reviews module
     InventoryModule, // Inventory management system module
+    EquipmentModule, // Equipment & Asset tracking module
   ],
   controllers: [AppController],
   providers: [AppService],

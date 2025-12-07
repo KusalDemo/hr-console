@@ -18,6 +18,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { ProjectFinancialsModule } from './project-financials/project-financials.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { LeadsModule } from './leads/leads.module';
+import { ClientsVendorsModule } from './clients-vendors/clients-vendors.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { LeadsModule } from './leads/leads.module';
     ProjectFinancialsModule, // Project financials module
     ContactsModule, // Contacts management module
     LeadsModule, // Lead management and scoring module
+    ClientsVendorsModule, // Clients and vendors management module
   ],
   controllers: [AppController],
   providers: [AppService],

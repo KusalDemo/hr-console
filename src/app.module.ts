@@ -38,6 +38,7 @@ import { SearchModule } from './search/search.module';
 import { GraphQLModule } from './graphql/graphql.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { RateLimitModule } from './rate-limit/rate-limit.module';
+import { DashboardsModule } from './dashboards/dashboards.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { RateLimitModule } from './rate-limit/rate-limit.module';
     SearchModule, // Advanced search & filtering module
     GraphQLModule, // GraphQL API layer
     WebhooksModule, // Webhook event system
+    DashboardsModule, // Dashboard builder framework module
   ],
   controllers: [AppController],
   providers: [AppService],

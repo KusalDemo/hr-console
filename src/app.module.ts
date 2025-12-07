@@ -27,6 +27,7 @@ import { PerformanceModule } from './performance/performance.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { EquipmentModule } from './equipment/equipment.module';
 import { ImportExportModule } from './import-export/import-export.module';
+import { ActivitiesModule } from './activities/activities.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ImportExportModule } from './import-export/import-export.module';
     InventoryModule, // Inventory management system module
     EquipmentModule, // Equipment & Asset tracking module
     ImportExportModule, // Data import framework module
+    ActivitiesModule, // Comprehensive audit logging module
   ],
   controllers: [AppController],
   providers: [AppService],

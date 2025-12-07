@@ -42,6 +42,7 @@ import { CachingModule } from './caching/caching.module';
 import { DashboardsModule } from './dashboards/dashboards.module';
 import { FormsModule } from './forms/forms.module';
 import { ReportsModule } from './reports/reports.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { ReportsModule } from './reports/reports.module';
     DashboardsModule, // Dashboard builder framework module
     FormsModule, // Form builder API module
     ReportsModule, // Advanced reporting engine module
+    JobsModule, // Background job processing module
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -37,6 +37,7 @@ import { DocumentsModule } from './documents/documents.module';
 import { SearchModule } from './search/search.module';
 import { GraphQLModule } from './graphql/graphql.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { RateLimitModule } from './rate-limit/rate-limit.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     LoggerModule,
     DatabaseModule,
     HealthModule,
+    RateLimitModule, // Rate limiting (import early for global availability)
     AuthModule,
     TenantsModule,
     OrganizationsModule, // Import after TenantsModule so middleware order is correct

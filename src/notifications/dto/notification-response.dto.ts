@@ -1,0 +1,77 @@
+import { Notification } from '../entities';
+
+export class NotificationResponseDto {
+  id: number;
+  templateId: number | null;
+  templateKey: string | null;
+  channel: string;
+  userId: number;
+  organizationId: number | null;
+  title: string;
+  body: string;
+  category: string | null;
+  priority: string;
+  status: string;
+  scheduledAt: Date | null;
+  sentAt: Date | null;
+  deliveredAt: Date | null;
+  readAt: Date | null;
+  failedAt: Date | null;
+  failureReason: string | null;
+  deliveryAttempts: number;
+  maxDeliveryAttempts: number;
+  nextRetryAt: Date | null;
+  recipientEmail: string | null;
+  recipientPhone: string | null;
+  webhookUrl: string | null;
+  actionUrl: string | null;
+  actionLabel: string | null;
+  relatedEntityType: string | null;
+  relatedEntityId: number | null;
+  templateVariables: Record<string, any> | null;
+  deliveryMetadata: Record<string, any> | null;
+  metadata: Record<string, any> | null;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: number | null;
+  updatedBy: number | null;
+
+  static fromEntity(entity: Notification): NotificationResponseDto {
+    const dto = new NotificationResponseDto();
+    dto.id = entity.id;
+    dto.templateId = entity.templateId;
+    dto.templateKey = entity.templateKey;
+    dto.channel = entity.channel;
+    dto.userId = entity.userId;
+    dto.organizationId = entity.organizationId;
+    dto.title = entity.title;
+    dto.body = entity.body;
+    dto.category = entity.category;
+    dto.priority = entity.priority;
+    dto.status = entity.status;
+    dto.scheduledAt = entity.scheduledAt;
+    dto.sentAt = entity.sentAt;
+    dto.deliveredAt = entity.deliveredAt;
+    dto.readAt = entity.readAt;
+    dto.failedAt = entity.failedAt;
+    dto.failureReason = entity.failureReason;
+    dto.deliveryAttempts = entity.deliveryAttempts;
+    dto.maxDeliveryAttempts = entity.maxDeliveryAttempts;
+    dto.nextRetryAt = entity.nextRetryAt;
+    dto.recipientEmail = entity.recipientEmail;
+    dto.recipientPhone = entity.recipientPhone;
+    dto.webhookUrl = entity.webhookUrl;
+    dto.actionUrl = entity.actionUrl;
+    dto.actionLabel = entity.actionLabel;
+    dto.relatedEntityType = entity.relatedEntityType;
+    dto.relatedEntityId = entity.relatedEntityId;
+    dto.templateVariables = entity.templateVariables;
+    dto.deliveryMetadata = entity.deliveryMetadata;
+    dto.metadata = entity.metadata;
+    dto.createdAt = entity.createdAt;
+    dto.updatedAt = entity.updatedAt;
+    dto.createdBy = entity.createdBy;
+    dto.updatedBy = entity.updatedBy;
+    return dto;
+  }
+}

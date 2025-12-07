@@ -31,6 +31,7 @@ import { ActivitiesModule } from './activities/activities.module';
 import { KnowledgeModule } from './knowledge/knowledge.module';
 import { SupportModule } from './support/support.module';
 import { FinancialsModule } from './financials/financials.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { FinancialsModule } from './financials/financials.module';
     KnowledgeModule, // Knowledge base system module
     SupportModule, // Help center & ticketing module
     FinancialsModule, // Multi-currency support module
+    NotificationsModule, // Notification system module
   ],
   controllers: [AppController],
   providers: [AppService],

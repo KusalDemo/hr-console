@@ -20,6 +20,7 @@ import { ContactsModule } from './contacts/contacts.module';
 import { LeadsModule } from './leads/leads.module';
 import { ClientsVendorsModule } from './clients-vendors/clients-vendors.module';
 import { CalendarsModule } from './calendars/calendars.module';
+import { ResourcesModule } from './resources/resources.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { CalendarsModule } from './calendars/calendars.module';
     LeadsModule, // Lead management and scoring module
     ClientsVendorsModule, // Clients and vendors management module
     CalendarsModule, // Calendar and scheduling system module
+    ResourcesModule, // Resource management module
   ],
   controllers: [AppController],
   providers: [AppService],

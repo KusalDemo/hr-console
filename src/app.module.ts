@@ -30,6 +30,7 @@ import { ImportExportModule } from './import-export/import-export.module';
 import { ActivitiesModule } from './activities/activities.module';
 import { KnowledgeModule } from './knowledge/knowledge.module';
 import { SupportModule } from './support/support.module';
+import { FinancialsModule } from './financials/financials.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { SupportModule } from './support/support.module';
     ActivitiesModule, // Comprehensive audit logging module
     KnowledgeModule, // Knowledge base system module
     SupportModule, // Help center & ticketing module
+    FinancialsModule, // Multi-currency support module
   ],
   controllers: [AppController],
   providers: [AppService],

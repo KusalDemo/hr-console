@@ -16,7 +16,7 @@ import {
   ConvertCurrencyDto,
 } from '../dto';
 import { Currency, CurrencyStatus } from '../entities/currency.entity';
-import { ExchangeRate } from '../entities/exchange-rate.entity';
+import { ExchangeRate, ExchangeRateSource } from '../entities/exchange-rate.entity';
 
 /**
  * Financial Service
@@ -231,7 +231,7 @@ export class FinancialService {
       ...createDto,
       effectiveDate: new Date(createDto.effectiveDate),
       expiryDate: createDto.expiryDate ? new Date(createDto.expiryDate) : null,
-      source: createDto.source || 'MANUAL',
+      source: createDto.source || ExchangeRateSource.MANUAL,
       createdBy,
     });
 

@@ -21,6 +21,7 @@ import { LeadsModule } from './leads/leads.module';
 import { ClientsVendorsModule } from './clients-vendors/clients-vendors.module';
 import { CalendarsModule } from './calendars/calendars.module';
 import { ResourcesModule } from './resources/resources.module';
+import { GoalsModule } from './goals/goals.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ResourcesModule } from './resources/resources.module';
     ClientsVendorsModule, // Clients and vendors management module
     CalendarsModule, // Calendar and scheduling system module
     ResourcesModule, // Resource management module
+    GoalsModule, // Goals & OKR framework module
   ],
   controllers: [AppController],
   providers: [AppService],

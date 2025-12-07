@@ -12,7 +12,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { FinancialService } from './services';
+import { FinancialService, AccountingService, FinancialReportingService } from './services';
 import {
   CreateCurrencyDto,
   UpdateCurrencyDto,
@@ -21,6 +21,10 @@ import {
   UpdateExchangeRateDto,
   ExchangeRateResponseDto,
   ConvertCurrencyDto,
+  CreateAccountDto,
+  CreateJournalEntryDto,
+  AccountResponseDto,
+  FinancialTransactionResponseDto,
 } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -40,7 +44,11 @@ import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 @Controller('financials')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class FinancialsController {
-  constructor(private readonly financialService: FinancialService) {}
+  constructor(
+    private readonly financialService: FinancialService,
+    private readonly accountingService: AccountingService,
+    private readonly reportingService: FinancialReportingService,
+  ) {}
 
   // ========== Currency Endpoints ==========
 
@@ -227,5 +235,179 @@ export class FinancialsController {
   @Post('convert')
   async convertCurrency(@Body() convertDto: ConvertCurrencyDto) {
     return this.financialService.convertCurrency(convertDto);
+  }
+
+  // ========== Accounting Endpoints ==========
+
+  /**
+   * Create a new account
+   * POST /financials/accounts
+   */
+  @Post('accounts')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async createAccount(
+    @Body() createDto: CreateAccountDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<AccountResponseDto> {
+    // This would be implemented in FinancialService
+    throw new Error('Not implemented yet');
+  }
+
+  /**
+   * Get account by ID
+   * GET /financials/accounts/:id
+   */
+  @Get('accounts/:id')
+  async getAccount(@Param('id', ParseIntPipe) id: number): Promise<AccountResponseDto> {
+    // This would be implemented in FinancialService
+    throw new Error('Not implemented yet');
+  }
+
+  /**
+   * Get all active accounts
+   * GET /financials/accounts
+   */
+  @Get('accounts')
+  async getAccounts(): Promise<AccountResponseDto[]> {
+    // This would be implemented in FinancialService
+    throw new Error('Not implemented yet');
+  }
+
+  /**
+   * Create a journal entry
+   * POST /financials/journal-entries
+   */
+  @Post('journal-entries')
+  @HttpCode(HttpStatus.CREATED)
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async createJournalEntry(
+    @Body() createDto: CreateJournalEntryDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<FinancialTransactionResponseDto> {
+    const transaction = await this.accountingService.createJournalEntry(
+      new Date(createDto.transactionDate),
+      createDto.description,
+      createDto.lineItems,
+      createDto.memo,
+      user.userId,
+    );
+
+    return FinancialTransactionResponseDto.fromEntity(transaction, true);
+  }
+
+  /**
+   * Post a transaction
+   * POST /financials/transactions/:id/post
+   */
+  @Post('transactions/:id/post')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async postTransaction(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<FinancialTransactionResponseDto> {
+    const transaction = await this.accountingService.postTransaction(id, user.userId);
+    return FinancialTransactionResponseDto.fromEntity(transaction, true);
+  }
+
+  /**
+   * Reverse a transaction
+   * POST /financials/transactions/:id/reverse
+   */
+  @Post('transactions/:id/reverse')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async reverseTransaction(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('reversalDate') reversalDate: string,
+    @Body('description') description: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<FinancialTransactionResponseDto> {
+    const transaction = await this.accountingService.reverseTransaction(
+      id,
+      new Date(reversalDate),
+      description,
+      user.userId,
+    );
+
+    return FinancialTransactionResponseDto.fromEntity(transaction, true);
+  }
+
+  /**
+   * Get transaction by ID
+   * GET /financials/transactions/:id
+   */
+  @Get('transactions/:id')
+  async getTransaction(@Param('id', ParseIntPipe) id: number): Promise<FinancialTransactionResponseDto> {
+    const transaction = await this.accountingService.getTransactionById(id);
+    return FinancialTransactionResponseDto.fromEntity(transaction, true);
+  }
+
+  /**
+   * Get transactions by date range
+   * GET /financials/transactions
+   */
+  @Get('transactions')
+  async getTransactions(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ): Promise<FinancialTransactionResponseDto[]> {
+    const transactions = await this.accountingService.getTransactionsByDateRange(
+      new Date(startDate),
+      new Date(endDate),
+    );
+
+    return transactions.map((t) => FinancialTransactionResponseDto.fromEntity(t, true));
+  }
+
+  // ========== Reporting Endpoints ==========
+
+  /**
+   * Generate Profit & Loss statement
+   * GET /financials/reports/profit-loss
+   */
+  @Get('reports/profit-loss')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async getProfitAndLoss(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.reportingService.generateProfitAndLoss(new Date(startDate), new Date(endDate));
+  }
+
+  /**
+   * Generate Balance Sheet
+   * GET /financials/reports/balance-sheet
+   */
+  @Get('reports/balance-sheet')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async getBalanceSheet(@Query('asOfDate') asOfDate: string) {
+    return this.reportingService.generateBalanceSheet(new Date(asOfDate));
+  }
+
+  /**
+   * Generate Trial Balance
+   * GET /financials/reports/trial-balance
+   */
+  @Get('reports/trial-balance')
+  @Roles('ADMIN', 'HR', 'FINANCE')
+  async getTrialBalance(@Query('asOfDate') asOfDate: string) {
+    return this.reportingService.generateTrialBalance(new Date(asOfDate));
+  }
+
+  /**
+   * Get account summary
+   * GET /financials/accounts/:id/summary
+   */
+  @Get('accounts/:id/summary')
+  async getAccountSummary(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    return this.reportingService.getAccountSummary(
+      id,
+      startDate ? new Date(startDate) : undefined,
+      endDate ? new Date(endDate) : undefined,
+    );
   }
 }

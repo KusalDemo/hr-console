@@ -5,3 +5,7 @@ export * from './create-exchange-rate.dto';
 export * from './update-exchange-rate.dto';
 export * from './exchange-rate-response.dto';
 export * from './convert-currency.dto';
+export * from './create-account.dto';
+export * from './create-journal-entry.dto';
+export * from './account-response.dto';
+export * from './financial-transaction-response.dto';

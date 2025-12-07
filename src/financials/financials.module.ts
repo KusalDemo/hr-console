@@ -1,9 +1,25 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FinancialsController } from './financials.controller';
-import { FinancialService, CurrencyConversionService } from './services';
-import { CurrencyRepository, ExchangeRateRepository } from './repositories';
-import { Currency, ExchangeRate } from './entities';
+import {
+  FinancialService,
+  CurrencyConversionService,
+  AccountingService,
+  FinancialReportingService,
+} from './services';
+import {
+  CurrencyRepository,
+  ExchangeRateRepository,
+  AccountRepository,
+  FinancialTransactionRepository,
+} from './repositories';
+import {
+  Currency,
+  ExchangeRate,
+  Account,
+  FinancialTransaction,
+  TransactionLineItem,
+} from './entities';
 
 /**
  * Financials Module
@@ -20,20 +36,31 @@ import { Currency, ExchangeRate } from './entities';
     TypeOrmModule.forFeature([
       Currency,
       ExchangeRate,
+      Account,
+      FinancialTransaction,
+      TransactionLineItem,
     ]),
   ],
   controllers: [FinancialsController],
   providers: [
     FinancialService,
     CurrencyConversionService,
+    AccountingService,
+    FinancialReportingService,
     CurrencyRepository,
     ExchangeRateRepository,
+    AccountRepository,
+    FinancialTransactionRepository,
   ],
   exports: [
     FinancialService,
     CurrencyConversionService,
+    AccountingService,
+    FinancialReportingService,
     CurrencyRepository,
     ExchangeRateRepository,
+    AccountRepository,
+    FinancialTransactionRepository,
   ],
 })
 export class FinancialsModule {}

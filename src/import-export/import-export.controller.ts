@@ -15,13 +15,18 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ImportService } from './services';
+import { ImportService, ExportService } from './services';
 import {
   CreateImportTemplateDto,
   UpdateImportTemplateDto,
   CreateImportJobDto,
   ImportTemplateResponseDto,
   ImportJobResponseDto,
+  CreateExportTemplateDto,
+  UpdateExportTemplateDto,
+  CreateExportJobDto,
+  ExportTemplateResponseDto,
+  ExportJobResponseDto,
 } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -29,6 +34,10 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 import { ImportJobStatus } from './entities/import-job.entity';
+import { ExportJobStatus } from './entities/export-job.entity';
+import { Res, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Response } from 'express';
+import { createReadStream } from 'fs';
 
 /**
  * Import Export Controller
@@ -41,7 +50,10 @@ import { ImportJobStatus } from './entities/import-job.entity';
 @Controller('import-export')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ImportExportController {
-  constructor(private readonly importService: ImportService) {}
+  constructor(
+    private readonly importService: ImportService,
+    private readonly exportService: ExportService,
+  ) {}
 
   /**
    * Create import template
@@ -231,5 +243,209 @@ export class ImportExportController {
     pending: number;
   }> {
     return this.importService.getImportStatistics(organizationId);
+  }
+
+  // ==================== Export Endpoints ====================
+
+  /**
+   * Create export template
+   * POST /import-export/export-templates
+   */
+  @Post('export-templates')
+  @Roles('ADMIN', 'HR')
+  @HttpCode(HttpStatus.CREATED)
+  async createExportTemplate(
+    @Body() createDto: CreateExportTemplateDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ExportTemplateResponseDto> {
+    return this.exportService.createTemplate(createDto, user.userId);
+  }
+
+  /**
+   * Get export template by ID
+   * GET /import-export/export-templates/:id
+   */
+  @Get('export-templates/:id')
+  async getExportTemplate(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ExportTemplateResponseDto> {
+    return this.exportService.getTemplateById(id);
+  }
+
+  /**
+   * Get export templates by entity type
+   * GET /import-export/export-templates?entityType=Employee
+   */
+  @Get('export-templates')
+  async getExportTemplates(
+    @Query('entityType') entityType?: string,
+    @Query('organizationId', new ParseIntPipe({ optional: true })) organizationId?: number,
+  ): Promise<ExportTemplateResponseDto[]> {
+    if (entityType) {
+      return this.exportService.getTemplatesByEntityType(entityType, organizationId);
+    }
+    return [];
+  }
+
+  /**
+   * Update export template
+   * PUT /import-export/export-templates/:id
+   */
+  @Put('export-templates/:id')
+  @Roles('ADMIN', 'HR')
+  async updateExportTemplate(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateExportTemplateDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ExportTemplateResponseDto> {
+    return this.exportService.updateTemplate(id, updateDto, user.userId);
+  }
+
+  /**
+   * Delete export template
+   * DELETE /import-export/export-templates/:id
+   */
+  @Delete('export-templates/:id')
+  @Roles('ADMIN', 'HR')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteExportTemplate(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.exportService.deleteTemplate(id);
+  }
+
+  /**
+   * Create export job
+   * POST /import-export/export-jobs
+   */
+  @Post('export-jobs')
+  @Roles('ADMIN', 'HR')
+  @HttpCode(HttpStatus.CREATED)
+  async createExportJob(
+    @Body() createDto: CreateExportJobDto,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<ExportJobResponseDto> {
+    const job = await this.exportService.createExportJob(createDto, user.userId);
+
+    // Process export job asynchronously (in production, this should be queued)
+    if (!job.isScheduled) {
+      this.exportService.processExportJob(job.id).catch((error) => {
+        console.error(`Failed to process export job ${job.id}:`, error);
+      });
+    }
+
+    return job;
+  }
+
+  /**
+   * Get export job by ID
+   * GET /import-export/export-jobs/:id
+   */
+  @Get('export-jobs/:id')
+  async getExportJob(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ExportJobResponseDto> {
+    return this.exportService.getExportJobById(id);
+  }
+
+  /**
+   * Get export jobs with pagination
+   * GET /import-export/export-jobs?page=1&limit=20&status=COMPLETED
+   */
+  @Get('export-jobs')
+  async getExportJobs(
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+    @Query('status') status?: ExportJobStatus,
+    @Query('entityType') entityType?: string,
+    @Query('organizationId', new ParseIntPipe({ optional: true })) organizationId?: number,
+    @Query('isScheduled', new ParseIntPipe({ optional: true })) isScheduled?: boolean,
+  ): Promise<{ jobs: ExportJobResponseDto[]; total: number }> {
+    return this.exportService.getExportJobs(page || 1, limit || 20, {
+      status,
+      entityType,
+      organizationId,
+      isScheduled,
+    });
+  }
+
+  /**
+   * Process export job
+   * POST /import-export/export-jobs/:id/process
+   */
+  @Post('export-jobs/:id/process')
+  @Roles('ADMIN', 'HR')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async processExportJob(@Param('id', ParseIntPipe) id: number): Promise<{
+    message: string;
+    jobId: number;
+  }> {
+    // Process asynchronously (in production, this should be queued)
+    this.exportService.processExportJob(id).catch((error) => {
+      console.error(`Failed to process export job ${id}:`, error);
+    });
+
+    return {
+      message: 'Export job queued for processing',
+      jobId: id,
+    };
+  }
+
+  /**
+   * Cancel export job
+   * POST /import-export/export-jobs/:id/cancel
+   */
+  @Post('export-jobs/:id/cancel')
+  @Roles('ADMIN', 'HR')
+  @HttpCode(HttpStatus.OK)
+  async cancelExportJob(@Param('id', ParseIntPipe) id: number): Promise<{
+    message: string;
+    jobId: number;
+  }> {
+    await this.exportService.cancelExportJob(id);
+    return {
+      message: 'Export job cancelled',
+      jobId: id,
+    };
+  }
+
+  /**
+   * Download export file
+   * GET /import-export/export-jobs/:id/download
+   */
+  @Get('export-jobs/:id/download')
+  async downloadExportFile(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    const job = await this.exportService.getExportJobById(id);
+
+    if (job.status !== 'COMPLETED') {
+      throw new BadRequestException('Export job is not completed yet');
+    }
+
+    if (!job.filePath) {
+      throw new NotFoundException('Export file not found');
+    }
+
+    const fileStream = createReadStream(job.filePath);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${job.fileName || 'export.csv'}"`);
+    fileStream.pipe(res);
+  }
+
+  /**
+   * Get export statistics
+   * GET /import-export/export-statistics?organizationId=1
+   */
+  @Get('export-statistics')
+  async getExportStatistics(
+    @Query('organizationId', ParseIntPipe) organizationId: number,
+  ): Promise<{
+    total: number;
+    completed: number;
+    failed: number;
+    processing: number;
+    pending: number;
+  }> {
+    return this.exportService.getExportStatistics(organizationId);
   }
 }

@@ -13,10 +13,17 @@ import {
   ParseBoolPipe,
 } from '@nestjs/common';
 import { EquipmentService } from './services/equipment.service';
+import { EquipmentBookingService } from './services/equipment-booking.service';
 import {
   CreateEquipmentDto,
   CreateEquipmentAssignmentDto,
   CreateEquipmentMaintenanceDto,
+  CreateEquipmentBookingDto,
+  UpdateEquipmentBookingDto,
+  ApproveEquipmentBookingDto,
+  RejectEquipmentBookingDto,
+  PickupEquipmentBookingDto,
+  ReturnEquipmentBookingDto,
 } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -38,7 +45,10 @@ import { EquipmentStatus } from './entities/equipment.entity';
 @Controller('equipment')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class EquipmentController {
-  constructor(private readonly equipmentService: EquipmentService) {}
+  constructor(
+    private readonly equipmentService: EquipmentService,
+    private readonly bookingService: EquipmentBookingService,
+  ) {}
 
   // ========== Equipment Endpoints ==========
 
@@ -314,6 +324,216 @@ export class EquipmentController {
     return this.equipmentService.getScheduledMaintenance(
       organizationId,
       beforeDate ? new Date(beforeDate) : undefined,
+    );
+  }
+
+  // ========== Booking Endpoints ==========
+
+  /**
+   * Create equipment booking
+   * POST /equipment/bookings
+   */
+  @Post('bookings')
+  @HttpCode(HttpStatus.CREATED)
+  async createBooking(
+    @Body() createDto: CreateEquipmentBookingDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.bookingService.createBooking(createDto, user.userId);
+  }
+
+  /**
+   * Get booking by ID
+   * GET /equipment/bookings/:id
+   */
+  @Get('bookings/:id')
+  async getBooking(@Param('id', ParseIntPipe) id: number) {
+    return this.bookingService.getBookingById(id);
+  }
+
+  /**
+   * Update booking
+   * PUT /equipment/bookings/:id
+   */
+  @Put('bookings/:id')
+  async updateBooking(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateEquipmentBookingDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.bookingService.updateBooking(id, updateDto, user.userId);
+  }
+
+  /**
+   * Approve booking
+   * POST /equipment/bookings/:id/approve
+   */
+  @Post('bookings/:id/approve')
+  @Roles('ADMIN', 'HR', 'MANAGER')
+  async approveBooking(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() approveDto: ApproveEquipmentBookingDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.bookingService.approveBooking(id, approveDto, user.userId);
+  }
+
+  /**
+   * Reject booking
+   * POST /equipment/bookings/:id/reject
+   */
+  @Post('bookings/:id/reject')
+  @Roles('ADMIN', 'HR', 'MANAGER')
+  async rejectBooking(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() rejectDto: RejectEquipmentBookingDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.bookingService.rejectBooking(id, rejectDto, user.userId);
+  }
+
+  /**
+   * Cancel booking
+   * POST /equipment/bookings/:id/cancel
+   */
+  @Post('bookings/:id/cancel')
+  async cancelBooking(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('cancellationReason') cancellationReason?: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.bookingService.cancelBooking(id, cancellationReason, user.userId);
+  }
+
+  /**
+   * Pickup equipment
+   * POST /equipment/bookings/:id/pickup
+   */
+  @Post('bookings/:id/pickup')
+  async pickupEquipment(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() pickupDto: PickupEquipmentBookingDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.bookingService.pickupEquipment(id, pickupDto, user.userId);
+  }
+
+  /**
+   * Return equipment
+   * POST /equipment/bookings/:id/return
+   */
+  @Post('bookings/:id/return')
+  async returnEquipment(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() returnDto: ReturnEquipmentBookingDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.bookingService.returnEquipment(id, returnDto, user.userId);
+  }
+
+  /**
+   * Get bookings by equipment
+   * GET /equipment/:equipmentId/bookings
+   */
+  @Get(':equipmentId/bookings')
+  async getBookingsByEquipment(
+    @Param('equipmentId', ParseIntPipe) equipmentId: number,
+    @Query('includeCompleted', new ParseBoolPipe({ optional: true })) includeCompleted = false,
+  ) {
+    return this.bookingService.getBookingsByEquipment(equipmentId, includeCompleted);
+  }
+
+  /**
+   * Get bookings by employee
+   * GET /equipment/bookings/employee/:employeeId
+   */
+  @Get('bookings/employee/:employeeId')
+  async getBookingsByEmployee(
+    @Param('employeeId', ParseIntPipe) employeeId: number,
+    @Query('includeCompleted', new ParseBoolPipe({ optional: true })) includeCompleted = false,
+  ) {
+    return this.bookingService.getBookingsByEmployee(employeeId, includeCompleted);
+  }
+
+  /**
+   * Get pending approvals
+   * GET /equipment/bookings/pending-approvals
+   */
+  @Get('bookings/pending-approvals')
+  @Roles('ADMIN', 'HR', 'MANAGER')
+  async getPendingApprovals(
+    @Query('organizationId', new ParseIntPipe({ optional: true })) organizationId?: number,
+    @Query('approverId', new ParseIntPipe({ optional: true })) approverId?: number,
+  ) {
+    return this.bookingService.getPendingApprovals(organizationId, approverId);
+  }
+
+  /**
+   * Get booking statistics
+   * GET /equipment/:equipmentId/bookings/statistics
+   */
+  @Get(':equipmentId/bookings/statistics')
+  async getBookingStatistics(
+    @Param('equipmentId', ParseIntPipe) equipmentId: number,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    return this.bookingService.getBookingStatistics(
+      equipmentId,
+      startDate ? new Date(startDate) : undefined,
+      endDate ? new Date(endDate) : undefined,
+    );
+  }
+
+  /**
+   * Check booking conflicts
+   * POST /equipment/:equipmentId/bookings/check-conflicts
+   */
+  @Post(':equipmentId/bookings/check-conflicts')
+  async checkBookingConflicts(
+    @Param('equipmentId', ParseIntPipe) equipmentId: number,
+    @Body() { startDate, endDate, excludeBookingId }: { startDate: string; endDate: string; excludeBookingId?: number },
+  ) {
+    return this.bookingService.checkBookingConflicts(
+      equipmentId,
+      new Date(startDate),
+      new Date(endDate),
+      excludeBookingId,
+    );
+  }
+
+  /**
+   * Get bookable equipment
+   * GET /equipment/bookable
+   */
+  @Get('bookable')
+  async getBookableEquipment(
+    @Query('organizationId', new ParseIntPipe({ optional: true })) organizationId?: number,
+  ) {
+    return this.equipmentService.getBookableEquipment(organizationId);
+  }
+
+  /**
+   * Update equipment booking availability
+   * PUT /equipment/:id/booking-availability
+   */
+  @Put(':id/booking-availability')
+  @Roles('ADMIN', 'HR')
+  async updateBookingAvailability(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: {
+      isBookable: boolean;
+      bookingAvailabilityRules?: Record<string, any>;
+      maxConcurrentBookings?: number | null;
+    },
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.equipmentService.updateBookingAvailability(
+      id,
+      updateDto.isBookable,
+      updateDto.bookingAvailabilityRules,
+      updateDto.maxConcurrentBookings,
+      user.userId,
     );
   }
 }

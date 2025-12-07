@@ -413,4 +413,49 @@ export class EquipmentService {
   ): Promise<EquipmentMaintenance[]> {
     return this.maintenanceRepository.findScheduled(organizationId, beforeDate);
   }
+
+  // ========== Booking Availability Methods ==========
+
+  /**
+   * Check if equipment is available for booking
+   */
+  async isEquipmentBookable(equipmentId: number): Promise<boolean> {
+    const equipment = await this.equipmentRepository.findById(equipmentId);
+    return equipment?.isBookable || false;
+  }
+
+  /**
+   * Get bookable equipment
+   */
+  async getBookableEquipment(organizationId?: number): Promise<Equipment[]> {
+    return this.equipmentRepository.findBookable(organizationId);
+  }
+
+  /**
+   * Update equipment booking availability
+   */
+  async updateBookingAvailability(
+    equipmentId: number,
+    isBookable: boolean,
+    bookingRules?: Record<string, any>,
+    maxConcurrentBookings?: number | null,
+    updatedBy?: number,
+  ): Promise<Equipment> {
+    const equipment = await this.equipmentRepository.findById(equipmentId);
+
+    if (!equipment) {
+      throw new NotFoundException(`Equipment with ID ${equipmentId} not found`);
+    }
+
+    equipment.isBookable = isBookable;
+    if (bookingRules !== undefined) {
+      equipment.bookingAvailabilityRules = bookingRules;
+    }
+    if (maxConcurrentBookings !== undefined) {
+      equipment.maxConcurrentBookings = maxConcurrentBookings;
+    }
+    equipment.updatedBy = updatedBy;
+
+    return this.equipmentRepository.save(equipment);
+  }
 }

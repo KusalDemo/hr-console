@@ -168,4 +168,21 @@ export class EquipmentRepository extends Repository<Equipment> {
 
     return query.getMany();
   }
+
+  /**
+   * Find bookable equipment
+   */
+  async findBookable(organizationId?: number): Promise<Equipment[]> {
+    const query = this.createQueryBuilder('equipment')
+      .where('equipment.isBookable = :isBookable', { isBookable: true })
+      .andWhere('equipment.isActive = :isActive', { isActive: true })
+      .andWhere('equipment.equipmentStatus = :status', { status: EquipmentStatus.AVAILABLE })
+      .orderBy('equipment.equipmentName', 'ASC');
+
+    if (organizationId) {
+      query.andWhere('equipment.organizationId = :organizationId', { organizationId });
+    }
+
+    return query.getMany();
+  }
 }

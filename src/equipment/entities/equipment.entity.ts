@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { EquipmentAssignment } from './equipment-assignment.entity';
 import { EquipmentMaintenance } from './equipment-maintenance.entity';
+import { EquipmentBooking } from './equipment-booking.entity';
 import { Employee } from '../../employees/entities/employee.entity';
 import { Organization } from '../../organizations/entities/organization.entity';
 
@@ -254,6 +255,42 @@ export class Equipment {
     lazy: true,
   })
   maintenanceHistory: Promise<EquipmentMaintenance[]> | EquipmentMaintenance[];
+
+  /**
+   * Whether equipment is available for booking
+   */
+  @Column({ name: 'is_bookable', type: 'boolean', nullable: false, default: false })
+  isBookable: boolean;
+
+  /**
+   * Booking availability rules (JSONB)
+   * Example: {
+   *   "advanceBookingDays": 30,
+   *   "maxBookingDays": 7,
+   *   "minBookingDays": 1,
+   *   "requiresApproval": true,
+   *   "allowedTimeSlots": ["09:00-17:00"],
+   *   "blackoutDates": ["2024-12-25"],
+   *   "bookingPolicy": "first_come_first_served"
+   * }
+   */
+  @Column({ name: 'booking_availability_rules', type: 'jsonb', nullable: true })
+  bookingAvailabilityRules: Record<string, any> | null;
+
+  /**
+   * Maximum concurrent bookings allowed (null = unlimited)
+   */
+  @Column({ name: 'max_concurrent_bookings', type: 'integer', nullable: true })
+  maxConcurrentBookings: number | null;
+
+  /**
+   * Equipment bookings
+   */
+  @OneToMany(() => EquipmentBooking, (booking) => booking.equipment, {
+    cascade: false,
+    lazy: true,
+  })
+  bookings: Promise<EquipmentBooking[]> | EquipmentBooking[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz', nullable: false })
   createdAt: Date;

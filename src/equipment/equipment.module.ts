@@ -1,19 +1,22 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EquipmentController } from './equipment.controller';
-import { EquipmentService } from './services';
+import { EquipmentService, EquipmentBookingService } from './services';
 import {
   EquipmentRepository,
   EquipmentAssignmentRepository,
   EquipmentMaintenanceRepository,
+  EquipmentBookingRepository,
 } from './repositories';
 import {
   Equipment,
   EquipmentAssignment,
   EquipmentMaintenance,
+  EquipmentBooking,
 } from './entities';
 import { Organization } from '../organizations/entities/organization.entity';
 import { Employee } from '../employees/entities/employee.entity';
+import { WorkflowsModule } from '../workflows/workflows.module';
 
 /**
  * Equipment Module
@@ -33,22 +36,28 @@ import { Employee } from '../employees/entities/employee.entity';
       Equipment,
       EquipmentAssignment,
       EquipmentMaintenance,
+      EquipmentBooking,
       Organization,
       Employee,
     ]),
+    WorkflowsModule,
   ],
   controllers: [EquipmentController],
   providers: [
     EquipmentService,
+    EquipmentBookingService,
     EquipmentRepository,
     EquipmentAssignmentRepository,
     EquipmentMaintenanceRepository,
+    EquipmentBookingRepository,
   ],
   exports: [
     EquipmentService,
+    EquipmentBookingService,
     EquipmentRepository,
     EquipmentAssignmentRepository,
     EquipmentMaintenanceRepository,
+    EquipmentBookingRepository,
   ],
 })
 export class EquipmentModule {}

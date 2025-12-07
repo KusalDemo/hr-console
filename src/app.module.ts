@@ -23,6 +23,7 @@ import { CalendarsModule } from './calendars/calendars.module';
 import { ResourcesModule } from './resources/resources.module';
 import { GoalsModule } from './goals/goals.module';
 import { KPIsModule } from './kpis/kpis.module';
+import { PerformanceModule } from './performance/performance.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { KPIsModule } from './kpis/kpis.module';
     ResourcesModule, // Resource management module
     GoalsModule, // Goals & OKR framework module
     KPIsModule, // KPI & Metrics framework module
+    PerformanceModule, // Performance reviews module
   ],
   controllers: [AppController],
   providers: [AppService],

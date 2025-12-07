@@ -29,6 +29,7 @@ import { EquipmentModule } from './equipment/equipment.module';
 import { ImportExportModule } from './import-export/import-export.module';
 import { ActivitiesModule } from './activities/activities.module';
 import { KnowledgeModule } from './knowledge/knowledge.module';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { KnowledgeModule } from './knowledge/knowledge.module';
     ImportExportModule, // Data import framework module
     ActivitiesModule, // Comprehensive audit logging module
     KnowledgeModule, // Knowledge base system module
+    SupportModule, // Help center & ticketing module
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -39,6 +39,7 @@ import { GraphQLModule } from './graphql/graphql.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { RateLimitModule } from './rate-limit/rate-limit.module';
 import { DashboardsModule } from './dashboards/dashboards.module';
+import { FormsModule } from './forms/forms.module';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { DashboardsModule } from './dashboards/dashboards.module';
     GraphQLModule, // GraphQL API layer
     WebhooksModule, // Webhook event system
     DashboardsModule, // Dashboard builder framework module
+    FormsModule, // Form builder API module
   ],
   controllers: [AppController],
   providers: [AppService],

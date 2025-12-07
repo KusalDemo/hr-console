@@ -24,6 +24,7 @@ import { ResourcesModule } from './resources/resources.module';
 import { GoalsModule } from './goals/goals.module';
 import { KPIsModule } from './kpis/kpis.module';
 import { PerformanceModule } from './performance/performance.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { PerformanceModule } from './performance/performance.module';
     GoalsModule, // Goals & OKR framework module
     KPIsModule, // KPI & Metrics framework module
     PerformanceModule, // Performance reviews module
+    InventoryModule, // Inventory management system module
   ],
   controllers: [AppController],
   providers: [AppService],

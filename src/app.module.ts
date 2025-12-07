@@ -26,6 +26,7 @@ import { KPIsModule } from './kpis/kpis.module';
 import { PerformanceModule } from './performance/performance.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { EquipmentModule } from './equipment/equipment.module';
+import { ImportExportModule } from './import-export/import-export.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { EquipmentModule } from './equipment/equipment.module';
     PerformanceModule, // Performance reviews module
     InventoryModule, // Inventory management system module
     EquipmentModule, // Equipment & Asset tracking module
+    ImportExportModule, // Data import framework module
   ],
   controllers: [AppController],
   providers: [AppService],

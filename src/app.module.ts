@@ -38,6 +38,7 @@ import { SearchModule } from './search/search.module';
 import { GraphQLModule } from './graphql/graphql.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { RateLimitModule } from './rate-limit/rate-limit.module';
+import { CachingModule } from './caching/caching.module';
 import { DashboardsModule } from './dashboards/dashboards.module';
 import { FormsModule } from './forms/forms.module';
 import { ReportsModule } from './reports/reports.module';
@@ -49,6 +50,7 @@ import { ReportsModule } from './reports/reports.module';
     DatabaseModule,
     HealthModule,
     RateLimitModule, // Rate limiting (import early for global availability)
+    CachingModule, // Redis caching layer (import early for global availability)
     AuthModule,
     TenantsModule,
     OrganizationsModule, // Import after TenantsModule so middleware order is correct

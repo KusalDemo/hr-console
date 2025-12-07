@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FormsController } from './forms.controller';
 import { FormService, FormValidationService } from './services';
@@ -8,6 +8,8 @@ import {
 } from './repositories';
 import { FormDefinition, FormResponse } from './entities';
 import { Organization } from '../organizations/entities/organization.entity';
+import { WorkflowsModule } from '../workflows/workflows.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 /**
  * Forms Module
@@ -31,6 +33,8 @@ import { Organization } from '../organizations/entities/organization.entity';
       FormResponse,
       Organization,
     ]),
+    forwardRef(() => WorkflowsModule), // For workflow integration
+    forwardRef(() => NotificationsModule), // For notification integration
   ],
   controllers: [FormsController],
   providers: [

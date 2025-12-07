@@ -3,6 +3,9 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
+  Inject,
+  Optional,
+  forwardRef,
 } from '@nestjs/common';
 import { FormDefinitionRepository } from '../repositories/form-definition.repository';
 import { FormResponseRepository } from '../repositories/form-response.repository';
@@ -13,6 +16,8 @@ import {
 } from '../entities/form-definition.entity';
 import { FormResponse, FormResponseStatus } from '../entities/form-response.entity';
 import { FormValidationService } from './form-validation.service';
+import { WorkflowService } from '../../workflows/services/workflow.service';
+import { NotificationService } from '../../notifications/services/notification.service';
 
 /**
  * Form Service
@@ -32,6 +37,10 @@ export class FormService {
     private readonly formDefinitionRepository: FormDefinitionRepository,
     private readonly formResponseRepository: FormResponseRepository,
     private readonly formValidationService: FormValidationService,
+    @Optional() @Inject(forwardRef(() => WorkflowService))
+    private readonly workflowService?: WorkflowService,
+    @Optional() @Inject(forwardRef(() => NotificationService))
+    private readonly notificationService?: NotificationService,
   ) {}
 
   /**
@@ -355,8 +364,93 @@ export class FormService {
       `Submitted form response: ${saved.id} for form ${formDefinitionId}`,
     );
 
-    // TODO: Trigger workflow if workflowId is set
-    // TODO: Send notifications if notificationConfig is set
+    // Trigger workflow if workflowId is set
+    if (form.workflowId && this.workflowService) {
+      try {
+        // Get workflow definition to find the workflow key
+        const workflowDefinition = await this.workflowService.getWorkflowDefinition(
+          form.workflowId,
+        );
+
+        if (workflowDefinition && workflowDefinition.workflowKey) {
+          const workflowInstance = await this.workflowService.startWorkflow(
+            {
+              workflowKey: workflowDefinition.workflowKey,
+              entityType: 'form_response',
+              entityId: saved.id,
+              initialData: {
+                formDefinitionId: form.id,
+                formName: form.formName,
+                responseData: responseData,
+                submittedBy: submittedBy,
+                isAnonymous: isAnonymous,
+              },
+              organizationId: form.organizationId,
+            },
+            submittedBy,
+          );
+
+          // Update response with workflow instance ID
+          if (workflowInstance && workflowInstance.id) {
+            saved.workflowInstanceId = workflowInstance.id;
+            await this.formResponseRepository.save(saved);
+          }
+
+          this.logger.log(
+            `Triggered workflow for form response: ${saved.id}`,
+          );
+        }
+      } catch (error) {
+        this.logger.error(
+          `Failed to trigger workflow for form response ${saved.id}: ${error.message}`,
+        );
+        // Don't fail the submission if workflow trigger fails
+      }
+    }
+
+    // Send notifications if notificationConfig is set
+    if (form.notificationConfig && this.notificationService) {
+      try {
+        const notificationConfig = form.notificationConfig;
+        const recipients = notificationConfig.recipients || [];
+
+        for (const recipient of recipients) {
+          if (recipient.userId) {
+            await this.notificationService.sendNotification(
+              {
+                userId: recipient.userId,
+                organizationId: form.organizationId,
+                templateKey: notificationConfig.templateKey || null,
+                title: notificationConfig.title || `New form submission: ${form.formName}`,
+                body:
+                  notificationConfig.body ||
+                  `A new response has been submitted for form "${form.formName}"`,
+                category: 'form_submission',
+                relatedEntityType: 'form_response',
+                relatedEntityId: saved.id,
+                templateVariables: {
+                  formName: form.formName,
+                  formId: form.id,
+                  responseId: saved.id,
+                  submittedBy: submittedBy || 'Anonymous',
+                  submittedAt: saved.submittedAt?.toISOString(),
+                },
+              },
+              submittedBy,
+            );
+          }
+        }
+
+        this.logger.log(
+          `Sent notifications for form response: ${saved.id}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Failed to send notifications for form response ${saved.id}: ${error.message}`,
+        );
+        // Don't fail the submission if notification sending fails
+      }
+    }
 
     return saved;
   }

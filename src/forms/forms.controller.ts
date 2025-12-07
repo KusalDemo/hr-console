@@ -13,6 +13,7 @@ import {
   HttpStatus,
   ParseBoolPipe,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FormService } from './services/form.service';
 import {
@@ -86,7 +87,11 @@ export class FormsController {
     const form = await this.formService.getFormDefinitionById(id);
     
     if (form.status !== FormStatus.PUBLISHED) {
-      throw new Error('Form is not published');
+      throw new ForbiddenException('Form is not published');
+    }
+
+    if (!form.isActive) {
+      throw new ForbiddenException('Form is not active');
     }
 
     return form;

@@ -31,7 +31,7 @@ export enum ExecutionStatus {
  * - Execution results
  * - Error logs
  */
-@Entity('job_executions')
+@Entity('job_executions', { schema: 'admin' })
 @Index('idx_job_executions_job', ['jobQueueId'])
 @Index('idx_job_executions_status', ['status'])
 @Index('idx_job_executions_started', ['startedAt'])

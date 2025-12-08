@@ -719,3 +719,4 @@ export class ComplianceFramework0000000000054 implements MigrationInterface {
   }
 }
 
+

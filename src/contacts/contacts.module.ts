@@ -38,3 +38,4 @@ import { Contact, ContactRelationship, ContactInteraction } from './entities';
 })
 export class ContactsModule {}
 
+

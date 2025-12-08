@@ -80,3 +80,4 @@ export class PrivacyPolicyAcceptance {
   metadata: Record<string, any> | null;
 }
 
+

@@ -34,3 +34,4 @@ export class BusinessRuleResponseDto {
   updatedBy: number | null;
 }
 
+

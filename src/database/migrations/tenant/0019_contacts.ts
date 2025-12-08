@@ -283,3 +283,4 @@ export class Contacts0000000000019 implements MigrationInterface {
   }
 }
 
+

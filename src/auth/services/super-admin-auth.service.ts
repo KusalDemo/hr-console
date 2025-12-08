@@ -105,22 +105,23 @@ export class SuperAdminAuthService {
       );
     }
 
+    // TODO: Re-enable password reset checks when needed
     // Check if password has expired
-    if (superAdmin.isPasswordExpired()) {
-      await this.superAdminRepository.requirePasswordChange(superAdmin.id);
-      throw new BusinessException(
-        ErrorCode.UNAUTHORIZED,
-        'Password has expired. Please change your password.',
-      );
-    }
+    // if (superAdmin.isPasswordExpired()) {
+    //   await this.superAdminRepository.requirePasswordChange(superAdmin.id);
+    //   throw new BusinessException(
+    //     ErrorCode.UNAUTHORIZED,
+    //     'Password has expired. Please change your password.',
+    //   );
+    // }
 
     // Check if password change is required
-    if (superAdmin.requiresPasswordChange) {
-      throw new BusinessException(
-        ErrorCode.UNAUTHORIZED,
-        'Password change is required. Please change your password before logging in.',
-      );
-    }
+    // if (superAdmin.requiresPasswordChange) {
+    //   throw new BusinessException(
+    //     ErrorCode.UNAUTHORIZED,
+    //     'Password change is required. Please change your password before logging in.',
+    //   );
+    // }
 
     // Handle MFA if enabled
     if (superAdmin.mfaEnabled) {

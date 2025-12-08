@@ -69,3 +69,4 @@ export class UpdateJobDto {
   jobMetadata?: Record<string, any>;
 }
 
+

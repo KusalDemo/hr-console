@@ -58,7 +58,7 @@ export enum JobPriority {
  * - Dependencies
  * - Job monitoring
  */
-@Entity('job_queues')
+@Entity('job_queues', { schema: 'admin' })
 @Index('idx_job_queues_type', ['jobType'])
 @Index('idx_job_queues_status', ['status'])
 @Index('idx_job_queues_priority', ['priority'])

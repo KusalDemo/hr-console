@@ -33,3 +33,4 @@ export class JSONScalar implements CustomScalar<any, any> {
     return null;
   }
 }
+

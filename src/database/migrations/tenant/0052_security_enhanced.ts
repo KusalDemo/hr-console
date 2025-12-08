@@ -392,3 +392,4 @@ export class SecurityEnhanced0000000000052 implements MigrationInterface {
   }
 }
 
+

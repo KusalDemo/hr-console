@@ -67,3 +67,4 @@ export class CreateContactInteractionDto {
   interactionMetadata?: Record<string, any>;
 }
 
+

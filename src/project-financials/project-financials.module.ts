@@ -36,3 +36,4 @@ import { TaskRepository } from '../tasks/repositories/task.repository';
 })
 export class ProjectFinancialsModule {}
 
+

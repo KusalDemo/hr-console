@@ -16,19 +16,37 @@ export class TenantAdminRepository extends Repository<TenantAdmin> {
   /**
    * Find tenant admin by email and tenant key (case-insensitive)
    * Only returns active tenant admins
+   * Uses raw SQL query first to find the ID, then loads full entity with relations
    */
   async findByEmailAndTenant(email: string, tenantKey: string): Promise<TenantAdmin | null> {
-    return this.findOne({
-      where: {
-        email: email.trim().toLowerCase(),
-        isActive: true,
-        tenant: {
-          tenantKey: tenantKey.toLowerCase(),
-          isActive: true,
-        },
-      },
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedTenantKey = tenantKey.toLowerCase();
+
+    // First, use raw SQL to find the tenant admin ID with case-insensitive matching
+    // Using TRIM and LOWER to handle whitespace and case differences
+    const result = await this.dataSource.query(
+      `SELECT ta.id
+       FROM admin.tenant_admin ta
+       INNER JOIN admin.tenants t ON ta.tenant_id = t.id
+       WHERE LOWER(TRIM(ta.email)) = LOWER(TRIM($1))
+         AND ta.is_active = true
+         AND LOWER(TRIM(t.tenant_key)) = LOWER(TRIM($2))
+         AND t.is_active = true
+       LIMIT 1`,
+      [normalizedEmail, normalizedTenantKey],
+    );
+
+    if (!result || result.length === 0) {
+      return null;
+    }
+
+    // Load the full entity with relations using TypeORM
+    const tenantAdmin = await this.findOne({
+      where: { id: result[0].id },
       relations: ['tenant'],
     });
+
+    return tenantAdmin;
   }
 
   /**
